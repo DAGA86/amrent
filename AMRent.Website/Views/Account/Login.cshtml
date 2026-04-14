@@ -1,0 +1,38 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model dCore.Identity.Models.UserViewModel
+@{
+	Layout = "_CleanLayout";
+	int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+	ViewData["Title"] = $"{TranslationProvider.GetTranslation(languageId, "Login.Titulo")}";
+}
+
+<div class="login-wrapper">
+	<div class="loginbox">
+		<div class="login-auth">
+			<div class="login-auth-wrap">
+				<h1>@TranslationProvider.GetTranslation(languageId, "Login.Titulo")</h1>
+				<form asp-controller="Account" asp-action="Login" method="post" class="mt-5">
+					<div class="form-group">
+						<label class="form-label" for="Username">@TranslationProvider.GetTranslation(languageId, "Login.Email") <span class="text-danger">*</span></label>
+						<input type="email" asp-for="Username" class="form-control">
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="Password">@TranslationProvider.GetTranslation(languageId, "Login.Password") <span class="text-danger">*</span></label>
+						<div class="pass-group">
+							<input asp-for="Password" type="password" class="form-control pass-input" placeholder="">
+							<span class="fas fa-eye toggle-password"></span>
+						</div>
+					</div>
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group">
+						<a class="forgot-link" asp-controller="Account" asp-action="ForgotPassword">@TranslationProvider.GetTranslation(languageId, "Login.EsqueceuPassword")</a>
+					</div>
+					<button type="submit" class="btn btn-outline-light w-100 btn-size mt-1">@TranslationProvider.GetTranslation(languageId, "Login.Botao")</button>
+					<div class="text-center dont-have">@TranslationProvider.GetTranslation(languageId, "Login.Registar.Texto") <a asp-controller="Account" asp-action="SignUp">@TranslationProvider.GetTranslation(languageId, "Login.Registar.Link")</a></div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,142 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\img\blog\**" />
+    <Compile Remove="wwwroot\img\campaigns\**" />
+    <Compile Remove="wwwroot\img\homebanners\**" />
+    <Compile Remove="wwwroot\img\segments\**" />
+    <Compile Remove="wwwroot\img\team\**" />
+    <Content Remove="wwwroot\img\blog\**" />
+    <Content Remove="wwwroot\img\campaigns\**" />
+    <Content Remove="wwwroot\img\homebanners\**" />
+    <Content Remove="wwwroot\img\segments\**" />
+    <Content Remove="wwwroot\img\team\**" />
+    <EmbeddedResource Remove="wwwroot\img\blog\**" />
+    <EmbeddedResource Remove="wwwroot\img\campaigns\**" />
+    <EmbeddedResource Remove="wwwroot\img\homebanners\**" />
+    <EmbeddedResource Remove="wwwroot\img\segments\**" />
+    <EmbeddedResource Remove="wwwroot\img\team\**" />
+    <None Remove="wwwroot\img\blog\**" />
+    <None Remove="wwwroot\img\campaigns\**" />
+    <None Remove="wwwroot\img\homebanners\**" />
+    <None Remove="wwwroot\img\segments\**" />
+    <None Remove="wwwroot\img\team\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\img\about.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Account\Login.cshtml" />
+    <None Include="wwwroot\lib\select2\js\i18n\af.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ar.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\az.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\bg.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\bn.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\bs.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ca.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\cs.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\da.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\de.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\dsb.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\el.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\en.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\es.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\et.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\eu.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\fa.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\fi.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\fr.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\gl.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\he.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\hi.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\hr.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\hsb.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\hu.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\hy.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\id.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\is.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\it.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ja.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ka.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\km.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ko.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\lt.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\lv.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\mk.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ms.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\nb.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ne.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\nl.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\pl.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ps.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\pt-BR.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\pt.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ro.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\ru.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\sk.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\sl.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\sq.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\sr-Cyrl.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\sr.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\sv.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\th.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\tk.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\tr.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\uk.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\vi.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\zh-CN.js" />
+    <None Include="wwwroot\lib\select2\js\i18n\zh-TW.js" />
+    <None Include="wwwroot\lib\select2\js\select2.full.js" />
+    <None Include="wwwroot\lib\select2\js\select2.full.min.js" />
+    <None Include="wwwroot\lib\select2\js\select2.js" />
+    <None Include="wwwroot\lib\select2\js\select2.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.13.2" />
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
+    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="8.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="8.0.4" />
+    <PackageReference Include="MimeKit" Version="4.10.0" />
+    <PackageReference Include="NLog" Version="5.3.3" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.12" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="UTF.Unknown" Version="2.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\dCore\dCore.Cryptography\dCore.Cryptography.csproj" />
+    <ProjectReference Include="..\..\..\..\dCore\dCore.Identity\dCore.Identity.csproj" />
+    <ProjectReference Include="..\..\..\..\dCore\dCore.Licensing\dCore.Licensing.csproj" />
+    <ProjectReference Include="..\AMRent.Data\AMRent.Data.csproj" />
+    <ProjectReference Include="..\AMRent.Shared\AMRent.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\docs\" />
+  </ItemGroup>
+
+</Project>

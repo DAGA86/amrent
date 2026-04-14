@@ -1,0 +1,63 @@
+﻿@model AMRent.Data.Models.Database.Setting
+
+@{
+    ViewData["Title"] = "Editar Definição";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Languages" asp-action="Index">Definições</a></li>
+}
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Key" />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Key">Chave</label>
+                                <input readonly="readonly" disabled="disabled" asp-for="Key" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Description">Descrição</label>
+                                <input asp-for="Description" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Value">Valor</label>
+                                <input asp-for="Value" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="Settings" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-settings', 'menu-configuration');
+        });
+    </script>
+}

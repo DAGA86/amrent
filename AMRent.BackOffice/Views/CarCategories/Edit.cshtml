@@ -1,0 +1,91 @@
+﻿@model AMRent.Data.Models.Database.CarCategory
+
+@{
+    ViewData["Title"] = "Editar Categoria de veículos";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="CarCategories" asp-action="Index">Categorias de veículos</a></li>
+}
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-check">
+                                <input asp-for="IsCommercial" type="checkbox" class="form-check-input" />
+                                <label for="IsCommercial">Comercial</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+        {
+            int languageId = ViewBag.Languages[i].Id;
+            var currentTranslation = Model.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+            <div class="col-md-12">
+                <div class="card card-success card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">@ViewBag.Languages[i].Name</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                            <input type="hidden" name="Translations[@i].CarCategoryId" value="@(currentTranslation != null ? Model.Id : 0)" />
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Name">@ViewBag.Languages[i].Name</label>
+                                    <input name="Translations[@i].Name" class="form-control form-control-sm" value="@(currentTranslation?.Name ?? "")" />
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Included">Incluído (1 por linha)</label>
+                                    <textarea rows="10" name="Translations[@i].Included" class="form-control form-control-sm">@(currentTranslation?.Included ?? "")</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        }
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="CarCategories" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-car-categories', 'menu-renting');
+        });
+    </script>
+}

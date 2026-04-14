@@ -1,0 +1,94 @@
+﻿@model AMRent.Data.Models.Database.DataProtectionConsent
+
+@{
+    ViewData["Title"] = "Novo Consentimento";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="DataProtectionConsents" asp-action="Index">Consentimentos</a></li>
+}
+
+<form asp-action="Create">
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="AuthorName">Activo</label>
+                                <input type="checkbox" asp-for="IsActive" data-bootstrap-switch data-on-text="Sim" data-off-text="Não">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Score">Obrigatório</label>
+                                <input type="checkbox" asp-for="IsMandatory" data-bootstrap-switch data-on-text="Sim" data-off-text="Não">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Texto</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+                        {
+                            int languageId = ViewBag.Languages[i].Id;
+                            var currentTranslation = Model?.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+                            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Text">@ViewBag.Languages[i].Name</label>
+                                    <textarea rows="5" name="Translations[@i].Text" class="form-control form-control-sm">@(currentTranslation?.Text ?? "")</textarea>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="DataProtectionConsents" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script>
+        $(function () {
+            SetActiveMenu('menu-consents', 'menu-content');
+
+            $("input[data-bootstrap-switch]").each(function(){
+                $(this).bootstrapSwitch();
+            })
+        });
+    </script>
+}

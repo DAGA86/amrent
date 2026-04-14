@@ -1,0 +1,490 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using AMRent.Data.Models.Database
+@model SegmentDetail
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = Model.Name;
+}
+
+<section class="section product-details">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@ViewData["Title"] <span style="font-size: 15px;">@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Titulo.OuSimilar")</span></h2>
+        </div>
+        <form id="segment-detail-form" asp-controller="Segment" asp-action="Detail" method="post">
+            <input type="hidden" asp-for="SegmentId" />
+            <input type="hidden" asp-for="CampaignId" />
+            <input type="hidden" asp-for="VoucherId" />
+            <input type="hidden" asp-for="Anchor" />
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="detail-product">
+                        <div class="product-img">
+                            <img src="~/img/segments/@(Model.SegmentId).jpg" asp-append-version="true" alt="Slider">
+                        </div>
+                    </div>@*
+                    <div class="review-sec extra-service">
+                    <div class="review-header">
+                    <h4>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Campanhas.Titulo")</h4>
+                    </div>
+                    <span>Baby Seat - $10</span>
+                    </div>*@
+                    <!--Listing Features Section-->
+                    <div class="review-sec specification-card ">
+                        <div class="review-header">
+                            <h4>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Caracteristicas.Titulo")</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="lisiting-featues">
+                                <div class="row">
+                                    <div class="featureslist d-flex align-items-center col-lg-4">
+                                        <div class="feature-img">
+                                            <img src="~/img/icons/car-parts-01.svg" alt="">
+                                        </div>
+                                        <div class="featues-info">
+                                            <span>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Caracteristicas.Transmissao") </span>
+                                            <h6> @Model.Gearbox</h6>
+                                        </div>
+                                    </div>
+                                    <div class="featureslist d-flex align-items-center col-lg-4">
+                                        <div class="feature-img">
+                                            <img src="~/img/icons/car-parts-03.svg" alt="">
+                                        </div>
+                                        <div class="featues-info">
+                                            <span>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Caracteristicas.Combustivel") </span>
+                                            <h6> @Model.Fuel</h6>
+                                        </div>
+                                    </div>
+                                    <div class="featureslist d-flex align-items-center col-lg-4">
+                                        <div class="feature-img">
+                                            <img src="~/img/icons/car-parts-06.svg" alt="">
+                                        </div>
+                                        <div class="featues-info">
+                                            <span>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Caracteristicas.Assentos") </span>
+                                            <h6> @Model.Seats</h6>
+                                        </div>
+                                    </div>
+                                    @if (Model.IsCommercial)
+                                    {
+                                        <div class="featureslist d-flex align-items-center col-lg-4">
+                                            <div class="feature-img">
+                                                <img src="~/img/icons/truck_length.svg" alt="">
+                                            </div>
+                                            <div class="featues-info">
+                                                <span>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Caracteristicas.ComprimentoCarga") </span>
+                                                <h6> @((Model.LoadingSpaceLengthInMilimeters.HasValue ? ((double)Model.LoadingSpaceLengthInMilimeters / 1000) : 0).ToString("0.00")) m</h6>
+                                            </div>
+                                        </div>
+                                        <div class="featureslist d-flex align-items-center col-lg-4">
+                                            <div class="feature-img">
+                                                <img src="~/img/icons/truck_width.svg" alt="">
+                                            </div>
+                                            <div class="featues-info">
+                                                <span>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Caracteristicas.LarguraCarga") </span>
+                                                <h6> @((Model.LoadingSpaceWidthInMilimeters.HasValue ? ((double)Model.LoadingSpaceWidthInMilimeters / 1000) : 0).ToString("0.00")) m</h6>
+                                            </div>
+                                        </div>
+                                        <div class="featureslist d-flex align-items-center col-lg-4">
+                                            <div class="feature-img">
+                                                <img src="~/img/icons/truck_height.svg" alt="">
+                                            </div>
+                                            <div class="featues-info">
+                                                <span>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Caracteristicas.AlturaCarga") </span>
+                                                <h6> @((Model.LoadingSpaceHeightInMilimeters.HasValue ? ((double)Model.LoadingSpaceHeightInMilimeters / 1000) : 0).ToString("0.00")) m</h6>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-sec listing-feature" id="extras-section">
+                        <div class="review-header">
+                            <h4>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Extras.Titulo")</h4>
+                        </div>
+                        <div class="listing-description">
+                            <div class="row">
+                                @for (int i = 0; i < Model.Extras.Count; i++)
+                                {
+                                    bool fixedValue = Model.Extras[i].MaximumValue == Model.Extras[i].DailyValue || Model.Extras[i].DailyValue == 0;
+                                    <input type="hidden" asp-for="Extras[i].Id" />
+                                    <div class="col-xl-6 col-12">
+                                        <div class="input-group input-group-sm input-group-extras mb-3">
+                                            <span class="input-group-text" style="font-size: 0.65rem" id="extra_id_@(Model.Extras[i].Id)">@(Model.Extras[i].Name) (@(Model.Extras[i].DailyValue == 0 ? TranslationProvider.GetTranslation(languageId, "Extra.Incluido") : $"{Model.Extras[i].DailyValue}€")@(fixedValue ? "" : $" /{TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Extras.Dia")}"))</span>
+                                            @if (Model.Extras[i].AllowMultiple)
+                                            {
+                                                <input type="number" asp-for="Extras[i].Quantity" min="0" class="form-control extra-quantity-input" aria-describedby="extra_id_@(Model.Extras[i].Id)">
+                                            }
+                                            else
+                                            {
+                                                <input type="number" asp-for="Extras[i].Quantity" min="0" max="1" class="form-control extra-quantity-input" aria-describedby="extra_id_@(Model.Extras[i].Id)">
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.Insurances != null && Model.Insurances.Any())
+                    {
+                        <input type="hidden" asp-for="SelectedInsuranceLevelId" />
+                        <!--/Listing Features Section-->
+                        <div class="review-sec pricing-section" id="insurance-section">
+                            <div class="review-header">
+                                <h4>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Seguro.Titulo")</h4>
+                            </div>
+                            <div class="listing-description">
+                                <div class="row">
+                                    @foreach (Insurance insurance in Model.Insurances.OrderBy(x => x.InsuranceLevelId).ToList())
+                                    {
+                                        bool selected = (Model.SelectedInsuranceLevelId == insurance.InsuranceLevelId);
+                                        <div class="col-lg-@(12/Model.Insurances.Count) d-flex col-12" data-aos="fade-down">
+                                            <div class="price-card flex-fill insurance@(selected ? " active" : "")" onclick="javascript:$('.insurance').removeClass('active'); $(this).addClass('active'); Refresh('insurance-section');" data-id="@(insurance.InsuranceLevelId)">
+                                                <div class="price-head">
+                                                    <div class="price-level@(selected ? " price-level-popular" : "")">
+                                                        <h6>@(insurance.InsuranceLevel?.Translations?.FirstOrDefault()?.Name)</h6>
+                                                    </div>
+                                                    <h2>@(insurance.Prices.FirstOrDefault().Value)€</h2>
+                                                    <h6>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Seguro.Franquia"): @(insurance.Excess)€</h6>
+                                                </div>
+                                                <div class="price-details">
+                                                    <ul>
+                                                        @{
+                                                            if (!string.IsNullOrEmpty(insurance.InsuranceLevel?.Translations?.FirstOrDefault()?.Included))
+                                                            {
+                                                                foreach (string included in insurance.InsuranceLevel?.Translations?.FirstOrDefault()?.Included.Split("\n"))
+                                                                {
+                                                                    <li class="price-check"><span><i class="fa-regular fa-circle-check"></i></span>@included</li>
+                                                                }
+                                                            }
+                                                            if (!string.IsNullOrEmpty(insurance.InsuranceLevel?.Translations?.FirstOrDefault()?.Excluded))
+                                                            {
+                                                                foreach (string excluded in insurance.InsuranceLevel?.Translations?.FirstOrDefault()?.Excluded.Split("\n"))
+                                                                {
+                                                                    <li class="price-uncheck"><span><i class="fa-regular fa-circle-xmark"></i></span>@excluded</li>
+                                                                }
+                                                            }
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <!--/Insurance-->
+                    }
+                </div>
+                <div class="col-lg-4 theiaStickySidebar" id="sidebar-div">
+                    <div class="review-sec mt-0">
+                        <div class="review-header">
+                            <h4>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.Titulo")</h4>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.LocalRecolha")</label>
+                                    <select asp-for="PickupLocationId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.PickupLocations"></select>
+                                </div>
+                            </div>
+                            <div class="col-12" style="display: none;" id="custom-pickup-location">
+                                <div class="form-group">
+                                    <input asp-for="CustomPickupLocationName" class="form-control" style="width: 100%;" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.LocalDevolucao")</label>
+                                    <select asp-for="ReturnLocationId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.ReturnLocations"></select>
+                                </div>
+                            </div>
+                            <div class="col-12" style="display: none;" id="custom-return-location">
+                                <div class="form-group">
+                                    <input asp-for="CustomReturnLocationName" class="form-control" style="width: 100%;" />
+                                </div>
+                            </div>
+                            <input type="hidden" asp-for="PickupDateTime" />
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.DataRecolha")</label>
+                                    <div class="row">
+                                        <div class="col-sm-7">
+                                            <input id="PickupDate" value="@(Model.PickupDateTime.ToString("dd-MM-yyyy"))" type="text" class="form-control datetimepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Data")">
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <input id="PickupTime" value="@(Model.PickupDateTime.TimeOfDay)" type="text" class="form-control timepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Hora")">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" asp-for="ReturnDateTime" />
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.DataDevolucao")</label>
+                                    <div class="row">
+                                        <div class="col-sm-7">
+                                            <input id="ReturnDate" value="@(Model.ReturnDateTime.Date.ToString("dd-MM-yyyy"))" type="text" class="form-control datetimepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Data")">
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <input id="ReturnTime" value="@(Model.ReturnDateTime.TimeOfDay)" type="text" class="form-control timepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Hora")">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.PickupReturnValuesAdjusted)
+                        {
+                            <div class="accordion text-danger">
+                                <span>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.AvisoDataHoraAjustada")</span>
+                            </div>
+                        }
+                        <hr />
+                        @{
+                            decimal? rentValue = Model.RentValue + Model.PickupValue + Model.ReturnValue;
+                            decimal? extrasValue = Model.Extras.Where(x => x.Cost != null).Sum(x => x.Cost);
+                            decimal? insuranceValue = Model.Insurances.FirstOrDefault(x => x.InsuranceLevelId == Model.SelectedInsuranceLevelId).Prices.FirstOrDefault().Value;
+                            decimal? pickupReturnTemporaryTaxesValue = Model.PickupReturnTemporaryTaxes.Sum(x => x.Cost);
+                            decimal? totalValue = rentValue + extrasValue + insuranceValue + pickupReturnTemporaryTaxesValue;
+                        }
+                        <div class="row">
+                            <div class="col-auto">@(TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.ValorVeiculo")) (@Model.Days @(TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.ValorVeiculo.Dias"))):</div>
+                            <div class="col" style="text-align: right;">@(rentValue)€</div>
+                        </div>
+                        @if (Model.Extras.Sum(x => x.Cost) > 0)
+                        {
+                            <div class="row">
+                                <div class="col-auto">@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.ValorExtras"):</div>
+                                <div class="col" style="text-align: right;">@(Model.Extras.Sum(x => x.Cost))€</div>
+                                @foreach (AMRent.Website.Models.Extra selectedExtra in Model.Extras)
+                                {
+                                    decimal? extraValue = selectedExtra.Cost;
+                                    if (extraValue.HasValue && extraValue > 0)
+                                    {
+                                        <div class="col-12" style="padding-left: 25px;">
+                                            <div class="row">
+                                                <div class="col-auto" style="font-size: 10px;">@selectedExtra.Name:</div>
+                                                <div class="col" style="text-align: right; font-size: 10px;">@(extraValue)€</div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-auto">@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.ValorSeguro") @(Model.Insurances.FirstOrDefault(x => x.InsuranceLevelId == Model.SelectedInsuranceLevelId).InsuranceLevel.Translations.FirstOrDefault().Name):</div>
+                            <div class="col" style="text-align: right;">@(insuranceValue)€</div>
+                        </div>
+                        @foreach (var pickupReturnTemporaryTax in Model.PickupReturnTemporaryTaxes)
+                        {
+                            <div class="row">
+                                <div class="col-auto">@(pickupReturnTemporaryTax.Name) (x @(pickupReturnTemporaryTax.Quantity)):</div>
+                                <div class="col" style="text-align: right;">@(pickupReturnTemporaryTax.UnitValue)€</div>
+                            </div>
+                        }
+                        <hr />
+                        @if (Model.CampaignId.HasValue || Model.VoucherId.HasValue)
+                        {
+                            <div class="row">
+                                <div class="col-auto">@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.ValorTotal"):</div>
+                                <div class="col" style="text-align: right;"><s>@(totalValue)€</s></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">@Model.CampaignVoucherName:</div>
+                                <div class="col" style="text-align: right;">@(Model.TotalValue)€</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-auto">@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.ValorTotal"):</div>
+                                <div class="col" style="text-align: right;">@(totalValue)€</div>
+                            </div>
+                        }
+                        <hr />
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.CodigoDesconto")</label>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <input asp-for="VoucherCode" class="form-control" style="padding: .25rem .5rem; font-size: .875rem; border-radius: .25rem;" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <button onclick="javascript:Refresh('sidebar-div');" class="btn btn-sm btn-primary check-available w-100" type="button" data-bs-toggle="modal"> @TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.CodigoDesconto.Botao")</button>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(Model.VoucherCode) && !Model.VoucherId.HasValue)
+                                        {
+                                            <div class="col" style="text-align: right;">@TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.CodigoDesconto.Invalido")</div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-12" style="text-align: center">
+                                <div class="search-btn">
+                                    <button id="book-button" style="display: none;" onclick="javascript:Book();" class="btn btn-primary check-available w-100" type="button" data-bs-toggle="modal" data-bs-target="#pages_edit"> @TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.BotaoReservar")</button>
+                                    <button id="ask-quotation-button" style="display: none;" onclick="javascript:AskQuotation();" class="btn btn-primary check-available w-100" type="button" data-bs-toggle="modal" data-bs-target="#pages_edit"> @TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.BotaoPedirCotacao")</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- /Car Grid View -->
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('.menu-search');
+            $('.select2').select2();
+
+            if ($('#PickupLocationId').val() == '-1') {
+                $('#custom-pickup-location').show();
+            }
+            if ($('#ReturnLocationId').val() == '-1') {
+                $('#custom-return-location').show();
+            }
+            if ($('#PickupLocationId').val() == '-1' || $('#ReturnLocationId').val() == '-1') {
+                $('#ask-quotation-button').show();
+                $('#book-button').hide();
+            } else {
+                $('#ask-quotation-button').hide();
+                $('#book-button').show();
+            }
+
+            $("input[max='1']").on("input", function () {
+                if ($(this).val() > 1) {
+                    $(this).val(1);
+                }
+            });
+
+            $('#PickupLocationId,#ReturnLocationId').change(function () {
+                Refresh('sidebar-div');
+            });
+            $('#PickupDate,#ReturnDate').on('dp.change', function (e) {
+                Refresh('sidebar-div');
+            });
+            var timeoutId;
+            $('#PickupTime,#ReturnTime').on('dp.change', function (e) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () {
+                    Refresh('sidebar-div');
+                }, 1500);
+            });
+            $('.extra-quantity-input').on('input', function () {
+                if ($(this).val() != null && $(this).val() != '') {
+                    Refresh('extras-section');
+                }
+            });
+        });
+
+        function Refresh(anchor) {
+            $('#segment-detail-form').attr('action', '/Segment/Detail');
+            $('#Anchor').val(anchor);
+            if (ValidateForm(true)) {
+                Submit();
+            }
+        }
+
+        function Book() {
+            $('#segment-detail-form').attr('action', '/Booking');
+            if (ValidateForm(false)) {
+                Submit();
+            }
+        }
+
+        function AskQuotation() {
+            $('#segment-detail-form').attr('action', '/Booking/AskQuotation');
+            if (ValidateForm(false)) {
+                Submit();
+            }
+        }
+
+        function Submit() {
+            // var checkedExtras = [];
+            // $('.extra.active').each(function () {
+            //     checkedExtras.push($(this).data('id'));
+            // });
+            // $('#SelectedExtraIds').val(checkedExtras);
+            $('#SelectedInsuranceLevelId').val($('.insurance.active').data('id'));
+
+            $('#segment-detail-form').submit();
+        }
+
+        function ValidateForm(isRefresh) {
+            var valid = true;
+            if ($('#PickupLocationId').val() == '' || $('#PickupLocationId').val() == null) {
+                $('[aria-labelledby="select2-PickupLocationId-container"]').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('[aria-labelledby="select2-PickupLocationId-container"]').removeClass("is-invalid");
+
+                if (isRefresh == false && $('#PickupLocationId').val() == '-1' && ($('#CustomPickupLocationName').val() == '' || $('#CustomPickupLocationName').val() == null)) {
+                    $('#CustomPickupLocationName').addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $('#CustomPickupLocationName').removeClass("is-invalid");
+                }
+            }
+            if ($('#PickupDate').val() == '' || $('#PickupDate').val() == null) {
+                $('#PickupDate').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupDate').removeClass("is-invalid");
+            }
+            if ($('#PickupTime').val() == '' || $('#PickupTime').val() == null) {
+                $('#PickupTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupTime').removeClass("is-invalid");
+            }
+            if ($('#ReturnLocationId').val() == '' || $('#ReturnLocationId').val() == null) {
+                $('[aria-labelledby="select2-ReturnLocationId-container"]').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('[aria-labelledby="select2-ReturnLocationId-container"]').removeClass("is-invalid");
+
+                if (isRefresh == false && $('#ReturnLocationId').val() == '-1' && ($('#CustomReturnLocationName').val() == '' || $('#CustomReturnLocationName').val() == null)) {
+                    $('#CustomReturnLocationName').addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $('#CustomReturnLocationName').removeClass("is-invalid");
+                }
+            }
+            if ($('#ReturnDate').val() == '' || $('#ReturnDate').val() == null) {
+                $('#ReturnDate').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnDate').removeClass("is-invalid");
+            }
+            if ($('#ReturnTime').val() == '' || $('#ReturnTime').val() == null) {
+                $('#ReturnTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnTime').removeClass("is-invalid");
+            }
+            if (valid) {
+                $('#PickupDateTime').val($('#PickupDate').val().split("-").reverse().join("-") + ' ' + $('#PickupTime').val());
+                $('#ReturnDateTime').val($('#ReturnDate').val().split("-").reverse().join("-") + ' ' + $('#ReturnTime').val());
+                return true;
+            } else {
+                $("html, body").scrollTop($('#sidebar-div').offset().top - 100);
+                return false;
+            }
+        }
+    </script>
+    @if (!string.IsNullOrEmpty(Model.Anchor))
+    {
+        <script>
+            $("html, body").scrollTop($('#@(Model.Anchor)').offset().top - 75);
+        </script>
+    }
+}

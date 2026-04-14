@@ -1,0 +1,145 @@
+﻿@using AMRent.Data.Models.Database
+@model ContactIndex
+@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Menu.Contactos");
+}
+
+<section class="section faq-section contact-section contact-accordion-section">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Titulo")</h2>
+        </div>
+        <!-- /Heading title -->
+        <div class="faq-info contact-info-area">
+            @{
+                int locations = 0;
+            }
+            @foreach (OfficeLocation officeLocation in Model.OfficeLocations)
+            {
+                locations++;
+                <div class="faq-card bg-white" data-aos="fade-down">
+                    <h4 class="faq-title">
+                        <a class="@(locations == 1 ? "" : "collapsed")" data-bs-toggle="collapse" href="#faq@(locations)" aria-expanded="@(locations == 1 ? "true" : "false")">@(officeLocation.Translations?.FirstOrDefault()?.Name)</a>
+                    </h4>
+                    <div id="faq@(locations)" class="card-collapse collapse pt-2 @(locations == 1 ? "show" : "")">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.1">
+                                <div class="single-contact-info flex-fill">
+                                    <span><i class="feather-phone-call"></i></span>
+                                    <h3>@TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Telefone")</h3>
+                                    <a href="tel:@(officeLocation.Telephone)">@(officeLocation.Telephone)</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.2">
+                                <div class="single-contact-info flex-fill">
+                                    <span><i class="feather-mail"></i></span>
+                                    <h3>@TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Email")</h3>
+                                    <a href="mailto:@(officeLocation.Email)">@(officeLocation.Email)</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.3">
+                                <a target="_blank" href="@(officeLocation.GoogleMapsURL)">
+                                    <div class="single-contact-info flex-fill">
+                                        <span><i class="feather-map-pin"></i></span>
+                                        <h3>@TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Localizacao")</h3>
+                                        <a target="_blank" href="@(officeLocation.GoogleMapsURL)">
+                                            @TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Localizacao.Abrir")
+                                        </a>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.4">
+                                <div class="single-contact-info flex-fill">
+                                    <span><i class="feather-clock"></i></span>
+                                    <h3>@TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Horario")</h3>
+                                    <a href="#">
+                                        @if (officeLocation.MondayToFridayTimetable.Trim().Length > 15)
+                                        {
+                                            @($"{TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Horario.SegundaASexta")}")
+                                            <br />
+                                            @($"({officeLocation.MondayToFridayTimetable.Trim()})")
+                                        }
+                                        else
+                                        {
+                                            @($"{TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Horario.SegundaASexta")} ({officeLocation.MondayToFridayTimetable.Trim()})")
+                                        }
+                                        @if (!string.IsNullOrEmpty(officeLocation.SaturdayTimetable.Trim()))
+                                        {
+                                            <br />
+                                            @($"{TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Horario.Sabado")} ({officeLocation.SaturdayTimetable.Trim()})")
+                                        }
+                                        @if (!string.IsNullOrEmpty(officeLocation.SundayTimetable.Trim()))
+                                        {
+                                            <br />
+                                            @($"{TranslationProvider.GetTranslation(languageId, "Contactos.Escritorios.Horario.Domingo")} ({officeLocation.SundayTimetable.Trim()})")
+                                        }
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Contact us -->
+<section class="contact-section">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@TranslationProvider.GetTranslation(languageId, "Contactos.Formulario.Titulo")</h2>
+        </div>
+        <div class="form-info-area" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.5">
+            <div class="row">
+                <div class="col-lg-6">
+                    <img src="~/img/contact.jpg" class="img-fluid" alt="Contact">
+                </div>
+                <div class="col-lg-6">
+                    <form asp-action="Contact" method="post" id="booking-index-form">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Contactos.Formulario.Nome") <span class="text-danger">*</span></label>
+                                    <input type="text" asp-for="ContactName" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Contactos.Formulario.Email") <span class="text-danger">*</span></label>
+                                    <input type="text" asp-for="ContactEmail" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Contactos.Formulario.Telefone") <span class="text-danger">*</span></label>
+                                    <input type="text" asp-for="ContactTelephoneNumber" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Contactos.Formulario.Texto") <span class="text-danger">*</span></label>
+                                    <textarea asp-for="ContactMessage" class="form-control" rows="4" cols="50" placeholder=""></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn contact-btn">@TranslationProvider.GetTranslation(languageId, "Contactos.Formulario.Botao")</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /Contact us -->
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('#menu-contacts');
+        });
+    </script>
+}

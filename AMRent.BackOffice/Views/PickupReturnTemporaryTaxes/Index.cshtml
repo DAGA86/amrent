@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Taxas de recolha/devolução (temporal)";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="PickupReturnTemporaryTaxes" asp-action="Index">@ViewData["Title"]</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="PickupReturnTemporaryTaxes" asp-action="Create"><i class="fas fa-plus"></i> Nova</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/PickupReturnTemporaryTaxes/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Data Início', targets: 0 },
+                    { title: 'Data Fim', targets: 1 },
+                    { title: 'Hora Início', targets: 2 },
+                    { title: 'Hora Fim', targets: 3 },
+                    { title: 'Valor', targets: 4 },
+                    { title: 'Nome', targets: 5 },
+                    {
+                        targets: 6, sortable: false, searchable: false, render: function (data) {
+                            return '<a class="btn btn-info btn-xs btn-xs-square" href="/PickupReturnTemporaryTaxes/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'startDate' },
+                    { data: 'endDate' },
+                    { data: 'startTime' },
+                    { data: 'endTime' },
+                    { data: 'value' },
+                    { data: 'name' },
+                    { data: 'id' },
+                ],
+                language: dataTablesLanguage
+            });
+
+            SetActiveMenu('menu-pickup-return-temporary-taxes', 'menu-renting');
+        });
+    </script>
+}

@@ -1,0 +1,394 @@
+﻿@model AMRent.Data.Models.Database.CarSegment
+
+@{
+    ViewData["Title"] = "Editar Segmento de veículos";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="CarSegments" asp-action="Index">Segmentos de veículos</a></li>
+}
+
+<form asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="IsActive" />
+    <input type="hidden" asp-for="Code" />
+    <input type="hidden" asp-for="CarCategoryId" />
+    <input type="hidden" asp-for="CarFuelId" />
+    <input type="hidden" asp-for="CarGearboxId" />
+    <input type="hidden" asp-for="Seats" />
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-6">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Code">Código</label>
+                                <input asp-for="Code" disabled="disabled" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="CarCategoryId">Categoria</label>
+                                @if (Model.Reservations.Any())
+                                {
+                                    <select asp-for="CarCategoryId" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.Categories">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="CarCategoryId" class="form-control form-control-sm" asp-items="ViewBag.Categories">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="CarFuelId">Combustível</label>
+                                @if (Model.Reservations.Any())
+                                {
+                                    <select asp-for="CarFuelId" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.Fuels">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="CarFuelId" class="form-control form-control-sm" asp-items="ViewBag.Fuels">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="CarGearboxId">Transmissão</label>
+                                @if (Model.Reservations.Any())
+                                {
+                                    <select asp-for="CarGearboxId" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.Gearboxes">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="CarGearboxId" class="form-control form-control-sm" asp-items="ViewBag.Gearboxes">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Seats">Assentos</label>
+                                @if (Model.Reservations.Any())
+                                {
+                                    <input asp-for="Seats" disabled="disabled" class="form-control form-control-sm" />
+                                }
+                                else
+                                {
+                                    <input asp-for="Seats" class="form-control form-control-sm" />
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="RentCountIncrement">Incremento de contador de aluguer</label>
+                                <input asp-for="RentCountIncrement" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Nome</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+                        {
+                            int languageId = ViewBag.Languages[i].Id;
+                            var currentTranslation = Model.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+                            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                            <input type="hidden" name="Translations[@i].CarSegmentId" value="@(currentTranslation != null ? Model.Id : 0)" />
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Name">@ViewBag.Languages[i].Name</label>
+                                    <input name="Translations[@i].Name" class="form-control form-control-sm" value="@(currentTranslation?.Name ?? "")" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        @if (Model.CarCategory.IsCommercial)
+        {
+            <div class="col-md-12">
+                <div class="card card-success card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">Medidas</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="LoadingSpaceLengthInMilimeters">Comprimento (mm)</label>
+                                    <input asp-for="LoadingSpaceLengthInMilimeters" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="LoadingSpaceWidthInMilimeters">Largura (mm)</label>
+                                    <input asp-for="LoadingSpaceWidthInMilimeters" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="LoadingSpaceHeightInMilimeters">Altura (mm)</label>
+                                    <input asp-for="LoadingSpaceHeightInMilimeters" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="row">
+                @for (int i = 0; i < ViewBag.InsuranceLevels.Count; i++)
+                {
+                    AMRent.Data.Models.Database.InsuranceLevel insuranceLevel = ViewBag.InsuranceLevels[i];
+                    var currentInsurance = Model?.Insurances?.FirstOrDefault(x => x.InsuranceLevelId == insuranceLevel.Id);
+                    <input type="hidden" name="Insurances[@i].InsuranceLevelId" value="@insuranceLevel.Id" />
+                    <input type="hidden" name="Insurances[@i].CarSegmentId" value="@(Model.Id)" />
+                    <input type="hidden" name="Insurances[@i].Id" value="@(currentInsurance != null ? currentInsurance.Id : 0)" />
+                    <div class="col-md-@(12/ViewBag.InsuranceLevels.Count)">
+                        <div class="card card-success card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">@(insuranceLevel.Translations?.FirstOrDefault(x => x.LanguageId == (int)AMRent.Data.Enums.Languages.Portuguese)?.Name)</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="form-group form-group-label-on-top">
+                                            <label for="Insurances[@i].Excess">Franquia</label>
+                                            <input name="Insurances[@i].Excess" class="form-control form-control-sm" value="@(currentInsurance?.Excess)" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group form-group-label-on-top">
+                                            <label for="Insurances[@i].MinimumValue">Valor total mínimo</label>
+                                            <input name="Insurances[@i].MinimumValue" class="form-control form-control-sm" value="@(currentInsurance?.MinimumValue)" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group form-group-label-on-top">
+                                            <label for="Insurances[@i].MaximumValue">Valor total máximo</label>
+                                            <input name="Insurances[@i].MaximumValue" class="form-control form-control-sm" value="@(currentInsurance?.MaximumValue)" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <table class="table table-sm table-bordered table-striped" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dias</th>
+                                                    <th>Valor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (currentInsurance?.Prices?.Any() == true)
+                                                {
+                                                    for (int j = 0; j < currentInsurance.Prices.Count; j++)
+                                                    {
+                                                        <tr>
+                                                            <input type="hidden" name="Insurances[@i].Prices[j].Id" value="@(Model.Insurances[@i].Prices[j].Id)" />
+                                                            <input type="hidden" name="Insurances[@i].Prices[j].Days" value="@(Model.Insurances[@i].Prices[j].Days)" />
+                                                            <input type="hidden" name="Insurances[@i].Prices[j].Value" value="@(Model.Insurances[@i].Prices[j].Value)" />
+                                                            <td>@(currentInsurance.Prices[j].Days)</td>
+                                                            <td>@(currentInsurance.Prices[j].Value) €</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Imagem (817px x 446px)</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12" style="text-align: center;">
+                            @if (!string.IsNullOrEmpty(Model?.ImagePath))
+                            {
+                                <img style="max-height: 300px; max-width: 50%;" src="@Model.ImagePath" asp-append-version="true" />
+                            }
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="ImageFile">Upload</label>
+                                <input type="file" name="ImageFile" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-4">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Imagem Listagem (275px x 219px)</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12" style="text-align: center;">
+                            @if (!string.IsNullOrEmpty(Model?.ListImagePath))
+                            {
+                                <img style="max-height: 300px; max-width: 50%;" src="@Model.ListImagePath" asp-append-version="true" />
+                            }
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="ListImageFile">Upload</label>
+                                <input type="file" name="ListImageFile" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-4">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Imagem Grelha (550px x 401px)</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12" style="text-align: center;">
+                            @if (!string.IsNullOrEmpty(Model?.GridImagePath))
+                            {
+                                <img style="max-height: 300px; max-width: 50%;" src="@Model.GridImagePath" asp-append-version="true" />
+                            }
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="GridImageFile">Upload</label>
+                                <input type="file" name="GridImageFile" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="CarSegments" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+    <div class="row mb-2">
+        @if (Model.Insurances.Any(x => x.Changes.Any()))
+        {
+            List<AMRent.Data.Models.Database.InsuranceChange> changes = [];
+            List<AMRent.Data.Models.Database.InsuranceLevel> levels = (List<AMRent.Data.Models.Database.InsuranceLevel>)ViewBag.InsuranceLevels;
+            foreach (var insurance in Model.Insurances)
+            {
+                changes.AddRange(insurance.Changes);
+            }
+            <div class="col-md-12">
+                <div class="card card-success card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">Histórico (coberturas)</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Nivel</th>
+                                            <th>Campo</th>
+                                            <th>Valor Anterior</th>
+                                            <th>Valor Novo</th>
+                                            <th>Data</th>
+                                            <th>Utilizador</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var changeItem in changes.OrderByDescending(x => x.ChangeDateTime).ThenBy(x => x.Insurance.InsuranceLevelId).ThenBy(x => x.FieldName))
+                                        {
+                                            AMRent.Data.Models.Database.InsuranceLevel insuranceLevel = levels.FirstOrDefault(x => x.Id == changeItem.Insurance.InsuranceLevelId);
+                                            <tr>
+                                                <td>@insuranceLevel.Translations?.FirstOrDefault(x => x.LanguageId == (int)AMRent.Data.Enums.Languages.Portuguese)?.Name</td>
+                                                <td>@changeItem.FieldName</td>
+                                                <td>@changeItem.OldValue</td>
+                                                <td>@changeItem.NewValue</td>
+                                                <td>@changeItem.ChangeDateTime</td>
+                                                <td>@changeItem.User.Username</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-car-segments', 'menu-renting');
+        });
+    </script>
+}

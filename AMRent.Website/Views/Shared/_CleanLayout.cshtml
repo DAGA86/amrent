@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>AMRent - @ViewData["Title"]</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css">
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/lib/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css">
+    <!-- Fearther CSS -->
+    <link rel="stylesheet" href="~/lib/feather/css/feather.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/lib/dreams-rent/css/style.css">
+    <!-- Dreams Rent CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=2" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="shortcut icon" href="/favicon.ico?v=2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+    <meta name="apple-mobile-web-app-title" content="AM Rent" />
+    <link rel="manifest" href="/site.webmanifest?v=2" />
+
+</head>
+<body>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper login-body">
+        <!-- Header -->
+        <header class="log-header">
+            <a asp-controller="Home" asp-action="Index"><img class="img-fluid logo-dark" src="~/img/logo.png" alt="Logo"></a>
+        </header>
+        <!-- /Header -->
+
+        @RenderBody()
+
+        <!-- Footer -->
+        <footer class="log-footer">
+            <div class="container-fluid">
+                <!-- Copyright -->
+                <div class="copyright">
+                    <div class="copyright-text">
+                        <p>© @DateTime.Now.Year AM Rent. Grupo AMCONFRARIA. Powered by <a href="http://www.daga.pt">daga</a>.</p>
+                    </div>
+                </div>
+                <!-- /Copyright -->
+            </div>
+        </footer>
+        <!-- /Footer -->
+    </div>
+<!-- /Main Wrapper -->
+
+    <!-- scrollToTop end -->
+    <!-- jQuery -->
+    <script src="~/lib/jquery/js/jquery-3.6.4.min.js"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Dreams Rent JS -->
+    <script src="~/lib/dreams-rent/js/script.js"></script>
+    <!-- Custom JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            // Preserve UTMs
+            var queryString = window.location.search;
+
+            if (queryString) {
+                // Append query string to all links
+                $("a[href^='/'], a[href^='./'], a[href^='../']").each(function () {
+                    var href = $(this).attr("href");
+                    if (href.indexOf("?") === -1) {
+                        $(this).attr("href", href + queryString);
+                    }
+                });
+
+                // Preserve UTMs in forms as hidden inputs
+                $("form").each(function () {
+                    var form = $(this);
+
+                    // Parse the query string and add hidden fields
+                    var params = new URLSearchParams(queryString);
+                    params.forEach(function (value, key) {
+                        if (!form.find("input[name='" + key + "']").length) { // Avoid duplicates
+                            form.append('<input type="hidden" name="' + key + '" value="' + value + '">');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

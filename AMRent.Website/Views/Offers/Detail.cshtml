@@ -1,0 +1,41 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using System.Globalization
+@model AMRent.Data.Models.Database.Campaign
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = $"{TranslationProvider.GetTranslation(languageId, "Menu.Blog")} - ";
+}
+
+<!-- Banner Section -->
+<div class="blogbanner" style="background-image: url(/img/campaigns/@(Model.Id)_top.jpg);">
+    <div class="blogbanner-content">
+        @*<span class="blog-hint">Health</span>*@
+        <h1>@(Model.Translations?.FirstOrDefault()?.Name)</h1>
+        <ul class="entry-meta meta-item justify-content-center">
+            <li>
+            </li>
+            <li class="date-icon">
+                <i class="fa-solid fa-calendar-days"></i> @Model.ValidFromUtc.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) - @Model.ValidUntilUtc.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- /Banner Section -->
+<!-- Blog Grid-->
+<div class="blog-section">
+    <div class="container">
+        <div class="blog-description">
+            <p>@(Html.Raw(Model.Translations?.FirstOrDefault()?.Description.Replace("\n", "<br>")))</p>
+        </div>
+    </div>
+</div>
+<!-- /Blog Grid-->
+
+@section Scripts {
+    <script>
+		$(function () {
+			SetActiveMenu('#menu-offers');
+		});
+	</script>
+}

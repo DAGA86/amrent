@@ -1,0 +1,297 @@
+﻿@{
+    ViewData["Title"] = "Reservas";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Reservations" asp-action="Index">@ViewData["Title"]</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group form-group-label-on-top">
+                            <label for="startPickupDate">Recolha (de)</label>
+                            <input type="date" id="startPickupDate" name="startPickupDate" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group form-group-label-on-top">
+                            <label for="endPickupDate">Recolha (até)</label>
+                            <input type="date" id="endPickupDate" name="endPickupDate" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group form-group-label-on-top">
+                            <label for="startCreateDate">Registo (de)</label>
+                            <input type="date" id="startCreateDate" name="startCreateDate" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group form-group-label-on-top">
+                            <label for="endCreateDate">Registo (até)</label>
+                            <input type="date" id="endCreateDate" name="endCreateDate" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-outline-success btn-sm float-right ml-2" onclick="javascript:Export();"><i class="fas fa-file-export"></i> Exportar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="Reservations" asp-action="Create"><i class="fas fa-plus"></i> Nova</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#datatable').DataTable({
+                order: [[1, 'desc']],
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                layout: {
+                    top2End: 'buttons',
+                    topStart: 'pageLength',
+                    topEnd: 'search',
+                    bottomStart: 'info',
+                    bottomEnd: 'paging'
+                },
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/Reservations/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Número', targets: 0 },
+                    { title: 'Colaborador', targets: 1, filterType: 'select',
+                        filterOptions:[
+                            @foreach (var item in (SelectList)ViewBag.Collaborators)
+                            {
+                                @:{ value: '@Html.Raw(item.Value)', label: '@Html.Raw(item.Text)' },
+                            }
+                        ]
+                    },
+                    { title: 'Estado', targets: 2, filterType: 'select',
+                        filterOptions:[
+                            @foreach (var item in (SelectList)ViewBag.Status)
+                            {
+                                @:{ value: '@Html.Raw(item.Value)', label: '@Html.Raw(item.Text)' },
+                            }
+                        ]
+                    },
+                    { title: 'Pagamento', targets: 3, filterType: 'select',
+                        filterOptions:[
+                            @foreach (var item in (SelectList)ViewBag.PaymentStatus)
+                            {
+                                @:{ value: '@Html.Raw(item.Value)', label: '@Html.Raw(item.Text)' },
+                            }
+                        ]
+                    },
+                    { title: 'Condutor', targets: 4 },
+                    { title: 'Recolha', targets: 5, filterType: 'select',
+                        filterOptions:[
+                            @foreach (var item in (SelectList)ViewBag.PickupLocations)
+                            {
+                                @:{ value: '@Html.Raw(item.Value)', label: '@Html.Raw(item.Text)' },
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Data de recolha', targets: 6, filterType: 'dateRange', render: function (data) {
+                            var date = new Date(data);
+                            var formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                            return formattedDate;
+                        }
+                    },
+                    {
+                        title: 'Data de reserva', targets: 7, filterType: 'dateRange', render: function (data) {
+                            var date = new Date(data);
+                            var formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                            return formattedDate;
+                        }
+                    },
+                    {
+                        targets: 8, sortable: false, searchable: false, render: function (data) {
+                            return '<a class="btn btn-info btn-xs btn-xs-square" href="/Reservations/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'number' },
+                    { data: 'collaboratorName' },
+                    { data: 'status' },
+                    { data: 'paymentStatus' },
+                    { data: 'driverName' },
+                    { data: 'pickupLocation' },
+                    { data: 'pickupDateTime' },
+                    { data: 'createDateTime' },
+                    { data: 'id' },
+                ],
+                order: [[2, 'asc'], [6, 'desc']],
+                language: dataTablesLanguage,
+                initComplete: function () {
+                    const api = this.api();
+
+                    $('#datatable thead tr')
+                        .clone(true)
+                        .addClass('filters')
+                        .appendTo('#datatable thead');
+
+                    api.columns(':visible').every(function () {
+                        const column = this;
+                        const visibleIdx = column.index('visible');
+                        const header = $('#datatable .filters th').eq(visibleIdx);
+                        const title = $(column.header()).text();
+
+                        if (!column.settings()[0].aoColumns[column.index()].bSearchable) {
+                            header.html('');
+                            return;
+                        }
+
+                        const colDef = column.settings()[0].aoColumns[column.index()];
+                        const filterType = colDef.filterType || 'text';
+
+                        if (filterType === 'dateRange') {
+                            const container = document.createElement('div');
+                            container.style.width = '100%';
+
+                            const containerFrom = document.createElement('div');
+                            containerFrom.className = 'mb-1';
+                            containerFrom.style.width = '100%';
+                            const from = document.createElement('input');
+                            from.type = 'date';
+                            from.className = 'form-control form-control-sm';
+                            from.placeholder = 'De';
+                            from.style.minWidth = '100px';
+                            containerFrom.appendChild(from);
+
+                            const containerTo = document.createElement('div');
+                            containerTo.style.width = '100%';
+                            const to = document.createElement('input');
+                            to.type = 'date';
+                            to.className = 'form-control form-control-sm';
+                            to.placeholder = 'Até';
+                            to.style.minWidth = '100px';
+                            containerTo.appendChild(to);
+
+                            container.appendChild(containerFrom);
+                            container.appendChild(containerTo);
+                            header.html(container);
+
+                            [from, to].forEach(el => {
+                                el.addEventListener('click', e => e.stopPropagation());
+                                el.addEventListener('mousedown', e => e.stopPropagation());
+                            });
+
+                            [from, to].forEach(el => {
+                                el.addEventListener('change', function () {
+                                    const valFrom = from.value || '';
+                                    const valTo = to.value || '';
+                                    const val = valFrom || valTo ? `${valFrom}|${valTo}` : '';
+                                    column.search(val, { exact: true }).draw();
+                                });
+                            });
+                        }
+                        else {
+                            let input;
+                            if (filterType === 'select') {
+                                const filterOptions = colDef.filterOptions || [];
+                                input = document.createElement('select');
+                                input.className = 'form-select form-select-sm';
+                                input.multiple = true;
+
+                                filterOptions.forEach(opt => {
+                                    const option = document.createElement('option');
+                                    option.value = opt.value ?? opt;
+                                    option.text = opt.label ?? opt;
+                                    input.appendChild(option);
+                                });
+
+                                input.style.height = '55px';
+
+                                input.addEventListener('change', function () {
+                                    const selected = Array.from(this.selectedOptions).map(o => o.value).filter(v => v);
+                                    let val = '';
+                                    if (selected.length === 0) {
+                                        val = '';
+                                    } else {
+                                        val = selected.join('|');
+                                    }
+                                    column
+                                        .search(val, { exact: true })
+                                        .draw();
+                                });
+                            } else {
+                                input = document.createElement('input');
+                                input.className = 'form-control form-control-sm';
+                                input.placeholder = 'Filtrar ' + title;
+
+                                let typingTimer;
+                                input.addEventListener('keyup', function () {
+                                    clearTimeout(typingTimer);
+                                    typingTimer = setTimeout(() => {
+                                        if (column.search() !== this.value) {
+                                            column.search(this.value).draw();
+                                        }
+                                    }, 500);
+                                });
+
+                                input.addEventListener('keydown', function () {
+                                    clearTimeout(typingTimer);
+                                });
+                            }
+
+                            input.addEventListener('click', function (e) {
+                                e.stopPropagation();
+                            });
+                            input.addEventListener('mousedown', function (e) {
+                                e.stopPropagation();
+                            });
+
+                            header.html(input);
+                        }
+                    });
+                },
+                rowCallback: function (row, data) {
+                    if (!data.collaboratorName) {
+                        $(row).css('background-color', '#d9883c');
+                    }
+                }
+            });
+
+            SetActiveMenu('menu-reservations', 'menu-renting');
+        });
+
+        function Export()
+        {
+            var startPickupDate = $('#startPickupDate').val();
+            var endPickupDate = $('#endPickupDate').val();
+            var startCreateDate = $('#startCreateDate').val();
+            var endCreateDate = $('#endCreateDate').val();
+            window.location.href = '/Reservations/Export?startPickupDate=' + startPickupDate + '&endPickupDate=' + endPickupDate + '&startCreateDate=' + startCreateDate + '&endCreateDate=' + endCreateDate;
+        }
+    </script>
+}

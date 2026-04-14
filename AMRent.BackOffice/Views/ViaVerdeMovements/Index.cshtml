@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Movimentos Via Verde";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="ViaVerdeMovements" asp-action="Index">Movimentos Via Verde</a></li>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-sm table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/ViaVerdeMovements/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Cod Transação', targets: 0 },
+                    { title: 'Matrícula', targets: 1 },
+                    { title: 'Equipamento', targets: 2 },
+                    {
+                        title: 'Entrada', targets: 3, render: function (data) {
+                            if (data != null)
+                            {
+                                var date = new Date(data);
+                                var formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+                                return formattedDate;
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        title: 'Saída', targets: 4, render: function (data) {
+                            if (data != null)
+                            {
+                                var date = new Date(data);
+                                var formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+                                return formattedDate;
+                            }
+                            return '';
+                        }
+                    },
+                    { title: 'Estado', targets: 5 },
+                    {
+                        targets: 6, sortable: false, searchable: false, render: function (data) {
+                            return '<a class="btn btn-info btn-xs btn-xs-square" href="/ViaVerdeMovements/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'transactionCode' },
+                    { data: 'licencePlate' },
+                    { data: 'equipmentNumber' },
+                    { data: 'entryDate' },
+                    { data: 'exitDate' },
+                    { data: 'status' },
+                    { data: 'id' },
+                ],
+                language: dataTablesLanguage
+            });
+
+
+            SetActiveMenu('menu-via-verde-movements', 'menu-renting');
+        });
+    </script>
+}

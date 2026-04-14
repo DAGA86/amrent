@@ -1,0 +1,121 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using System.Globalization
+@model BookingAskQuotationConfirmation
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = $"{TranslationProvider.GetTranslation(languageId, "PedidoCotacao.Confirmacao.Resumo.Titulo")} {Model.QuotationNumber}";
+
+    decimal segmentCost = Model.RentCost;
+
+    decimal segmentCostWithDiscount = Model.TotalValue
+                    - Model.Insurances.FirstOrDefault().Prices.FirstOrDefault().Value
+                    - Model.SelectedExtras.Sum(x => x.Cost);
+
+    decimal totalCost = segmentCost
+                    + Model.Insurances.FirstOrDefault().Prices.FirstOrDefault().Value
+                    + Model.SelectedExtras.Sum(x => x.Cost);
+
+}
+
+<section class="order-confirmation">
+    <div class="container">
+        <div class="confirm-order">
+            <div class="section-title">
+                <h3>@(TranslationProvider.GetTranslation(languageId, "PedidoCotacao.Confirmacao.Resumo.Titulo")) (@(Model.QuotationNumber))</h3>
+                @if (Model.TotalValue != totalCost)
+                {
+                    <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Total")): <span><s>@(totalCost)€</s> @(Model.TotalValue)€</span></h5>
+                }
+                else
+                {
+                    <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Total")): <span>@(totalCost)€</span></h5>
+                }
+            </div>
+            <div class="booking-details order-confirm-box">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="confirmation-title">
+                            <h4>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Segmento"))</h4>
+                        </div>
+                        <div class="order-car">
+                            <span><img src="~/img/segments/@(Model.SegmentId)_grid.jpg" asp-append-version="true" alt=""></span>
+                            <h5>@Model.SegmentName @(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Segmento.OuSimilar"))
+                                @if (segmentCostWithDiscount != segmentCost)
+                                {
+                                    <span>@Model.Days @(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Segmento.Dias")): <s>@(segmentCost)€</s> @(segmentCostWithDiscount)€</span>
+                                }
+                                else
+                                {
+                                    <span>@Model.Days @(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Segmento.Dias")): @(segmentCost)€</span>
+                                }
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="confirmation-title">
+                            <h4>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Extras"))</h4>
+                        </div>
+                        <ul class="address-info">
+                            @foreach (AMRent.Website.Models.SelectedExtra extra in Model.SelectedExtras)
+                            {
+                                string extraName = extra.Quantity > 1 ? $"{extra.Name} ({extra.Quantity})" : extra.Name;
+                                <li>@(extraName): @(extra.Cost.ToString("0.00"))€</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-6">
+                        <div class="confirmation-title">
+                            <h4>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Recolha"))</h4>
+                        </div>
+                        <ul class="address-info">
+                            <li>@Model.PickupLocationName</li>
+                            <li>@Model.PickupDateTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) @(Model.PickupDateTime.ToString("HH:mm"))</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="confirmation-title">
+                            <h4>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Devolucao"))</h4>
+                        </div>
+                        <ul class="address-info mb-0">
+                            <li>@Model.ReturnLocationName</li>
+                            <li>@Model.ReturnDateTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) @(Model.ReturnDateTime.ToString("HH:mm"))</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-6">
+                        <div class="confirmation-title">
+                            <h4>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Seguro"))</h4>
+                        </div>
+                        <ul class="address-info mb-0">
+                            <li>@Model.Insurances?.FirstOrDefault()?.InsuranceLevel?.Translations?.FirstOrDefault()?.Name: @(Model.Insurances?.FirstOrDefault()?.Prices.FirstOrDefault().Value)€</li>
+                            <li>@(TranslationProvider.GetTranslation(languageId, "Reserva.Confirmacao.Resumo.Seguro.Franquia")) @(Model.Insurances.FirstOrDefault().Excess)€</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-12">
+                        <div class="confirmation-title">
+                            <h4>@(TranslationProvider.GetTranslation(languageId, "PedidoCotacao.Confirmacao.Resumo.Notas"))</h4>
+                        </div>
+                        <ul class="address-info">
+                            <li>@(TranslationProvider.GetTranslation(languageId, "PedidoCotacao.Confirmacao.Resumo.Notas.Texto"))</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('.menu-search');
+        });
+    </script>
+}
+

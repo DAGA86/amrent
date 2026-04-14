@@ -1,0 +1,138 @@
+/* Menu */
+
+.nav-sidebar > .nav-item > .nav-treeview {
+    border-width: 0 0 2px 0;
+    border-color: #d9883c;
+    border-style: solid;
+}
+
+.nav-treeview > .nav-item > .nav-link.active, .nav-treeview > .nav-item > .nav-link.active:focus, .nav-treeview > .nav-item > .nav-link.active:hover {
+    background-color: #d9883c !important;
+    color: #fff !important;
+}
+
+.input-validation-error {
+    border-color: red;
+}
+/* AMRent Colors */
+a {
+    color: #d9883c;
+}
+
+    a:hover {
+        color: #d9883c;
+    }
+
+.callout a {
+    color: #d9883c;
+    text-decoration: none;
+}
+    .callout a:hover {
+        color: #d9883c;
+        text-decoration: underline;
+    }
+
+.form-control:focus {
+    border-color: #d9883c;
+}
+.select2-container--default.select2-container--focus .select2-selection--multiple, .select2-container--default.select2-container--focus .select2-selection--single,
+.form-control:hover, .select2-selection:hover {
+    border-color: #d9883c;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #d9883c;
+    border-color: #d9883c;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[aria-selected]:hover {
+    background-color: #d9883c;
+}
+
+.select2-container--default .select2-dropdown {
+    border: 1px solid #d9883c;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 3px 12px;
+    font-size: .875rem;
+}
+
+/* AMRent Colors */
+
+.validation-summary-errors ul {
+    margin-bottom: 0;
+}
+
+.table td {
+    padding: 0.25rem 0.75rem;
+}
+
+.table-sm td {
+    padding: 0.1rem 0.25rem;
+}
+
+.content-footer {
+    padding: 0 0.5rem 15px 0.5rem;
+}
+
+.form-group-label-on-top, .radio-group-label-on-top {
+    margin-top: -1rem;
+}
+
+.input-group {
+    margin-top: 0.7rem;
+}
+
+.form-group-label-on-top label, .radio-group-label-on-top > label {
+    position: relative;
+    left: 1rem;
+    top: .67rem;
+    background-color: #fff;
+    padding: 0 .250rem;
+    line-height: .75rem;
+    z-index: 4;
+}
+
+.form-group label {
+    font-size: .8rem;
+}
+
+.bootstrap-switch-wrapper {
+    display: block;
+    border-radius: .2rem;
+}
+
+.bootstrap-switch-container span {
+    height: calc(1.8125rem);
+}
+
+.custom-file-input-sm {
+    height: calc(1.8125rem + 2px);
+}
+
+.custom-file-sm {
+    height: calc(1.8125rem + 2px);
+}
+
+.custom-file-label-sm {
+    height: calc(1.8125rem + 2px);
+    padding: 0.175rem 0.75rem;
+}
+
+    .custom-file-label-sm::after {
+        padding: 0.175rem 0.75rem;
+    }
+
+.btn-xs-square {
+    width: 24px;
+    height: 24px;
+}
+
+@media (min-width: 768px) {
+    .col-md-week {
+        -ms-flex: 0 0 14.285714%;
+        flex: 0 0 14.285714%;
+        max-width: 14.285714%;
+    }
+}

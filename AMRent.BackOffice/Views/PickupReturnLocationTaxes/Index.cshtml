@@ -1,0 +1,64 @@
+﻿@model AMRent.Data.Models.View.PickupReturnLocationTaxIndex
+@{
+    ViewData["Title"] = "Taxas de recolha/devolução (local)";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="PickupReturnLocationTaxes" asp-action="Index">ViewData["Title"]</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="PickupReturnLocationTaxes" asp-action="Create"><i class="fas fa-plus"></i> Nova</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/PickupReturnLocationTaxes/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Localização de entrega/devolução', targets: 0 },
+                    { title: 'Dias', targets: 1 },
+                    { title: 'Valor', targets: 2 },
+                    {
+                        targets: 3, sortable: false, searchable: false, render: function (data) {
+                            return '<a class="btn btn-info btn-xs btn-xs-square" href="/PickupReturnLocationTaxes/Edit/' + data + '"><i class="fas fa-edit"></i></a>' +
+                                '<a class="btn btn-danger btn-xs btn-xs-square ml-2" href="/PickupReturnLocationTaxes/Delete/' + data + '" onclick="javascript: return ConfirmDelete(this);"><i class="fas fa-trash-alt"></i></a>';
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'pickupReturnLocationName' },
+                    { data: 'days' },
+                    { data: 'value' },
+                    { data: 'id' },
+                ],
+                language: dataTablesLanguage
+            });
+
+
+            SetActiveMenu('menu-pickup-return-location-taxes', 'menu-renting');
+        });
+    </script>
+}

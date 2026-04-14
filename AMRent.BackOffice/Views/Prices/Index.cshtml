@@ -1,0 +1,115 @@
+﻿@model AMRent.Data.Models.View.PriceImport
+@{
+    ViewData["Title"] = "Preços";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Prices" asp-action="Index">Preços</a></li>
+}
+
+<form asp-action="Import" enctype="multipart/form-data">
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-9">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        }
+        <div class="col-md-9">
+            <div class="card card-success card-outline">
+                <div class="card-body" style="padding:0.4rem 1.25rem">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Method">Método</label>
+                                <select asp-for="Method" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<AMRent.Data.Enums.PriceImportMethods>()" required>
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="input-group">
+                                <div class="custom-file custom-file-sm">
+                                    <input type="file" class="custom-file-input custom-file-input-sm" id="file" name="file" accept=".csv" required>
+                                    <label class="custom-file-label custom-file-label-sm" for="file" data-browse="Carregar">
+                                        Procurar ficheiro
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3" style="margin-top: 0.7rem;">
+                            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="fas fa-file-import"></i> Importar</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-3">
+            <div class="card card-success card-outline">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="Prices" asp-action="Export"><i class="fas fa-file-export"></i> Exportar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row mb-2">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var deleteUrl = '';
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/Prices/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Temporada', targets: 0 },
+                    { title: 'Segmento', targets: 1 },
+                    { title: 'Dias', targets: 2 },
+                    { title: 'Valor', targets: 3 },
+                    {
+                        targets: 4, sortable: false, searchable: false, render: function (data) {
+                            return '<a class="btn btn-info btn-xs btn-xs-square" href="/Prices/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'season' },
+                    { data: 'segment' },
+                    { data: 'days' },
+                    { data: 'value' },
+                    { data: 'id' },
+                ],
+                language: dataTablesLanguage
+            });
+
+            SetActiveMenu('menu-prices', 'menu-renting');
+        });
+    </script>
+}

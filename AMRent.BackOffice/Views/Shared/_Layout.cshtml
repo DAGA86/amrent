@@ -1,0 +1,493 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] - AM Rent BackOffice</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=2" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="shortcut icon" href="/favicon.ico?v=2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+    <meta name="apple-mobile-web-app-title" content="AM Rent" />
+    <link rel="manifest" href="/site.webmanifest?v=2" />
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css">
+    <!-- DataTables -->
+    <link href="https://cdn.datatables.net/v/bs4/jq-3.7.0/jszip-3.10.1/dt-2.1.7/b-3.1.2/b-html5-3.1.2/r-3.0.3/datatables.min.css" rel="stylesheet">
+    @* <link rel="stylesheet" href="~/lib/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/lib/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/lib/datatables-buttons/css/buttons.bootstrap4.min.css"> *@
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/lib/adminlte/css/adminlte.min.css">
+    <!-- Custom style -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    @{
+        var environment = Configuration["Environment"];
+        if (environment == "Test")
+        {
+            <style>
+                .main-header {
+                    border: 2px solid red;
+                }
+            </style>
+        }
+    }
+</head>
+<body class="hold-transition sidebar-mini layout-navbar-fixed">
+    <!-- Site wrapper -->
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="#" class="nav-link">Contact</a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Notifications Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge">15</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">15 Notifications</span>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-envelope mr-2"></i> 4 new messages
+                            <span class="float-right text-muted text-sm">3 mins</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-users mr-2"></i> 8 friend requests
+                            <span class="float-right text-muted text-sm">12 hours</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-file mr-2"></i> 3 new reports
+                            <span class="float-right text-muted text-sm">2 days</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-success elevation-4">
+            <!-- Brand Logo -->
+            <a asp-controller="Home" asp-action="Index" class="brand-link elevation-4" style="background-color:#fff;">
+                <img src="~/img/logo.png" alt="Logo" class="brand-image" style="max-width: 100%; margin: 0;">
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="info">
+                        <a href="#" class="d-block">@User.Claims.First(x => x.Type == ClaimTypes.Name)?.Value (@User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier)?.Value)</a>
+                        <a asp-controller="Account" asp-action="Logout" class="d-block">Logout <i class="fas fa-sign-out-alt"></i></a>
+                    </div>
+                </div>
+
+                <!-- SidebarSearch Form -->
+                <div class="form-inline">
+                    <div class="input-group" data-widget="sidebar-search">
+                        <input class="form-control form-control-sidebar" type="search" placeholder="Procurar no menu" aria-label="Procurar no menu">
+                        <div class="input-group-append">
+                            <button class="btn btn-sidebar">
+                                <i class="fas fa-search fa-fw"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                        with font-awesome or any other icon font library -->
+                        <li class="nav-item" id="menu-configuration">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-circle"></i>
+                                <p>
+                                    Configuração Geral
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="Languages" asp-action="Index" class="nav-link" id="menu-languages">
+                                        <i class="nav-icon fas fa-globe-europe"></i>
+                                        <p>Línguas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="GenericTexts" asp-action="Index" class="nav-link" id="menu-generic-texts">
+                                        <i class="nav-icon fas fa-globe-europe"></i>
+                                        <p>Textos Genéricos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Settings" asp-action="Index" class="nav-link" id="menu-settings">
+                                        <i class="nav-icon fas fa-cog"></i>
+                                        <p>Definições</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item" id="menu-amrent">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-circle"></i>
+                                <p>
+                                    AMRent
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="OfficeLocations" asp-action="Index" class="nav-link" id="menu-office-locations">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>Escritórios</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="TeamMembers" asp-action="Index" class="nav-link" id="menu-team-members">
+                                        <i class="nav-icon fas fa-users"></i>
+                                        <p>Membros da Equipa</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="SocialNetworks" asp-action="Index" class="nav-link" id="menu-social-networks">
+                                        <i class="nav-icon fas fa-thumbs-up"></i>
+                                        <p>Redes Sociais</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item" id="menu-content">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-circle"></i>
+                                <p>
+                                    Conteúdo
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="HomeBanners" asp-action="Index" class="nav-link" id="menu-home-banners">
+                                        <i class="nav-icon fas fa-window-maximize"></i>
+                                        <p>Banners homepage</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="BlogArticleCategories" asp-action="Index" class="nav-link" id="menu-blog-article-categories">
+                                        <i class="nav-icon fas fa-newspaper"></i>
+                                        <p>Categorias de Blog</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="BlogArticles" asp-action="Index" class="nav-link" id="menu-blog-articles">
+                                        <i class="nav-icon fas fa-newspaper"></i>
+                                        <p>Artigos de Blog</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="QuestionsAndAnswers" asp-action="Index" class="nav-link" id="menu-questions-and-answers">
+                                        <i class="nav-icon fas fa-question-circle"></i>
+                                        <p>Perguntas e Respostas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="TermsAndConditions" asp-action="Edit" class="nav-link" id="menu-terms-and-conditions">
+                                        <i class="nav-icon fas fa-handshake"></i>
+                                        <p>Termos e Condições</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="TermsAndConditionsVisaMastercard" asp-action="Edit" class="nav-link" id="menu-terms-and-conditions-visa-mastercard">
+                                        <i class="nav-icon fas fa-handshake"></i>
+                                        <p>Termos e Condições de pagamento</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="PrivacyPolicy" asp-action="Edit" class="nav-link" id="menu-privacy-policy">
+                                        <i class="nav-icon fas fa-user-secret"></i>
+                                        <p>Política de Privacidade</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="RentGuide" asp-action="Edit" class="nav-link" id="menu-rent-guide">
+                                        <i class="nav-icon fas fa-map-signs"></i>
+                                        <p>Guia de Aluguer</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="About" asp-action="Edit" class="nav-link" id="menu-about">
+                                        <i class="nav-icon fas fa-address-card"></i>
+                                        <p>Sobre nós</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Testimonials" asp-action="Index" class="nav-link" id="menu-testimonials">
+                                        <i class="nav-icon fas fa-star"></i>
+                                        <p>Testemunhos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Processes" asp-action="Index" class="nav-link" id="menu-processes">
+                                        <i class="nav-icon fas fa-recycle"></i>
+                                        <p>Processos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Facts" asp-action="Index" class="nav-link" id="menu-facts">
+                                        <i class="nav-icon fas fa-chart-bar"></i>
+                                        <p>Factos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="ReasonsToChooseUs" asp-action="Index" class="nav-link" id="menu-reasons-to-choose-us">
+                                        <i class="nav-icon fas fa-tasks"></i>
+                                        <p>Razões para escolher-nos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="EmailContents" asp-action="Index" class="nav-link" id="menu-email-contents">
+                                        <i class="nav-icon far fa-envelope"></i>
+                                        <p>Textos de email</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="DataProtectionConsents" asp-action="Index" class="nav-link" id="menu-consents">
+                                        <i class="nav-icon far fa-check-square"></i>
+                                        <p>Consentimentos</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item" id="menu-renting">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-circle"></i>
+                                <p>
+                                    Gestão de Renting
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="Quotations" asp-action="Index" class="nav-link" id="menu-quotations">
+                                        <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                        <p>Cotações</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Reservations" asp-action="Index" class="nav-link" id="menu-reservations">
+                                        <i class="nav-icon fas fa-file-signature"></i>
+                                        <p>Reservas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="CarCategories" asp-action="Index" class="nav-link" id="menu-car-categories">
+                                        <i class="nav-icon fas fa-car-side"></i>
+                                        <p>Categorias de veículos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="CarSegments" asp-action="Index" class="nav-link" id="menu-car-segments">
+                                        <i class="nav-icon fas fa-car"></i>
+                                        <p>Segmentos de veículos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="CarFuels" asp-action="Index" class="nav-link" id="menu-car-fuels">
+                                        <i class="nav-icon fas fa-gas-pump"></i>
+                                        <p>Combustíveis</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="CarGearboxes" asp-action="Index" class="nav-link" id="menu-car-gearboxes">
+                                        <i class="nav-icon fas fa-cogs"></i>
+                                        <p>Transmissões</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Extras" asp-action="Index" class="nav-link" id="menu-extras">
+                                        <i class="nav-icon fas fa-plus"></i>
+                                        <p>Extras</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Services" asp-action="Index" class="nav-link" id="menu-services">
+                                        <i class="nav-icon fas fa-hand-holding-medical"></i>
+                                        <p>Serviços</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="SeasonCategories" asp-action="Index" class="nav-link" id="menu-season-categories">
+                                        <i class="nav-icon fas fa-tree"></i>
+                                        <p>Tipos de Temporada</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Seasons" asp-action="Index" class="nav-link" id="menu-seasons">
+                                        <i class="nav-icon fas fa-calendar-alt"></i>
+                                        <p>Datas de Temporada</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Prices" asp-action="Index" class="nav-link" id="menu-prices">
+                                        <i class="nav-icon fas fa-euro-sign"></i>
+                                        <p>Preços</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="InsuranceLevels" asp-action="Index" class="nav-link" id="menu-insurance-levels">
+                                        <i class="nav-icon fas fa-car-crash"></i>
+                                        <p>Franquias</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Campaigns" asp-action="Index" class="nav-link" id="menu-campaigns">
+                                        <i class="nav-icon fas fa-percentage"></i>
+                                        <p>Campanhas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Vouchers" asp-action="Index" class="nav-link" id="menu-vouchers">
+                                        <i class="nav-icon fas fa-percentage"></i>
+                                        <p>Vouchers</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="PickupReturnLocations" asp-action="Index" class="nav-link" id="menu-pickup-return-locations">
+                                        <i class="nav-icon fas fa-exchange-alt"></i>
+                                        <p>Locais de Recolha/Devolução</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="PickupReturnLocationTaxes" asp-action="Index" class="nav-link" id="menu-pickup-return-location-taxes">
+                                        <i class="nav-icon fas fa-euro-sign"></i>
+                                        <p>Taxas de Recolha/Devolução (local)</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="PickupReturnTemporaryTaxes" asp-action="Index" class="nav-link" id="menu-pickup-return-temporary-taxes">
+                                        <i class="nav-icon fas fa-euro-sign"></i>
+                                        <p>Taxas de Recolha/Devolução (temporal)</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="ViaVerdeMovements" asp-action="Index" class="nav-link" id="menu-via-verde-movements">
+                                        <i class="nav-icon fas fa-road"></i>
+                                        <p>Via Verde</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Users" asp-action="Customers" class="nav-link" id="menu-customers">
+                                        <i class="nav-icon fas fa-users"></i>
+                                        <p>Clientes</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1>@ViewData["Title"]</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                @await RenderSectionAsync("Breadcrumb")
+                            </ol>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </section>
+        </div>
+        <!-- /.content-wrapper -->
+
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-block">
+                <b>v</b> 2026.3.1
+            </div>
+            <strong>Powered by <a href="http://www.daga.pt">Daga</a>.</strong>
+        </footer>
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+    <!-- jQuery -->
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- InputMask -->
+    <script src="~/lib/inputmask/jquery.inputmask.min.js"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/bs4/jq-3.7.0/jszip-3.10.1/dt-2.1.7/b-3.1.2/b-html5-3.1.2/r-3.0.3/datatables.min.js"></script>
+    <!-- Select2 -->
+    <script src="~/lib/select2/js/select2.full.min.js"></script>
+    @* <script src="~/lib/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/lib/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/lib/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/lib/jszip/jszip.min.js"></script>
+    <script src="~/lib/pdfmake/pdfmake.min.js"></script>
+    <script src="~/lib/pdfmake/vfs_fonts.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.colVis.min.js"></script> *@
+    <!-- AdminLTE App -->
+    <script src="~/lib/adminlte/js/adminlte.min.js"></script>
+    <!-- Custom App -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

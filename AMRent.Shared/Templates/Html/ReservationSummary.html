@@ -1,0 +1,263 @@
+﻿<html>
+<head>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            font-family: Poppins;
+            font-size: 14px;
+        }
+        table {
+            font-size: 14px;
+            width: 100%;
+            padding: 0;
+            border-spacing: 0;
+        }
+        td {
+            vertical-align: top;
+        }
+        .brand-coloured-text {
+            font-size: 15px;
+            color: #d9883c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <table style='border-bottom: 1px solid #000;' cellpadding='0' cellspacing='0'>
+        <tr>
+            <td style='padding: 20px;'>
+                <img style='margin: 0; border: 0; padding: 0; display: block; max-width: 128px; min-width: 128px;' src='https://www.amrent.pt/img/logo.png' />
+            </td>
+        </tr>
+    </table>
+    <table cellpadding='0' cellspacing='0'>
+        <tr>
+            <td style='height: 20px;'></td>
+        </tr>
+        <tr>
+            <td style='width: 100%;'>
+                <table style='border: 1px solid #ccc; border-radius: 10px;' cellpadding='0' cellspacing='0'>
+                    <tr>
+                        <td style='height: 20px;' colspan='3'></td>
+                    </tr>
+                    <tr>
+                        <td style='width: 20px;'></td>
+                        <td style='width: auto;'>
+                            <table cellpadding='0' cellspacing='0'>
+                                <tr>
+                                    <td style='width: 50%;'>
+                                        <font class='brand-coloured-text'>[[Translation:Documento.Reserva.NomeCliente]]:</font> [[CustomerName]]
+                                        <br />
+                                        <font class='brand-coloured-text'>[[Translation:Documento.Reserva.Numero]]:</font> [[Number]]
+                                        <br />
+                                        <font class='brand-coloured-text'>[[Translation:Documento.Reserva.Data]]:</font> [[Date]]
+                                    </td>
+                                    <td style='width: 50%;'>
+                                        <!--[[FlightNumberSection]]-->
+                                        <font class='brand-coloured-text'>[[Translation:Reserva.Detalhe.DadosOutros.NumeroVoo]]:</font> [[FlightNumber]]
+                                        <br />
+                                        <!--[[/FlightNumberSection]]-->
+                                        <font class='brand-coloured-text'>[[Translation:Reserva.Confirmacao.Resumo.Recolha]]:</font> [[PickupLocationName]] - [[PickupDateTime]]
+                                        <br />
+                                        <font class='brand-coloured-text'>[[Translation:Reserva.Confirmacao.Resumo.Devolucao]]:</font> [[ReturnLocationName]] - [[ReturnDateTime]]
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width: 20px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='height: 20px;'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style='height: 20px;'></td>
+        </tr>
+        <!--[[Foreach:QuotationItems]]-->
+        <tr>
+            <td style='width: 100%;'>
+                <table style='border: 1px solid #ccc; border-radius: 10px;' cellpadding='0' cellspacing='0'>
+                    <tr>
+                        <td style='height: 20px;' colspan='3'></td>
+                    </tr>
+                    <tr>
+                        <td style='width: 20px;'></td>
+                        <td style='width: auto;'>
+                            <table cellpadding='0' cellspacing='0'>
+                                <tr>
+                                    <td style='width: 20%;'>
+                                        <img style='margin: 0; border: 0; padding: 0; display: block; max-width: 100%; min-width: 100%;' src='https://www.amrent.pt/img/segments/[[SegmentId]]_list.jpg' />
+                                    </td>
+                                    <td style='width: 80%;'>
+                                        <table cellpadding='0' cellspacing='0'>
+                                            <tr>
+                                                <td style='width: 20px;'></td>
+                                                <td style='width: auto;'>
+                                                    <table cellpadding='0' cellspacing='0'>
+                                                        <tr>
+                                                            <td style='width: 100%;' colspan='3'>
+                                                                <font class='brand-coloured-text' style='font-size: 16px;'>[[SegmentName]]</font> [[Translation:Reserva.Confirmacao.Resumo.Segmento.OuSimilar]]
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style='height: 20px;' colspan='3'></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style='width: 33%'>
+                                                                <img src="https://www.amrent.pt/img/icons/car-parts-03.jpg" width="16">&nbsp;[[FuelName]]
+                                                                <br />
+                                                                <img src="https://www.amrent.pt/img/icons/car-parts-01.jpg" width="16">&nbsp;[[GearboxName]]
+                                                                <br />
+                                                                <img src="https://www.amrent.pt/img/icons/car-parts-06.jpg" width="16">&nbsp;[[SegmentSeats]]
+                                                            </td>
+                                                            <td style='width: 33%'>
+                                                                <!--[[CommercialMeasuresSection]]-->
+                                                                <img src="https://www.amrent.pt/img/icons/truck_length.jpg" width="16">&nbsp;[[LoadingSpaceLength]] m
+                                                                <br />
+                                                                <img src="https://www.amrent.pt/img/icons/truck_width.jpg" width="16">&nbsp;[[LoadingSpaceWidth]] m
+                                                                <br />
+                                                                <img src="https://www.amrent.pt/img/icons/truck_height.jpg" width="16">&nbsp;[[LoadingSpaceHeight]] m
+                                                                <!--[[/CommercialMeasuresSection]]-->
+                                                            </td>
+                                                            <td style='width: 34%'>
+                                                                <!--[[CategoryCharacteristicsSection]]-->
+                                                                <!--[[Foreach:CategoryCharacteristics]]-->
+                                                                <img src="https://www.amrent.pt/img/icons/check.jpg" width="16">&nbsp;[[CategoryCharacteristicsText]]
+                                                                <br />
+                                                                <!--[[/Foreach:CategoryCharacteristics]]-->
+                                                                <!--[[/CategoryCharacteristicsSection]]-->
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td style='width: 20px;'></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width: 20px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width: 20px; height: 20px;'></td>
+                        <td style='width: auto; height: 20px; border-bottom: 1px solid #d9883c;'></td>
+                        <td style='width: 20px; height: 20px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='height: 20px;' colspan='3'></td>
+                    </tr>
+                    <tr>
+                        <td style='width: 20px;'></td>
+                        <td style='width: auto;'>
+                            <table cellpadding='0' cellspacing='0'>
+                                <tr>
+                                    <td style='width: 40%;'>
+                                        <font class='brand-coloured-text' style='font-size: 16px;'>[[Translation:Reserva.Confirmacao.Resumo.Extras]]:</font>
+                                        <br />
+                                        <br />
+                                        <!--[[Foreach:Extras]]-->
+                                        <font class='brand-coloured-text'>[[ExtraName]][[ExtraQuantity]]:</font> [[ExtraUnitCost]]
+                                        <br />
+                                        <!--[[/Foreach:Extras]]-->
+                                        <!--[[Foreach:Services]]-->
+                                        <font class='brand-coloured-text'>[[ServiceName]]:</font> [[ServiceCost]]€
+                                        <br />
+                                        <!--[[/Foreach:Services]]-->
+                                    </td>
+                                    <td style='width: 20%;'>
+                                        <font class='brand-coloured-text' style='font-size: 16px;'>[[Translation:Reserva.Confirmacao.Resumo.Seguro]]:</font>
+                                        <br />
+                                        <br />
+                                        <font class='brand-coloured-text'>[[InsuranceLevelName]]</font>
+                                        <br />
+                                        <font class='brand-coloured-text'>[[Translation:Reserva.Confirmacao.Resumo.Seguro.Franquia]]:</font> [[InsuranceExcess]]€
+                                    </td>
+                                    <td style='width: auto; border-left: 1px solid #d9883c; padding-left: 20px;'>
+                                        <font class='brand-coloured-text' style='font-size: 16px;'>[[Translation:Documento.Reserva.ResumoDeCustos]]:</font>
+                                        <br />
+                                        <br />
+                                        <font class='brand-coloured-text'>[[ReservationDays]] [[Translation:Reserva.Confirmacao.Resumo.Segmento.Dias]]:</font> [[SegmentAndPickupReturnCost]]€
+                                        <br />
+                                        <font class='brand-coloured-text'>[[Translation:Reserva.Confirmacao.Resumo.Seguro]]:</font> [[InsuranceCost]]€
+                                        <br />
+                                        <font class='brand-coloured-text'>[[Translation:Reserva.Confirmacao.Resumo.Extras]]:</font> [[ExtrasAndServicesCost]]€
+                                        <br />
+                                        <!--[[Foreach:PickupReturnTemporaryTaxes]]-->
+                                        <font class='brand-coloured-text'>[[TaxName]][[TaxQuantity]]:</font> [[TaxUnitCost]]
+                                        <br />
+                                        <!--[[/Foreach:PickupReturnTemporaryTaxes]]-->
+                                        <!--[[AdvanceParcialPaymentSection]]-->
+                                        <font class='brand-coloured-text'>[[Translation:Email.Sumario.PagamentoParcialAntecipado]]:</font> [[AdvanceParcialPaymentValue]]€
+                                        <br />
+                                        <!--[[/AdvanceParcialPaymentSection]]-->
+                                        <font class='brand-coloured-text'>[[Translation:Reserva.Confirmacao.Resumo.Total]]:</font> [[ValueWithoutDiscount]][[TotalCost]]€
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width: 20px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='height: 20px;' colspan='3'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style='height: 20px;'></td>
+        </tr>
+        <!--[[/Foreach:QuotationItems]]-->
+        <tr>
+            <td style='height: 20px;'></td>
+        </tr>
+        <tr>
+            <td style='width: 100%;'>
+                <table style='border: 1px solid #ccc; border-radius: 10px;' cellpadding='0' cellspacing='0'>
+                    <tr>
+                        <td style='height: 20px;' colspan='3'></td>
+                    </tr>
+                    <tr>
+                        <td style='width: 20px;'></td>
+                        <td style='width: auto;'>
+                            <font class='brand-coloured-text' style='font-size: 16px;'>[[Translation:Email.Sumario.DetalheCoberturas.Titulo]]:</font>
+                        </td>
+                        <td style='width: 20px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='height: 20px;' colspan='3'></td>
+                    </tr>
+                    <tr>
+                        <td style='width: 20px;'></td>
+                        <td style='width: auto;'>
+                            <table cellpadding='0' cellspacing='0'>
+                                <tr>
+                                    <!--[[Foreach:InsuranceLevels]]-->
+                                    <td style='width: 33%;'>
+                                        <font class='brand-coloured-text'>[[InsuranceLevelsInsuranceLevelName]]:</font>
+                                        <br />
+                                        <br />
+                                        [[InsuranceLevelsInsuranceLevelIncludedProtection]]
+                                    </td>
+                                    <!--[[/Foreach:InsuranceLevels]]-->
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width: 20px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='height: 20px;' colspan='3'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style='height: 20px;'></td>
+        </tr>
+    </table>
+</body>
+</html>

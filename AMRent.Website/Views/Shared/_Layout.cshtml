@@ -1,0 +1,437 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    var languages = ViewBag.Languages as SelectList;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>AM Rent - @ViewData["Title"]</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css">
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/lib/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css">
+    <!-- Datepicker CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <!-- Rangeslider CSS -->
+    <link rel="stylesheet" href="~/lib/ion-rangeslider/css/ion.rangeSlider.min.css">
+    <!-- Aos CSS -->
+    <link rel="stylesheet" href="~/lib/aos/css/aos.css">
+    <!-- Feather CSS -->
+    <link rel="stylesheet" href="~/lib/feather/css/feather.css">
+    <!-- Owl carousel CSS -->
+    <link rel="stylesheet" href="~/lib/owl-carousel/css/owl.carousel.min.css">
+    <!-- Cookie consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/lib/dreams-rent/css/style.css">
+    <!-- Dreams Rent CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=2" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="shortcut icon" href="/favicon.ico?v=2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+    <meta name="apple-mobile-web-app-title" content="AM Rent" />
+    <link rel="manifest" href="/site.webmanifest?v=2" />
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amulya:wght@400;700&display=swap">
+
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) {
+        w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+
+        new Date().getTime(), event: 'gtm.js'
+        }); var f = d.getElementsByTagName(s)[0],
+
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+
+        })(window, document, 'script', 'dataLayer', 'GTM-K3VLL9C');
+    </script>
+    <!-- End Google Tag Manager -->
+    @{
+        var environment = Configuration["Environment"];
+        if (environment == "Test")
+        {
+            <style>
+                header {
+                    border: 2px solid red;
+                }
+            </style>
+        }
+    }
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K3VLL9C" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <div class="main-wrapper">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="container-fluid">
+                <nav class="navbar navbar-expand-lg header-nav">
+                    <div class="navbar-header">
+                        <a id="mobile_btn" href="javascript:void(0);">
+                            <span class="bar-icon">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </span>
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="navbar-brand logo">
+                            <img src="~/img/logo.png" class="img-fluid" alt="Logo">
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="navbar-brand logo-small">
+                            <img src="~/img/logo.png" class="img-fluid" alt="Logo">
+                        </a>
+                    </div>
+                    <div class="main-menu-wrapper">
+                        <div class="menu-header">
+                            <a asp-controller="Home" asp-action="Index" class="menu-logo">
+                                <img src="~/img/logo.png" class="img-fluid" alt="Logo">
+                            </a>
+                            <a id="menu_close" class="menu-close" href="javascript:void(0);"> <i class="fas fa-times"></i></a>
+                        </div>
+                        <ul class="main-nav">
+                            <li id="menu-home"><a asp-controller="Home" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Menu.Home")</a></li>
+                            <li class="menu-search"><a asp-controller="Search" asp-action="Passengers">@TranslationProvider.GetTranslation(languageId, "Menu.Passageiros")</a></li>
+                            <li class="menu-search"><a asp-controller="Search" asp-action="Commercials">@TranslationProvider.GetTranslation(languageId, "Menu.Comerciais")</a></li>
+                            <li><a href="https://renting.amrent.pt/" target="_blank">@TranslationProvider.GetTranslation(languageId, "Menu.Renting")</a></li>
+                            @if ((bool)ViewBag.HasCampaigns)
+                            {
+                                <li id="menu-offers"><a asp-controller="Offers" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Menu.Ofertas")</a></li>
+                            }
+                            <li id="menu-blog"><a asp-controller="Blog" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Menu.Blog")</a></li>
+                            <li id="menu-contacts"><a asp-controller="Contact" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Menu.Contactos")</a></li>
+                            @if (User != null && User.Claims.Any())
+                            {
+                                <li class="login-link"><a asp-controller="Account" asp-action="Profile">@TranslationProvider.GetTranslation(languageId, "Header.MinhaConta")</a></li>
+                                <li class="login-link"><a asp-controller="Account" asp-action="Logout">@TranslationProvider.GetTranslation(languageId, "Header.Logout")</a></li>
+                            }
+                            else
+                            {
+                                <li class="login-link"><a asp-controller="Account" asp-action="Register">@TranslationProvider.GetTranslation(languageId, "Header.Registo")</a></li>
+                                <li class="login-link"><a asp-controller="Account" asp-action="Login">@TranslationProvider.GetTranslation(languageId, "Header.Entrar")</a></li>
+                            }
+                        </ul>
+                    </div>
+                    <form id="languageForm" method="post" asp-controller="Home" asp-action="ChangeLanguage">
+                        <input type="hidden" name="Id" id="languageSelect" />
+                    </form>
+                    <ul class="nav header-navbar-rht">
+                        <li class="nav-item">
+                            <div class="language-selector">
+                                <a id="selected-language-flag" class="nav-link header-language" href="#" style="background-image:url(@(languages.FirstOrDefault(x => x.Selected)?.Text)); background-size: 100% 100%;"><span>&nbsp;</span></a>
+                                <ul id="language-dropdown" class="language-dropdown" style="width: 100%;">
+                                    @foreach (var language in languages.Where(x => !x.Selected))
+                                    {
+                                        <li data-value="@language.Value" style="background-image:url(@(language.Text)); background-size: 100% 100%; width: 100%;"><span>&nbsp;</span></li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                        @if (User != null && User.Claims.Any())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link header-login" data-bs-toggle="tooltip" data-bs-placement="bottom" asp-controller="Account" asp-action="Profile"><span><i class="fa-solid fa-id-card"></i></span>@TranslationProvider.GetTranslation(languageId, "Header.MinhaConta")</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link header-reg" data-bs-toggle="tooltip" data-bs-placement="bottom" asp-controller="Account" asp-action="Logout"><span><i class="fa-solid fa-arrow-right-from-bracket"></i></span>@TranslationProvider.GetTranslation(languageId, "Header.Logout")</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link header-login" data-bs-toggle="tooltip" data-bs-placement="bottom" asp-controller="Account" asp-action="Login"><span><i class="fa-regular fa-user"></i></span>@TranslationProvider.GetTranslation(languageId, "Header.Entrar")</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link header-reg" data-bs-toggle="tooltip" data-bs-placement="bottom" asp-controller="Account" asp-action="Register"><span><i class="fa-solid fa-lock"></i></span>@TranslationProvider.GetTranslation(languageId, "Header.Registo")</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <!-- /Header -->
+        @RenderBody()
+
+        <!-- Footer -->
+        <footer class="footer">
+            <!-- Footer Top -->
+            <div class="footer-top aos" data-aos="fade-up">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-9 col-lg-8">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <!-- Footer Widget -->
+                                    <div class="footer-widget footer-menu">
+                                        <h5 class="footer-title">@TranslationProvider.GetTranslation(languageId, "Footer.Coluna1.Titulo")</h5>
+                                        <ul>
+                                            <li>
+                                                <a asp-controller="About" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.SobreNos")</a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="OurTeam" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.NossaEquipa")</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /Footer Widget -->
+                                </div>
+                                <div class="col-sm-4">
+                                    <!-- Footer Widget -->
+                                    <div class="footer-widget footer-menu">
+                                        <h5 class="footer-title">@TranslationProvider.GetTranslation(languageId, "Footer.Coluna2.Titulo")</h5>
+                                        <ul>
+                                            <li>
+                                                <a target="_blank" asp-controller="RentGuide" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.GuiaDeAluguer")</a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="TermsAndConditions" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.TermosECondicoes")</a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="TermsAndConditionsVisaMastercard" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.TermosECondicoesVisaMastercard")</a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="PrivacyPolicy" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.PoliticaDePrivacidade")</a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="Faq" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.PerguntasERespostas")</a>
+                                            </li>
+                                            <li>
+                                                <a href="https://www.livroreclamacoes.pt/" target="_blank">@TranslationProvider.GetTranslation(languageId, "Footer.Queixas")</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /Footer Widget -->
+                                </div>
+                                <div class="col-sm-4">
+                                    <!-- Footer Widget -->
+                                    <div class="footer-widget footer-menu">
+                                        <h5 class="footer-title">@TranslationProvider.GetTranslation(languageId, "Footer.Coluna3.Titulo")</h5>
+                                        <ul>
+                                            <li>
+                                                <a asp-controller="Contact" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.HorarioDeTrabalho")</a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="Contact" asp-action="Index">@TranslationProvider.GetTranslation(languageId, "Footer.Balcoes")</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /Footer Widget -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4">
+                            <div class="footer-contact footer-widget">
+                                <h5 class="footer-title">@TranslationProvider.GetTranslation(languageId, "Footer.Coluna4.Titulo")</h5>
+                                <div class="footer-contact-info">
+                                    <div class="footer-address">
+                                        <span><i class="feather-phone-call"></i></span>
+                                        <div class="addr-info">
+                                            <a href="tel:+351244723988">+351 244 723 988</a>
+                                        </div>
+                                    </div>
+                                    <div class="footer-address">
+                                        <span><i class="feather-mail"></i></span>
+                                        <div class="addr-info">
+                                            <a href="mailto:geral@amrent.pt">geral@amrent.pt</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="footer-social-widget">
+                                    <h6>@TranslationProvider.GetTranslation(languageId, "Footer.RedesSociais.Titulo")</h6>
+                                    @await Component.InvokeAsync("_LayoutSocialNetworks")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-3 col-sm-6">
+                            <img src="~/img/logo_sgs@($"_{ViewBag.SelectedLanguageObject.Code}_{ViewBag.SelectedLanguageObject.CountryCode}").png" class="img-fluid mt-3 mb-3" alt="SGS" />
+                        </div>
+                        @* <div class="col-xl-1 col-md-2 col-sm-3" style="display: grid; align-items: end;">
+                            <img src="~/img/logo_pme22.png" class="img-fluid mt-3 mb-3" alt="PME22" />
+                        </div> *@
+                        <div class="col-xl-10 col-md-9 col-sm-12" style="display: grid; align-items: end;">
+                            <a href="~/docs/AMRent_PRR.pdf" target="_blank"><img src="~/img/logos_prr.png" class="img-fluid mt-3 mb-3" alt="PRR" /></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Footer Top -->
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="container">
+                    <!-- Copyright -->
+                    <div class="copyright">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="copyright-text">
+                                    <p>© @DateTime.Now.Year AM Rent. Grupo Confraria. Powered by <a href="http://www.daga.pt">daga</a>.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- Copyright Menu -->
+                                <div class="copyright-menu">
+                                    <div class="vistors-details">
+                                        <ul class="d-flex">
+                                            <li><a href="javascript:void(0)"><img class="img-fluid" src="~/img/icons/easypay.png" alt="EasyPay"></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- /Copyright Menu -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Copyright -->
+                </div>
+            </div>
+            <!-- /Footer Bottom -->
+        </footer>
+        <!-- /Footer -->
+
+    </div>
+
+    @* <!-- scrollToTop start -->
+    <div class="progress-wrap active-progress">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919px, 307.919px; stroke-dashoffset: 228.265px;"></path>
+        </svg>
+    </div>
+    <!-- scrollToTop end -->*@
+    <!-- WhatsApp start -->
+    <div class="whatsapp-wrap">
+        <a target="_blank" href="https://wa.me/351964458018"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+    <!-- WhatsApp end -->
+    <!-- jQuery -->
+    <script src="~/lib/jquery/js/jquery-3.6.4.min.js"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- counterup JS -->
+    <script src="~/lib/jquery-counterup/js/jquery.waypoints.js"></script>
+    <script src="~/lib/jquery-counterup/js/jquery.counterup.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <!-- Aos -->
+    <script src="~/lib/aos/js/aos.js"></script>
+    @* <!-- Top JS -->
+    <script src="~/js/backToTop.js"></script> *@
+    <!-- Rangeslider JS -->
+    <script src="~/lib/ion-rangeslider/js/ion.rangeSlider.min.js"></script>
+    <script src="~/lib/ion-rangeslider/js/custom-rangeslider.js"></script>
+    <!-- Sticky Sidebar JS -->
+    <script src="~/lib/theia-sticky-sidebar/js/ResizeSensor.js"></script>
+    <script src="~/lib/theia-sticky-sidebar/js/theia-sticky-sidebar.js"></script>
+    <!-- Datepicker Core JS -->
+    <script src="~/lib/moment/js/moment.min.js"></script>
+    <script src="~/lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <!-- Owl Carousel JS -->
+    <script src="~/lib/owl-carousel/js/owl.carousel.min.js"></script>
+    <!-- Specific libs -->
+    @await RenderSectionAsync("SpecificLibs", required: false)
+    <!-- Dreams Rent JS -->
+    <script src="~/lib/dreams-rent/js/script.js"></script>
+    <!-- Cookie consent -->
+    <script type="module" src="~/js/cookieconsent-config.js" asp-append-version="true"></script>
+    <!-- Custom JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            var queryString = window.location.search;
+
+            if (queryString) {
+                // Append query string to all links
+                $("a[href^='/'], a[href^='./'], a[href^='../']").each(function () {
+                    var href = $(this).attr("href");
+                    if (href.indexOf("?") === -1) {
+                        $(this).attr("href", href + queryString);
+                    }
+                });
+
+                // Preserve UTMs in forms as hidden inputs
+                $("form").each(function () {
+                    var form = $(this);
+
+                    // Parse the query string and add hidden fields
+                    var params = new URLSearchParams(queryString);
+                    params.forEach(function (value, key) {
+                        if (!form.find("input[name='queryStringParam_" + key + "']").length) { // Avoid duplicates
+                            form.append('<input type="hidden" name="queryStringParam_' + key + '" value="' + value + '">');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var dropdown = $("#language-dropdown");
+            var selectedLanguage = $("#selected-language-flag");
+
+            selectedLanguage.on("click", function () {
+                dropdown.toggle();
+            });
+
+            dropdown.on("click", "li", function (event) {
+                var value = $(this).data("value");
+                $('#languageSelect').val(value);
+                $("#languageForm").submit();
+            });
+
+            // Close dropdown when clicking outside
+            $(document).on("click", function (event) {
+                if (!$(event.target).closest(".language-selector").length) {
+                    dropdown.hide();
+                }
+            });
+
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '358656982007293');
+        fbq('track', 'PageView');
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none"
+             src="https://www.facebook.com/tr?id=358656982007293&ev=PageView&noscript=1" />
+    </noscript>
+    <!-- End Meta Pixel Code -->
+</body>
+</html>

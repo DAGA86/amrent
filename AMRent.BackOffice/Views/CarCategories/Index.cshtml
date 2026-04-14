@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Categorias de veículos";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="CarCategories" asp-action="Index">Categorias de veículos</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="CarCategories" asp-action="Create"><i class="fas fa-plus"></i> Nova</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var deleteUrl = '';
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/CarCategories/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Nome', targets: 0 },
+                    {
+                        targets: 1, sortable: false, searchable: false, render: function (data, type, row) {
+                            var result = '<a class="btn btn-info btn-xs btn-xs-square" href="/CarCategories/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                            if (!row.hasSegments) {
+                                result += '<a class="btn btn-danger btn-xs btn-xs-square ml-2" href="/CarCategories/Delete/' + data + '" onclick="javascript: return ConfirmDelete(this);"><i class="fas fa-trash-alt"></i></a>';
+                            }
+                            return result;
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'name' },
+                    { data: 'id' },
+                    { data: 'hasSegments', visible: false },
+                ],
+                language: dataTablesLanguage
+            });
+
+
+            SetActiveMenu('menu-car-categories', 'menu-renting');
+        });
+    </script>
+}

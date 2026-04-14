@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Redes Sociais";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="SocialNetworks" asp-action="Index">Redes Sociais</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="SocialNetworks" asp-action="Create"><i class="fas fa-plus"></i> Nova</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var deleteUrl = '';
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/SocialNetworks/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Nome', targets: 0 },
+                    {
+                        title: 'Acções', targets: 1, sortable: false, searchable: false, render: function (data) {
+                            return '<a class="btn btn-info btn-xs btn-xs-square" href="/SocialNetworks/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'name' },
+                    { data: 'id' },
+                ],
+                language: dataTablesLanguage
+            });
+
+
+            SetActiveMenu('menu-social-networks', 'menu-amrent');
+        });
+    </script>
+}

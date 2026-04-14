@@ -1,0 +1,141 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using AMRent.Data.Models.Database
+@model BlogIndex
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+	ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Menu.Blog");
+}
+
+<!-- Blog Grid-->
+<div class="blog-section">
+	<div class="container">
+		<!-- Heading title-->
+		<div class="section-heading" data-aos="fade-down">
+			<h2>@ViewData["Title"]</h2>
+		</div>
+		<div class="row">
+			<div class="col-lg-8">
+                <div class="row">
+                    @foreach (BlogArticle blogArticle in Model.BlogArticles)
+                    {
+                        <div class="col-lg-6 col-md-6 d-lg-flex">
+                            <div class="blog grid-blog">
+                                <div class="blog-image">
+									<a asp-controller="Blog" asp-action="Detail" asp-route-segmentId="@(blogArticle.Id)"><img class="img-fluid" src="~/img/blog/@(blogArticle.Id)_list.jpg" alt="Post Image"></a>
+                                </div>
+                                <div class="blog-content">
+                                    <p class="blog-category">
+										<a asp-controller="Blog" asp-action="Index" asp-route-categoryId="@blogArticle.BlogArticleCategoryId"><span>@(blogArticle.BlogArticleCategory?.Translations?.FirstOrDefault()?.Name)</span></a>
+                                    </p>
+                                    <h3 class="blog-title"><a asp-controller="Blog" asp-action="Detail" asp-route-segmentId="@(blogArticle.Id)">@(blogArticle.Translations?.FirstOrDefault()?.Title)</a></h3>
+                                    <p class="blog-description">@(blogArticle.Translations?.FirstOrDefault()?.Text)</p>
+                                    <ul class="meta-item">
+                                        <li class="date-icon">
+											<i class="fa-solid fa-calendar-days"></i> <span>@(blogArticle.CreateDate.ToString("dd/MM/yyyy"))</span>
+                                        </li>
+                                        <li>
+                                            <a asp-controller="Blog" asp-action="Detail" asp-route-segmentId="@(blogArticle.Id)" class="viewlink btn btn-primary">@TranslationProvider.GetTranslation(languageId, "Blog.Lista.Artigo.Botao") <i class="feather-arrow-right ms-2"></i></a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+				@*<!--Pagination-->
+				<div class="pagination">
+					<nav>
+						<ul class="pagination">
+							<li class="previtem">
+								<a class="page-link" href="#"><i class="fas fa-regular fa-arrow-left me-2"></i> Prev</a>
+							</li>
+							<li class="justify-content-center pagination-center">
+								<div class="page-group">
+									<ul>
+										<li class="page-item">
+											<a class="page-link" href="#">1</a>
+										</li>
+										<li class="page-item">
+											<a class="active page-link" href="#">2 <span class="visually-hidden">(current)</span></a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#">3</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#">4</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#">5</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="nextlink">
+								<a class="page-link" href="#">Next <i class="fas fa-regular fa-arrow-right ms-2"></i></a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+				<!--/Pagination-->*@
+			</div>
+			<div class="col-lg-4 theiaStickySidebar">
+				<div class="rightsidebar">
+					<div class="card">
+                        <h4>
+							<i class="fa-solid fa-briefcase"></i> @TranslationProvider.GetTranslation(languageId, "Blog.Lista.Sidebar.Categorias.Titulo")
+                        </h4>
+                        <ul class="blogcategories-list">
+							@foreach (BlogArticleCategory blogArticleCategory in Model.BlogArticleCategories)
+							{
+								<li><a asp-controller="Blog" asp-action="Index" asp-route-categoryId="@blogArticleCategory.Id">@blogArticleCategory.Translations?.FirstOrDefault()?.Name</a></li>
+							}
+                        </ul>
+					</div>
+					<div class="card tags-widget">
+						<h4><i class="feather-tag"></i> @TranslationProvider.GetTranslation(languageId, "Blog.Lista.Sidebar.Tags.Titulo")</h4>
+                        <ul class="tags">
+                            @foreach (string tag in Model.Tags)
+                            {
+								<a asp-controller="Blog" asp-action="Index" asp-route-tag="@(tag)"><li>@tag</li></a>
+                            }
+                        </ul>
+					</div>
+					<div class="card">
+                        <h4>
+                            <i class="fa-solid fa-ranking-star"></i>@TranslationProvider.GetTranslation(languageId, "Blog.Lista.Sidebar.MaisVistos.Titulo")
+                        </h4>
+                        @foreach (BlogArticle mostViewedBlogArticle in Model.MostViewedBlogArticles)
+                        {
+                            <div class="article">
+                                <div class="article-blog">
+                                    <a asp-controller="Blog" asp-action="Detail" asp-route-segmentId="@(mostViewedBlogArticle.Id)">
+                                        <img class="img-fluid" src="~/img/blog/@(mostViewedBlogArticle.Id)_list.jpg" alt="Blog">
+                                    </a>
+                                </div>
+                                <div class="article-content">
+									<h5><a asp-controller="Blog" asp-action="Detail" asp-route-segmentId="@(mostViewedBlogArticle.Id)"> @(mostViewedBlogArticle.Translations?.FirstOrDefault()?.Title)</a></h5>
+                                    <div class="article-date">
+                                        <i class="fa-solid fa-calendar-days"></i>
+										<span>@(mostViewedBlogArticle.CreateDate.ToString("dd/MM/yyyy"))</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /Blog Grid-->
+
+@section Scripts {
+	<script>
+		$(function () {
+			SetActiveMenu('#menu-blog');
+		});
+	</script>
+}

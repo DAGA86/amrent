@@ -1,0 +1,94 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using AMRent.Data.Models.Database
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model OffersIndex
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+	ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Menu.Ofertas");
+}
+
+<!-- Blog Grid-->
+<div class="blog-section">
+	<div class="container">
+		<!-- Heading title-->
+		<div class="section-heading" data-aos="fade-down">
+			<h2>@ViewData["Title"]</h2>
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+                <div class="row">
+                    @foreach (Campaign campaign in Model.Campaigns)
+                    {
+                        <div class="col-lg-4 col-md-4 d-lg-flex">
+                            <div class="blog grid-blog">
+                                <div class="blog-image">
+									<a asp-controller="Offers" asp-action="Detail" asp-route-segmentId="@(campaign.Id)"><img class="img-fluid" src="~/img/campaigns/@($"{campaign.Id}_{ViewBag.SelectedLanguageObject.Code}_{ViewBag.SelectedLanguageObject.CountryCode}").jpg" alt="Post Image"></a>
+                                </div>
+                                <div class="blog-content">
+									<h3 class="blog-title"><a asp-controller="Offers" asp-action="Detail" asp-route-segmentId="@(campaign.Id)">@(campaign.Translations?.FirstOrDefault()?.Name)</a></h3>
+									<p class="blog-description">@(campaign.Translations?.FirstOrDefault()?.Description)</p>
+                                    <ul class="meta-item">
+                                        <li class="date-icon">
+											<i class="fa-solid fa-calendar-days"></i> <span>@TranslationProvider.GetTranslation(languageId, "Ofertas.Lista.Campanha.Ate") @(campaign.ValidUntilUtc.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))</span>
+                                        </li>
+                                        <li>
+											<a asp-controller="Offers" asp-action="Detail" asp-route-segmentId="@(campaign.Id)" class="viewlink btn btn-primary">@TranslationProvider.GetTranslation(languageId, "Ofertas.Lista.Campanha.Botao") <i class="feather-arrow-right ms-2"></i></a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+				@*<!--Pagination-->
+				<div class="pagination">
+					<nav>
+						<ul class="pagination">
+							<li class="previtem">
+								<a class="page-link" href="#"><i class="fas fa-regular fa-arrow-left me-2"></i> Prev</a>
+							</li>
+							<li class="justify-content-center pagination-center">
+								<div class="page-group">
+									<ul>
+										<li class="page-item">
+											<a class="page-link" href="#">1</a>
+										</li>
+										<li class="page-item">
+											<a class="active page-link" href="#">2 <span class="visually-hidden">(current)</span></a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#">3</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#">4</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#">5</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="nextlink">
+								<a class="page-link" href="#">Next <i class="fas fa-regular fa-arrow-right ms-2"></i></a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+				<!--/Pagination-->*@
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /Blog Grid-->
+
+@section Scripts {
+	<script>
+		$(function () {
+			SetActiveMenu('#menu-offers');
+		});
+	</script>
+}

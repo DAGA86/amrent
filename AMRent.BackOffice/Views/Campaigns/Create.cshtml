@@ -1,0 +1,216 @@
+﻿@model AMRent.Data.Models.Database.Campaign
+
+@{
+    ViewData["Title"] = "Nova Campanha";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Campaigns" asp-action="Index">Campanhas</a></li>
+}
+
+<form asp-action="Create" enctype="multipart/form-data">
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DiscountType">Tipo</label>
+                                <select asp-for="DiscountType" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<AMRent.Data.Enums.DiscountTypes>()">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 value-input">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Value">Valor</label>
+                                <input asp-for="Value" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3 extras-input">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="ExtraIds">Extras</label>
+                                <select asp-for="ExtraIds" class="form-control form-control-sm select2" multiple="multiple" style="width: 100%;" asp-items="ViewBag.Extras"></select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="SegmentIds">Segmentos</label>
+                                <select asp-for="SegmentIds" class="form-control form-control-sm select2" multiple="multiple" style="width: 100%;" asp-items="ViewBag.Segments"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-check">
+                                <input asp-for="IsUsableForBackoffice" type="checkbox" class="form-check-input" />
+                                <label for="IsUsableForBackoffice">Disponível para backoffice</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="ValidFromUtc">Levantamento a partir de</label>
+                                <input asp-for="ValidFromUtc" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="ValidUntilUtc">Devolução até</label>
+                                <input asp-for="ValidUntilUtc" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="AppliesToBookingsMadeFromUtc">Registo a partir de</label>
+                                <input asp-for="AppliesToBookingsMadeFromUtc" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="AppliesToBookingsMadeUntilUtc">Registo até</label>
+                                <input asp-for="AppliesToBookingsMadeUntilUtc" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Imagem de Topo (1920px x 600px)</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6" style="text-align: center;">
+                            @if (!string.IsNullOrEmpty(Model?.TopImagePath))
+                            {
+                                <img style="max-height: 300px; max-width: 50%;" src="@Model.TopImagePath" />
+                            }
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="TopImageFile">Upload</label>
+                                <input type="file" name="TopImageFile" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+        {
+            int languageId = ViewBag.Languages[i].Id;
+            var currentTranslation = Model?.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+            <div class="col-md-12">
+                <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                <div class="card card-success card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">@ViewBag.Languages[i].Name</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Name">Nome</label>
+                                    <input name="Translations[@i].Name" class="form-control form-control-sm" value="@(currentTranslation?.Name ?? "")" />
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Description">Descrição</label>
+                                    <textarea rows="10" name="Translations[@i].Description" class="form-control form-control-sm">@(currentTranslation?.Description ?? "")</textarea>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" style="text-align: center;">
+                                @if (!string.IsNullOrEmpty(currentTranslation?.ImagePath))
+                                {
+                                    <img style="max-height: 300px; max-width: 50%;" src="@currentTranslation.ImagePath" />
+                                }
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="ImageFile_@(ViewBag.Languages[i].Code)_@(ViewBag.Languages[i].CountryCode)">Imagem (833px x 573px)</label>
+                                    <input type="file" name="ImageFile_@(ViewBag.Languages[i].Code)_@(ViewBag.Languages[i].CountryCode)" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="col-sm-6" style="text-align: center;">
+                                @if (!string.IsNullOrEmpty(currentTranslation?.PopupImagePath))
+                                {
+                                    <img style="max-height: 300px; max-width: 50%;" src="@currentTranslation.PopupImagePath" />
+                                }
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="PopupImageFile_@(ViewBag.Languages[i].Code)_@(ViewBag.Languages[i].CountryCode)">Imagem (popup)</label>
+                                    <input type="file" name="PopupImageFile_@(ViewBag.Languages[i].Code)_@(ViewBag.Languages[i].CountryCode)" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        }
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="Campaigns" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-campaigns', 'menu-renting');
+            $('.select2').select2();
+
+            $('#@(nameof(Model.DiscountType))').on('change', function () {
+                RefreshVisibility();
+            });
+
+            RefreshVisibility();
+        });
+
+        function RefreshVisibility()
+        {
+            if ($("#@(nameof(Model.DiscountType))").val() == '@((int)AMRent.Data.Enums.DiscountTypes.Extra)')
+            {
+                $(".extras-input").show();
+                $(".value-input").hide();
+            }
+            else
+            {
+                $(".extras-input").hide();
+                $(".value-input").show();
+            }
+        }
+    </script>
+}

@@ -1,0 +1,115 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using System.Globalization
+@model BookingPayment
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Reserva.Titulo");
+}
+
+<section class="booking-section">
+    <form asp-action="Payment" method="post" id="booking-payment-form">
+        <input type="hidden" asp-for="ReservationId" />
+        <input type="hidden" asp-for="ReservationNumber" />
+        <input type="hidden" asp-for="PaymentType" />
+        <div class="container">
+            <!-- Heading title-->
+            <div class="section-heading" data-aos="fade-down">
+                <h2>@ViewData["Title"]</h2>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="payment-div">
+                    <div class="booking-details payment-details">
+                        <div class="booking-title">
+                            <h3>@(TranslationProvider.GetTranslation(languageId, "Cotacao.Pagamento.Titulo"))</h3>
+                        </div>
+                        <div class="booking-info">
+                            <div class="booking-amount">
+                                <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.Valor.Titulo"))</h5>
+                                <h6><span>@(Model.TotalCost)€ </span><i class="feather-info"></i></h6>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <h4 class="text-danger">@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.EscolhaMetodo.Titulo"))</h4>
+                            <ul>
+                                <li><a id="payment-type-@(AMRent.Data.Enums.PaymentTypes.BankTransfer)" class="active" onclick="javascript: PaymentTypeSelect('@(AMRent.Data.Enums.PaymentTypes.BankTransfer)'); return false;"><img src="~/img/icons/payment-iban.png" alt=""></a></li>
+                                <li><a id="payment-type-@(AMRent.Data.Enums.PaymentTypes.MBReference)" onclick="javascript: PaymentTypeSelect('@(AMRent.Data.Enums.PaymentTypes.MBReference)'); return false;"><img src="~/img/icons/payment-multibanco.svg" alt=""></a></li>
+                                <li><a id="payment-type-@(AMRent.Data.Enums.PaymentTypes.MBWay)" onclick="javascript: PaymentTypeSelect('@(AMRent.Data.Enums.PaymentTypes.MBWay)'); return false;"><img src="~/img/icons/payment-mbway.svg" alt=""></a></li>
+                                <li><a id="payment-type-@(AMRent.Data.Enums.PaymentTypes.CreditCard)" onclick="javascript: PaymentTypeSelect('@(AMRent.Data.Enums.PaymentTypes.CreditCard)'); return false;"><img src="~/img/icons/payment-credit-card.svg" alt=""></a></li>
+                                @* <li><a id="payment-type-@(AMRent.Data.Enums.PaymentTypes.Paypal)" onclick="javascript: PaymentTypeSelect('@(AMRent.Data.Enums.PaymentTypes.Paypal)'); return false;"><img src="~/img/icons/payment-paypal.svg" alt=""></a></li> *@
+                            </ul>
+                            <div class="booking-form">
+                                <div>
+                                    @* <div class="booking-title">
+                                    <h5>Enter Below details</h5>
+                                    </div> *@
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group" id="payment-type-text-@(AMRent.Data.Enums.PaymentTypes.BankTransfer)">
+                                                <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.TransferenciaBancaria.Texto")) <span class="text-danger">*</span></label>
+                                            </div>
+                                            <div class="form-group" id="payment-type-text-@(AMRent.Data.Enums.PaymentTypes.MBReference)" style="display: none;">
+                                                <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.ReferenciaMultibanco.Texto")) <span class="text-danger">*</span></label>
+                                            </div>
+                                            <div class="form-group" id="payment-type-text-@(AMRent.Data.Enums.PaymentTypes.MBWay)" style="display: none;">
+                                                <label for="MbWayNumber">@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.MbWay.Texto")) <span class="text-danger">*</span></label>
+                                                <input asp-for="MbWayNumber" class="form-control">
+                                            </div>
+                                            <div class="form-group" id="payment-type-text-@(AMRent.Data.Enums.PaymentTypes.CreditCard)" style="display: none;">
+                                                <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.CartaoCredito.Texto")) <span class="text-danger">*</span></label>
+                                            </div>
+                                            @* <div class="form-group" id="payment-type-text-@(AMRent.Data.Enums.PaymentTypes.Paypal)" style="display: none;">
+                                                <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.Paypal.Texto")) <span class="text-danger">*</span></label>
+                                            </div> *@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="payment-btn">
+                                    <button class="btn btn-primary submit-review w-100" type="button" onclick="javascript:Pay();">@(TranslationProvider.GetTranslation(languageId, "Cotacao.Pagamento.Botao"))</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Booking  -->
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <script>
+        var valid = true;
+        $(function () {
+            SetActiveMenu('.menu-search');
+        });
+
+        function PaymentTypeSelect(paymentType) {
+            $('.booking-form .form-group').hide();
+            $('#payment-type-text-' + paymentType).show();
+            $('.payment-method ul li a').removeClass('active');
+            $('#payment-type-' + paymentType).addClass('active');
+            $('#@(nameof(Model.PaymentType))').val(paymentType);
+        }
+
+        function ValidatePayment() {
+            valid = true;
+            if ($('#PaymentType').val() == '@(AMRent.Data.Enums.PaymentTypes.MBWay)' && ($('#MbWayNumber').val() == '' || $('#MbWayNumber').val() == null || !validateMbWayPhoneNumber($('#MbWayNumber').val()))) {
+                $('#MbWayNumber').addClass("is-invalid");
+                valid = false;
+            }
+            return valid;
+        }
+
+        function validateMbWayPhoneNumber(phoneNumber) {
+            var regex = /^\d{9}$/;
+            return regex.test(phoneNumber);
+        }
+
+        function Pay() {
+            if (ValidatePayment())
+                $('#booking-payment-form').submit();
+        }
+    </script>
+}
+

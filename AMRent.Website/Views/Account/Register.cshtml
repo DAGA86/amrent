@@ -1,0 +1,55 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model dCore.Identity.Models.UserViewModel
+@{
+	Layout = "_CleanLayout";
+	int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+	ViewData["Title"] = $"{TranslationProvider.GetTranslation(languageId, "Registo.Titulo")}";
+}
+
+<div class="login-wrapper">
+	<div class="loginbox">
+		<div class="login-auth">
+			<div class="login-auth-wrap">
+				@* <div class="sign-group">
+					<a href="index.html" class="btn sign-up"><span><i class="fe feather-corner-down-left" aria-hidden="true"></i></span> Back To Home</a>
+				</div> *@
+				<h1>@TranslationProvider.GetTranslation(languageId, "Registo.Titulo")</h1>
+				@* <p class="account-subtitle">We'll send a confirmation code to your email.</p> *@
+				<form asp-controller="Account" asp-action="Register" method="post" class="mt-5">
+					<div class="form-group">
+						<label class="form-label" for="Username">@TranslationProvider.GetTranslation(languageId, "Registo.Email") <span class="text-danger">*</span></label>
+						<input type="email" asp-for="Username" class="form-control">
+					</div>
+					@* <div class="form-group">
+						<label class="form-label">Email <span class="text-danger">*</span></label>
+						<input type="email" class="form-control" placeholder="">
+					</div> *@
+					<div class="form-group">
+						<label class="form-label" for="Password">@TranslationProvider.GetTranslation(languageId, "Registo.Password") <span class="text-danger">*</span></label>
+						<div class="pass-group">
+							<input asp-for="Password" type="password" class="form-control pass-input" placeholder="">
+							<span class="fas fa-eye toggle-password"></span>
+						</div>
+					</div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<button type="submit" class="btn btn-outline-light w-100 btn-size mt-1">@TranslationProvider.GetTranslation(languageId, "Registo.Botao")</button>
+					@* <div class="login-or">
+						<span class="or-line"></span>
+						<span class="span-or">Or, Create an account with your email</span>
+					</div>
+					<!-- Social Login -->
+					<div class="social-login">
+						<a href="#" class="d-flex align-items-center justify-content-center form-group btn google-login w-100"><span><img src="assets/img/icons/google.svg" class="img-fluid" alt="Google"></span>Log in with Google</a>
+					</div>
+					<div class="social-login">
+						<a href="#" class="d-flex align-items-center justify-content-center form-group btn google-login w-100"><span><img src="assets/img/icons/facebook.svg" class="img-fluid" alt="Facebook"></span>Log in with Facebook</a>
+					</div>
+					<!-- /Social Login --> *@
+					<div class="text-center dont-have">@TranslationProvider.GetTranslation(languageId, "Registo.Login.Texto") <a asp-controller="Account" asp-action="Login">@TranslationProvider.GetTranslation(languageId, "Registo.Login.Link")</a></div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

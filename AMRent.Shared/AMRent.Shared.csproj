@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Templates\Html\ReservationSummary.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Html\QuotationSummary.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.13.2" />
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageReference Include="MimeKit" Version="4.10.0" />
+    <PackageReference Include="NLog" Version="5.3.3" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.12" />
+    <PackageReference Include="SSH.NET" Version="2025.0.0" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+	<PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+	<PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
+	<PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
+	<PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+	<PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\dCore\dCore.Communication\dCore.Communication.csproj" />
+    <ProjectReference Include="..\..\..\..\dCore\dCore.Helpers\dCore.Helpers.csproj" />
+    <ProjectReference Include="..\AMRent.Data\AMRent.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Libraries\DinkToPdf\libwkhtmltox.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

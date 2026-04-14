@@ -1,0 +1,62 @@
+﻿@model AMRent.BackOffice.Models.RentGuideViewModel
+
+@{
+    ViewData["Title"] = "Editar Guia de Aluguer";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active">Guia de Aluguer</li>
+}
+
+<form asp-action="Edit" enctype="multipart/form-data">
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+        {
+            int languageId = ViewBag.Languages[i].Id;
+            <div class="col-md-4">
+                <input type="hidden" name="RentGuides[@i].LanguageId" value="@languageId" />
+                <div class="card card-success card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">@ViewBag.Languages[i].Name</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="RentGuides[@i].File">Upload</label>
+                                    <input type="file" name="RentGuides[@i].File" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        }
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-rent-guide', 'menu-content');
+        });
+    </script>
+}

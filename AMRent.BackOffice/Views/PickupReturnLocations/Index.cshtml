@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Locais de Recolha e Devolução";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="PickupReturnLocations" asp-action="Index">Locais de Recolha e Devolução</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="PickupReturnLocations" asp-action="Create"><i class="fas fa-plus"></i> Novo</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var deleteUrl = '';
+            var datatable = $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/PickupReturnLocations/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Nome', targets: 0 },
+                    {
+                        title: 'Acções', targets: 1, sortable: false, searchable: false, render: function (data, type, row) {
+                            var result = '<a class="btn btn-info btn-xs btn-xs-square" href="/PickupReturnLocations/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                            if (!row.isSelectedByDefault) {
+                                result += '<a class="btn btn-secondary btn-xs btn-xs-square ml-2" href="/PickupReturnLocations/SetSelectedByDefault/' + data + '"><i class="fas fa-list-ol" data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como seleccionado por defeito"></i></a>';
+                            } else {
+                                result += '<a class="btn btn-outline-secondary btn-xs btn-xs-square ml-2" href="#" style="cursor: default;"><i class="fas fa-list-ol" data-bs-toggle="tooltip" data-bs-placement="top" title="Seleccionado por defeito"></i></a>';
+                                }
+                            if (!row.isWorkingOffice) {
+                                result += '<a class="btn btn-secondary btn-xs btn-xs-square ml-2" href="/PickupReturnLocations/SetWorkingOffice/' + data + '"><i class="fas fa-building" data-bs-toggle="tooltip" data-bs-placement="top" title="Definir como escritório principal"></i></a>';
+                            } else {
+                                result += '<a class="btn btn-outline-secondary btn-xs btn-xs-square ml-2" href="#" style="cursor: default;"><i class="fas fa-building" data-bs-toggle="tooltip" data-bs-placement="top" title="Escritório principal"></i></a>';
+                            }
+                            return result;
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'name' },
+                    { data: 'id' },
+                    { data: 'isSelectedByDefault', visible: false },
+                    { data: 'isWorkingOffice', visible: false },
+                ],
+                language: dataTablesLanguage
+            });
+
+            datatable.on('draw.dt', function () {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl)
+                })
+            });
+
+            SetActiveMenu('menu-pickup-return-locations', 'menu-renting');
+        });
+    </script>
+}

@@ -1,0 +1,110 @@
+﻿@model AMRent.Data.Models.Database.PickupReturnTemporaryTax
+
+@{
+    ViewData["Title"] = "Editar Taxa de recolha/devolução (temporal)";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="PickupReturnTemporaryTaxes" asp-action="Index">Taxas de recolha/devolução (temporal)</a></li>
+}
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <div class="row">
+        <div class="card card-danger callout callout-danger">
+            <div class="text-danger"><strong>ATENÇÃO:</strong> Ao editar as traduções de uma taxa de recolha/devolução, todas as reservas e cotações em que esta taxa de recolha/devolução esteja incluída serão afectadas pela alteração. Se o objectivo é criar uma nova taxa de recolha/devolução, deverá fazê-lo <a asp-controller="PickupReturnTimeTaxes" asp-action="Create">AQUI</a></div>
+        </div>
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="card card-danger callout callout-danger">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="StartDate">Data Início</label>
+                                <input asp-for="StartDate" type="date" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="EndDate">Data Fim</label>
+                                <input asp-for="EndDate" type="date" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="StartTime">Início</label>
+                                <input asp-for="StartTime" type="time" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="EndTime">Fim</label>
+                                <input asp-for="EndTime" type="time" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Value">Valor</label>
+                                <input asp-for="Value" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Nome</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+                        {
+                            int languageId = ViewBag.Languages[i].Id;
+                            var currentTranslation = Model.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+                            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                            <input type="hidden" name="Translations[@i].PickupReturnTemporaryTaxId" value="@(currentTranslation != null ? Model.Id : 0)" />
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Name">@ViewBag.Languages[i].Name</label>
+                                    <input name="Translations[@i].Name" class="form-control form-control-sm" value="@(currentTranslation?.Name ?? "")" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="PickupReturnTemporaryTaxes" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-pickup-return-temporary-taxes', 'menu-renting');
+        });
+    </script>
+}

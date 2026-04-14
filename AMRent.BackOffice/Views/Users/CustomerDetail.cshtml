@@ -1,0 +1,162 @@
+﻿@model AMRent.Data.Models.Database.User
+
+@{
+    ViewData["Title"] = "Detalhe de cliente";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Users" asp-action="Customers">Clientes</a></li>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-success card-outline">
+            <div class="card-header">
+                <h3 class="card-title">Geral</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group form-group-label-on-top">
+                            <label for="Name">Nome</label>
+                            <input asp-for="Name" disabled="disabled" readonly="readonly" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-group-label-on-top">
+                            <label for="EmailAddress">Email</label>
+                            <input asp-for="EmailAddress" disabled="disabled" readonly="readonly" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+</div>
+@if (Model.DataProtectionConsents.Any())
+{
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Consentimentos</h3>
+                </div>
+                <div class="card-body">
+                    @for (int i = 0; i < Model.DataProtectionConsents.Count; i++)
+                    {
+                        <div class="row">
+                            <div class="col-3 col-md-2 col-xl-1">
+                                <div class="form-group">
+                                    <input type="checkbox" asp-for="DataProtectionConsents[i].HasConsented" disabled="disabled" data-bootstrap-switch data-on-text="Sim" data-off-text="Não">
+                                </div>
+                            </div>
+                            <div class="col-9 col-md-10 col-xl-11">
+                                @Model.DataProtectionConsents[i].DataProtectionConsent.Translations.FirstOrDefault().Text
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a asp-controller="Users" asp-action="Customers" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+    </div>
+</div>
+@if (Model.Quotations.Any())
+{
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Cotações associadas</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Data de recolha</th>
+                                        <th>Acções</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var quotation in Model.Quotations.OrderBy(x => x.PickupDateTime).ThenBy(x => x.ReturnDateTime))
+                                    {
+                                        <tr>
+                                            <td>@quotation.Number</td>
+                                            <td>@quotation.PickupDateTime.ToString("dd/MM/yyyy")</td>
+                                            <td><a class="btn btn-info btn-xs btn-xs-square" href="/Quotations/Edit/@quotation.Id"><i class="fas fa-edit"></i></a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.Reservations.Any())
+{
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Reservas associadas</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Data de recolha</th>
+                                        <th>Segmento</th>
+                                        <th>Acções</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var reservation in Model.Reservations.OrderBy(x => x.PickupDateTime).ThenBy(x => x.ReturnDateTime))
+                                    {
+                                        <tr>
+                                            <td>@reservation.Number</td>
+                                            <td>@reservation.PickupDateTime.ToString("dd/MM/yyyy")</td>
+                                            <td>@reservation.CarSegment.Code</td>
+                                            <td><a class="btn btn-info btn-xs btn-xs-square" href="/Reservations/Edit/@reservation.Id"><i class="fas fa-edit"></i></a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/lib/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script>
+        $(function () {
+            SetActiveMenu('menu-customers', 'menu-renting');
+
+            $("input[data-bootstrap-switch]").each(function(){
+                $(this).bootstrapSwitch();
+            })
+        });
+    </script>
+}

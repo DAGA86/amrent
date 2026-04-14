@@ -1,0 +1,150 @@
+﻿@model AMRent.Data.Models.Database.EmailContent
+
+@{
+    ViewData["Title"] = $"Editar texto de email - {dCore.Helpers.Enum.GetDescription(Model.Type)}";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="EmailContents" asp-action="Index">Textos de email</a></li>
+}
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Type" />
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Tags</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <p><b>Exclusivas para emails relacionados com cotações e reservas</b></p>
+                    </div>
+                    <div class="row">
+                        <ul>
+                            <li>Nome do cliente: <b>[NAME]</b> (exemplo: Olá [NAME])</li>
+                            <li>Número da reserva/cotação: <b>[NUMBER]</b> - exemplo: A sua reserva [NUMBER]</li>
+                            <li>Nome do colaborador associado: <b>[EMPLOYEE_NAME]</b></li>
+                            <li>Data de validade da cotação: <b>[QUOTATION_EXPIRE_DATE]</b> - exemplo: A cotação é válida até [QUOTATION_EXPIRE_DATE]</li>
+                            <li>Detalhes de pagamento: <b>[PAYMENT_INFO]</b></li>
+                            <li>Link para pagamento: <b>[LINK_START][TEXT]Texto_visivel[URL][PAYMENT_URL][LINK_END]</b> - exemplo: Faça o pagamento [LINK_START][TEXT]AQUI[URL][PAYMENT_URL][LINK_END]</li>
+                        </ul>
+                    </div>
+                    <div class="row">
+                        <p><b>Exclusiva para email de recuperação de password</b></p>
+                    </div>
+                    <div class="row">
+                        <ul>
+                            <li>Link para recuperação de password: <b>[LINK_START][TEXT]Texto_visivel[URL][PASSWORD_RESET_URL][LINK_END]</b> - exemplo: Redefina a sua password [LINK_START][TEXT]AQUI[URL][PASSWORD_RESET_URL][LINK_END]</li>
+                        </ul>
+                    </div>
+                    <div class="row">
+                        <p><b>Exclusiva para email de activação de conta</b></p>
+                    </div>
+                    <div class="row">
+                        <ul>
+                            <li>Link para activação de conta: <b>[LINK_START][TEXT]Texto_visivel[URL][ACTIVATE_ACCOUNT_URL][LINK_END]</b> - exemplo: Active a sua conta [LINK_START][TEXT]AQUI[URL][ACTIVATE_ACCOUNT_URL][LINK_END]</li>
+                        </ul>
+                    </div>
+                    <div class="row">
+                        <p><b>Genéricas</b></p>
+                    </div>
+                    <div class="row">
+                        <ul>
+                            <li>Link: <b>[LINK_START][TEXT]Texto_visivel[URL]http://www.link_desejado.pt[LINK_END]</b> - exemplo: Veja as nossas dicas [LINK_START][TEXT]AQUI[URL]http://www.amrent.pt/Blog[LINK_END]</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <div class="col-md-12">
+        <div class="card card-success card-outline">
+            <div class="card-header">
+                <h3 class="card-title">Geral</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="SendQoutationReservationSummaryPdf">Enviar PDF com sumário de cotação/reserva</label>
+                            <input type="checkbox" asp-for="SendQuotationReservationSummaryPdf" data-bootstrap-switch data-on-text="Sim" data-off-text="Não">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <div class="col-md-12">
+        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+        {
+            int languageId = ViewBag.Languages[i].Id;
+            var currentTranslation = Model.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+            <input type="hidden" name="Translations[@i].EmailContentId" value="@(currentTranslation != null ? Model.Id : 0)" />
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewBag.Languages[i].Name</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Translations[@i].Subject">Assunto</label>
+                                <input name="Translations[@i].Subject" class="form-control form-control-sm" value="@(currentTranslation?.Subject ?? "")" />
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Translations[@i].Text">Texto</label>
+                                <textarea rows="10" name="Translations[@i].Text" class="form-control form-control-sm">@(currentTranslation?.Text ?? "")</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        }
+    </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="EmailContents" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script>
+        $(function () {
+            SetActiveMenu('menu-email-contents', 'menu-content');
+
+            $("input[data-bootstrap-switch]").each(function(){
+                $(this).bootstrapSwitch();
+                // $(this).on('switchChange.bootstrapSwitch', function(event, state) {
+                //     $(this).val(state);
+                // });
+            })
+        });
+    </script>
+}

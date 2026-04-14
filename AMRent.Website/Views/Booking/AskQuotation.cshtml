@@ -1,0 +1,275 @@
+@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using System.Globalization
+@model BookingAskQuotation
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Reserva.Titulo");
+
+    decimal segmentCost = Model.RentValue
+                          + Model.PickupValue
+                          + Model.ReturnValue;
+
+    decimal totalCost = segmentCost
+                    + Model.Insurances.FirstOrDefault().Prices.FirstOrDefault().Value
+                    + Model.Extras.Sum(x => x.Cost);
+}
+
+<section class="booking-section">
+    <form asp-action="ConfirmAskQuotation" method="post" id="booking-index-form">
+        <input type="hidden" asp-for="CampaignId" />
+        <input type="hidden" asp-for="VoucherId" />
+        <input type="hidden" asp-for="VoucherCode" />
+        <div class="container">
+            <!-- Heading title-->
+            <div class="section-heading" data-aos="fade-down">
+                <h2>@ViewData["Title"]</h2>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="summary-div">
+                    <div class="booking-details">
+                        <div class="booking-title">
+                            <h3>@(TranslationProvider.GetTranslation(languageId, "PedidoCotacao.Detalhe.Titulo"))</h3>
+                        </div>
+                        <div class="booking-info">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-6 pickup-address">
+                                    <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Recolha"))</h5>
+                                    <p>@($"{Model.PickupLocationName} {Model.CustomPickupLocationName}")</p>
+                                    <span>@Model.PickupDateTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) @(Model.PickupDateTime.ToString("HH:mm"))</span>
+                                </div>
+                                <div class="col-md-4 col-sm-6 drop-address">
+                                    <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Devolucao"))</h5>
+                                    <p>@($"{Model.ReturnLocationName} {Model.CustomReturnLocationName}")</p>
+                                    <span>@Model.ReturnDateTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) @(Model.ReturnDateTime.ToString("hh\\:mm"))</span>
+                                </div>
+                                <div class="col-md-4 col-sm-6 drop-address">
+                                    <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Segmento"))</h5>
+                                    <p>@Model.SegmentName @(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Segmento.OuSimilar"))</p>
+                                    <span>@Model.Days @(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Segmento.Dias")): @(segmentCost)€</span>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-4 col-sm-6 pickup-address">
+                                    <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Extras"))</h5>
+                                    @foreach (AMRent.Website.Models.SelectedExtra extra in Model.Extras)
+                                    {
+                                        <p>@(extra.Name): @(extra.Cost)€</p>
+                                    }
+                                </div>
+                                <div class="col-md-4 col-sm-6 drop-address">
+                                    <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Seguro"))</h5>
+                                    <p>@Model.Insurances?.FirstOrDefault()?.InsuranceLevel?.Translations?.FirstOrDefault()?.Name: @(Model.Insurances?.FirstOrDefault()?.Prices.FirstOrDefault().Value)€</p>
+                                    <span>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Seguro.Franquia")) @(Model.Insurances.FirstOrDefault().Excess)€</span>
+                                </div>
+                                @if (Model.CampaignId.HasValue || Model.VoucherId.HasValue)
+                                {
+                                    <div class="col-md-4 col-sm-6 booking-amount">
+                                        <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Total"))</h5>
+                                        <h6><span><s>@(totalCost)€</s></span></h6>
+                                        <h6><span>@Model.CampaignVoucherName : @(Model.TotalValue)€</span></h6>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4 col-sm-6 booking-amount">
+                                        <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Total"))</h5>
+                                        <h6><span>@(totalCost)€ </span></h6>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="booking-form">
+                            <div class="booking-title">
+                                <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.Titulo"))</h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.Nome")) <span class="text-danger">*</span></label>
+                                        <input asp-for="DriverName" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.DataNascimento")) <span class="text-danger">*</span></label>
+                                        <div style="position: relative;">
+                                            <input id="DriverBirthDateInput" type="text" value="@(Model.DriverBirthDate.ToString("dd-MM-yyyy"))" class="form-control datetimepicker">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.Email")) <span class="text-danger">*</span></label>
+                                        <input asp-for="DriverEmail" type="email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.PaisTelefone")) <span class="text-danger">*</span></label>
+                                        <select asp-for="DriverTelephoneCountryId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.Countries">
+                                            <option disabled selected></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.Telefone")) <span class="text-danger">*</span></label>
+                                        <input asp-for="DriverTelephone" type="tel" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="booking-title">
+                                <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosOutros.Titulo"))</h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosOutros.Comentarios"))</label>
+                                        <textarea asp-for="Comments" rows="2" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="booking-title">
+                                <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.Consentimentos.Titulo"))</h5>
+                            </div>
+                            <div class="row">
+                                @for (int i = 0; i < Model.DataProtectionConsents.Count; i++)
+                                {
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="hidden" asp-for="DataProtectionConsents[i].Id" />
+                                            <label class="custom_check">
+                                                <input type="checkbox" asp-for="DataProtectionConsents[i].HasConsent" class="rememberme">
+                                                <span class="checkmark" name="DataProtectionConsents[@i].HasConsentSpan"></span>
+                                                @(Model.DataProtectionConsents[i].Text)
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="payment-btn">
+                                <a class="btn btn-primary submit-review" onclick="javascript:Book();" href="#">@(TranslationProvider.GetTranslation(languageId, "PedidoCotacao.Detalhe.Botao"))<i class="fa-solid fa-arrow-right ms-2"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Booking  -->
+        </div>
+        <input asp-for="SegmentId" type="hidden" />
+        <input asp-for="PickupLocationId" type="hidden" />
+        <input asp-for="ReturnLocationId" type="hidden" />
+        <input asp-for="CustomPickupLocationName" type="hidden" />
+        <input asp-for="CustomReturnLocationName" type="hidden" />
+        <input asp-for="ReturnLocationId" type="hidden" />
+        <input asp-for="PickupDateTime" type="hidden" />
+        <input asp-for="ReturnDateTime" type="hidden" />
+        <input asp-for="SelectedInsuranceLevelId" type="hidden" />
+        <input asp-for="DriverBirthDate" type="hidden" />
+        <input asp-for="RentValue" type="hidden" />
+        <input asp-for="PickupValue" type="hidden" />
+        <input asp-for="ReturnValue" type="hidden" />
+        @for (int i = 0; i < Model.Extras.Count; i++)
+        {
+            <input asp-for="Extras[i].Id" type="hidden" />
+            <input asp-for="Extras[i].Quantity" type="hidden" />
+            <input asp-for="Extras[i].Cost" type="hidden" />
+            <input asp-for="Extras[i].DailyValue" type="hidden" />
+        }
+    </form>
+</section>
+
+@section Scripts {
+    <script>
+        var valid = true;
+        $(function () {
+            SetActiveMenu('.menu-search');
+            $('.select2').select2();
+
+        });
+
+        function Validate() {
+            valid = true;
+            if ($('#DriverName').val() == '' || $('#DriverName').val() == null) {
+                $('#DriverName').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#DriverName').removeClass("is-invalid");
+            }
+            if ($('#DriverBirthDateInput').val() == '' || $('#DriverBirthDateInput').val() == null) {
+                //$('#DriverBirthDateInput').addClass("is-invalid");
+                //valid = false;
+            } else {
+                var selectedDate = $('#DriverBirthDateInput').val().split("-").reverse().join("-");
+                if (!isAtLeast18YearsOld(selectedDate)) {
+                    $('#DriverBirthDateInput').addClass("is-invalid");
+                    valid = false;
+                }
+                else {
+                    $('#DriverBirthDate').val(selectedDate);
+                    $('#DriverBirthDateInput').removeClass("is-invalid");
+                }
+            }
+            if ($('#DriverEmail').val() == '' || $('#DriverEmail').val() == null || !validateEmail($('#DriverEmail').val())) {
+                $('#DriverEmail').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#DriverEmail').removeClass("is-invalid");
+            }
+            if ($('#DriverTelephoneCountryId').val() == '' || $('#DriverTelephoneCountryId').val() == null) {
+                $('[aria-labelledby="select2-DriverTelephoneCountryId-container"]').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('[aria-labelledby="select2-DriverTelephoneCountryId-container"]').removeClass("is-invalid");
+            }
+            if ($('#DriverTelephone').val() == '' || $('#DriverTelephone').val() == null || !validatePhoneNumber($('#DriverTelephone').val())) {
+                $('#DriverTelephone').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#DriverTelephone').removeClass("is-invalid");
+            }
+            @for (int i = 0; i < Model.DataProtectionConsents.Count; i++)
+            {
+                if (Model.DataProtectionConsents[i].IsRequired)
+                {
+                    @:if (!$('[name="DataProtectionConsents[@i].HasConsent"]').is(':checked')) {
+                        @:$('[name="DataProtectionConsents[@i].HasConsentSpan"]').addClass("is-invalid");
+                        @:valid = false;
+                    @:} else {
+                        @:$('[name="DataProtectionConsents[@i].HasConsentSpan"]').removeClass("is-invalid");
+                    @:}
+                }
+            }
+            return valid;
+        }
+
+        function Book() {
+            if (Validate()) {
+                $('#booking-index-form').submit();
+            }
+        }
+
+        function validateEmail(email) {
+            var regex = /^[a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})*$/;
+            return regex.test(email);
+        }
+
+        function validatePhoneNumber(phoneNumber) {
+            var regex = /^\d{4,12}$/;
+            return regex.test(phoneNumber);
+        }
+
+        function isAtLeast18YearsOld(selectedDateString) {
+            const selectedDate = new Date(selectedDateString);
+            const currentDate = new Date();
+            const date18YearsAgo = new Date(
+                currentDate.getFullYear() - 18,
+                currentDate.getMonth(),
+                currentDate.getDate()
+            );
+            return selectedDate <= date18YearsAgo;
+        }
+    </script>
+}
+

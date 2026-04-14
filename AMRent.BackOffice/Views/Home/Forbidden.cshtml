@@ -1,0 +1,21 @@
+﻿@model AMRent.BackOffice.Models.Dashboard
+@{
+    ViewData["Title"] = "";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+}
+
+<div class="text-center mb-5">
+    <img src="~/img/logo.png" alt="Logo">
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            <h4 class="alert-heading">Acesso negado</h4>
+            <p>Sem permissão para aceder a este recurso.</p>
+        </div>
+    </div>
+</div>

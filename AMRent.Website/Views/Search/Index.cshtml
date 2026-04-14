@@ -1,0 +1,668 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using AMRent.Data.Models.Database
+@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model SearchIndex
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Pesquisa.Titulo");
+}
+
+<!-- Breadscrumb Section -->
+<div class="breadcrumb-bar"></div>
+<!-- /Breadscrumb Section -->
+
+<div class="sortby-sec">
+    <div class="container">
+        <div class="sorting-div">
+            <div class="row d-flex align-items-center">
+                <div class="col-xl-12 col-lg-12 col-sm-12 col-12">
+                    <div class="product-filter-group">
+                        <div class="grid-listview">
+                            <ul>
+                                @if (Model.ViewLayout == "Grid")
+                                {
+                                    <li>
+                                        <a href="#" class="active">
+                                            <i class="feather-grid"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a onclick="javascript:ChangeView('List');">
+                                            <i class="feather-list"></i>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a onclick="javascript:ChangeView('Grid');" href="#">
+                                            <i class="feather-grid"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="active">
+                                            <i class="feather-list"></i>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Car Grid View -->
+<section class="section car-listing">
+    <div class="container">
+        <div class="row">
+            @{
+                string divClasses = Model.ViewLayout == "Grid" ? "col-xl-3" : "col-xl-3 col-lg-4 col-sm-12";
+            }
+            <div class="@divClasses col-12 theiaStickySidebar">
+                <form id="search-index-form" asp-controller="Search" asp-action="Index" method="post">
+                    <input type="hidden" name="SegmentId" id="SegmentId" />
+                    <input type="hidden" asp-for="ViewLayout" />
+                    <input type="hidden" asp-for="Anchor" />
+                    <div class="sidebar-form">
+                        <!-- Pickup and Return -->
+                        <div id="pickup-return-div">
+                            <div class="sidebar-heading">
+                                <h3>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.Recolha")</h3>
+                            </div>
+                            <div class="row">
+                                <div class="form-custom">
+                                    <select asp-for="PickupLocationId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.PickupLocations"></select>
+                                    <span><i class="feather-map-pin"></i></span>
+                                </div>
+                                <input type="hidden" asp-for="PickupDateTime" />
+                                <div class="form-custom date-widget col-sm-7">
+                                    <input id="PickupDate" value="@(Model.PickupDateTime.ToString("dd-MM-yyyy"))" type="text" class="form-control datetimepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Data")">
+                                    <span><i class="feather-calendar"></i></span>
+                                </div>
+
+                                <div class="form-custom time-widget col-sm-5">
+                                    <input id="PickupTime" value="@(Model.PickupDateTime.TimeOfDay)" type="text" class="form-control timepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Hora")">
+                                    <span><i class="feather-clock"></i></span>
+                                </div>
+                            </div>
+                            <div class="sidebar-heading">
+                                <h3>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.Devolucao")</h3>
+                            </div>
+                            <div class="row">
+                                <div class="form-custom">
+                                    <select asp-for="ReturnLocationId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.ReturnLocations"></select>
+                                    <span><i class="feather-map-pin"></i></span>
+                                </div>
+                                <input type="hidden" asp-for="ReturnDateTime" />
+                                <div class="form-custom date-widget col-sm-7">
+                                    <input id="ReturnDate" value="@(Model.ReturnDateTime.Date.ToString("dd-MM-yyyy"))" type="text" class="form-control datetimepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Data")">
+                                    <span><i class="feather-calendar"></i></span>
+                                </div>
+
+                                <div class="form-custom time-widget col-sm-5">
+                                    <input id="ReturnTime" value="@(Model.ReturnDateTime.TimeOfDay)" type="text" class="form-control timepicker" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Hora")">
+                                    <span><i class="feather-clock"></i></span>
+                                </div>
+                            </div>
+                            <div class="sidebar-heading">
+                                <h3>@Model.Days @TranslationProvider.GetTranslation(languageId, "Segmento.Detalhe.Sidebar.ValorVeiculo.Dias")</h3>
+                            </div>
+                        </div>
+                        @if (Model.PickupReturnValuesAdjusted)
+                        {
+                            <div class="accordion text-danger">
+                                <span>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.RecolhaDevolucao.AvisoDataHoraAjustada")</span>
+                            </div>
+                        }
+                        <!-- /Pickup and Return -->
+                    </div>
+                    <div class="sidebar-form mt-4">
+                        <!-- Category -->
+                        <select asp-for="SelectedCategoryIds" multiple="multiple" style="display:none;">
+                            @foreach (KeyValuePair<int, string?> carCategory in Model.CarCategories.OrderBy(x => x.Value))
+                            {
+                                <option value="@carCategory.Key">@carCategory.Value</option>
+                            }
+                        </select>
+                        @{
+                            bool showCategoryFilter = Model.SelectedCategoryIds.Any();
+                        }
+                        <div class="accordion" id="category-div">
+                            <div class="card-header-new" id="headingOne">
+                                <h6 class="filter-title">
+                                    <a href="javascript:void(0);" class="w-100 @(showCategoryFilter ? "" : "collapsed")" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="@(showCategoryFilter ? "true" : "false")" aria-controls="collapseOne">
+                                        @TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.Categoria")
+                                        <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
+                                    </a>
+                                </h6>
+                            </div>
+                            <div id="collapseOne" class="collapse @(showCategoryFilter ? "show" : "")" aria-labelledby="headingOne" data-bs-parent="#accordionExample1">
+                                <div class="card-body-chat">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="selectBox-cont">
+                                                @foreach (KeyValuePair<int, string?> carCategory in Model.CarCategories.OrderBy(x => x.Value))
+                                                {
+                                                    <label class="custom_check w-100">
+                                                        <input type="checkbox" class="categoryCheckbox" data-id="@(carCategory.Key)" @(Model.SelectedCategoryIds.Contains(carCategory.Key) ? "checked='checked'" : "")>
+                                                        <span class="checkmark"></span> @(carCategory.Value)
+                                                    </label>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Category -->
+                        <!-- Fuel -->
+                        <select asp-for="SelectedFuelIds" multiple="multiple" style="display:none;">
+                            @foreach (KeyValuePair<int, string?> carFuel in Model.CarFuels.OrderBy(x => x.Value))
+                            {
+                                <option value="@carFuel.Key">@carFuel.Value</option>
+                            }
+                        </select>
+                        @{
+                            bool showFuelFilter = Model.SelectedFuelIds.Any();
+                        }
+                        <div class="accordion" id="fuel-div">
+                            <div class="card-header-new" id="headingTwo">
+                                <h6 class="filter-title">
+                                    <a href="javascript:void(0);" class="w-100 @(showFuelFilter ? "" : "collapsed")" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="@(showFuelFilter ? "true" : "false")" aria-controls="collapseTwo">
+                                        @TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.Combustivel")
+                                        <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
+                                    </a>
+                                </h6>
+                            </div>
+                            <div id="collapseTwo" class="collapse @(showFuelFilter ? "show" : "")" aria-labelledby="headingTwo" data-bs-parent="#accordionExample2">
+                                <div class="card-body-chat">
+                                    <div class="selectBox-cont">
+                                        @foreach (KeyValuePair<int, string?> carFuel in Model.CarFuels.OrderBy(x => x.Value))
+                                        {
+                                            <label class="custom_check w-100">
+                                                <input type="checkbox" class="fuelCheckbox" data-id="@(carFuel.Key)" @(Model.SelectedFuelIds.Contains(carFuel.Key) ? "checked='checked'" : "")>
+                                                <span class="checkmark"></span> @(carFuel.Value)
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Fuel -->
+                        <!-- Gearbox -->
+                        <select asp-for="SelectedGearboxIds" multiple="multiple" style="display:none;">
+                            @foreach (KeyValuePair<int, string?> carGearbox in Model.CarGearboxes.OrderBy(x => x.Value))
+                            {
+                                <option value="@carGearbox.Key">@carGearbox.Value</option>
+                            }
+                        </select>
+                        @{
+                            bool showGearboxFilter = Model.SelectedGearboxIds.Any();
+                        }
+                        <div class="accordion" id="gearbox-div">
+                            <div class="card-header-new" id="headingThree">
+                                <h6 class="filter-title">
+                                    <a href="javascript:void(0);" class="w-100 @(showGearboxFilter ? "" : "collapsed")" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="@(showGearboxFilter ? "true" : "false")" aria-controls="collapseThree">
+                                        @TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.Transmissao")
+                                        <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
+                                    </a>
+                                </h6>
+                            </div>
+                            <div id="collapseThree" class="collapse @(showGearboxFilter ? "show" : "")" aria-labelledby="headingThree" data-bs-parent="#accordionExample3">
+                                <div class="card-body-chat">
+                                    <div class="selectBox-cont">
+                                        @foreach (KeyValuePair<int, string?> carGearbox in Model.CarGearboxes.OrderBy(x => x.Value))
+                                        {
+                                            <label class="custom_check w-100">
+                                                <input type="checkbox" class="gearboxCheckbox" data-id="@(carGearbox.Key)" @(Model.SelectedGearboxIds.Contains(carGearbox.Key) ? "checked='checked'" : "")>
+                                                <span class="checkmark"></span> @(carGearbox.Value)
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Gearbox -->
+                        <!-- Seats -->
+                        <select asp-for="SelectedSeatNumbers" multiple="multiple" style="display:none;">
+                            @foreach (int carSeat in Model.CarSeats)
+                            {
+                                <option value="@carSeat">@carSeat</option>
+                            }
+                        </select>
+                        @{
+                            bool showSeatsFilter = Model.SelectedSeatNumbers.Any();
+                        }
+                        <div class="accordion" id="seat-div">
+                            <div class="card-header-new" id="headingFour">
+                                <h6 class="filter-title">
+                                    <a href="javascript:void(0);" class="w-100 @(showSeatsFilter ? "" : "collapsed")" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="@(showSeatsFilter ? "true" : "false")" aria-controls="collapseFour">
+                                        @TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.Lugares")
+                                        <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
+                                    </a>
+                                </h6>
+                            </div>
+                            <div id="collapseFour" class="collapse @(showSeatsFilter ? "show" : "")" aria-labelledby="headingFour" data-bs-parent="#accordionExample4">
+                                <div class="card-body-chat">
+                                    <div class="selectBox-cont">
+                                        @foreach (int carSeat in Model.CarSeats.OrderBy(x => x))
+                                        {
+                                            <label class="custom_check w-100">
+                                                <input type="checkbox" class="seatCheckbox" data-id="@(carSeat)" @(Model.SelectedSeatNumbers.Contains(carSeat) ? "checked='checked'" : "")>
+                                                <span class="checkmark"></span> @(carSeat)
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Seats -->
+                        <!-- Campaigns -->
+                        @{
+                            //TODO: voltar a mostrar quando activar campanhas
+                            bool showCampaignsFilter = Model.SelectedCampaignIds.Any();
+                        }
+                        @*
+                        <select asp-for="SelectedCampaignIds" multiple="multiple" style="display:none;">
+                        @foreach (KeyValuePair<int, string?> campaign in Model.Campaigns.OrderBy(x => x.Value))
+                        {
+                        <option value="@campaign.Key">@campaign.Value</option>
+                        }
+                        </select>
+                        <div class="accordion" id="campaign-div">
+                        <div class="card-header-new" id="headingFive">
+                        <h6 class="filter-title">
+                        <a href="javascript:void(0);" class="w-100 @(showCampaignsFilter ? "" : "collapsed")" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="@(showCampaignsFilter ? "true" : "false")" aria-controls="collapseFive">
+                        @TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.Campanhas")
+                        <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
+                        </a>
+                        </h6>
+                        </div>
+                        <div id="collapseFive" class="collapse @(showCampaignsFilter ? "show" : "")" aria-labelledby="headingFive" data-bs-parent="#accordionExample5">
+                        <div class="card-body-chat">
+                        <div class="selectBox-cont">
+                        @foreach (KeyValuePair<int, string?> campaign in Model.Campaigns.OrderBy(x => x.Value))
+                        {
+                        <label class="custom_check w-100">
+                        <input type="checkbox" class="campaignCheckbox" data-id="@(campaign.Key)" @(Model.SelectedCampaignIds.Contains(campaign.Key) ? "checked='checked'" : "")>
+                        <span class="checkmark"></span> @(campaign.Value)
+                        </label>
+                        }
+                        </div>
+                        </div>
+                        </div>
+                        </div>*@
+                        <!-- /Campaigns -->
+                        <button type="button" onclick="javascript:ClearFilters();" class="d-inline-flex align-items-center justify-content-center btn w-100 btn-primary filter-btn">
+                            <span><i class="feather-filter me-2"></i></span>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.LimparFiltros")
+                        </button>
+                        @*<a href="" class="reset-filter">@TranslationProvider.GetTranslation(languageId, "Pesquisa.Filtros.LimparFiltros")</a>*@
+                    </div>
+                </form>
+            </div>
+            @if (Model.ViewLayout == "Grid")
+            {
+                <div class="col-xl-9">
+                    <div class="row">
+                        @if (Model.CarSegments.Any())
+                        {
+                            foreach (CarSegment segment in Model.CarSegments)
+                            {
+                                <!-- col -->
+                                <div class="col-lg-6 col-12">
+                                    <div class="listing-item">
+                                        <div class="listing-img">
+                                            <a href="#" onclick="javascript:Detail(@(segment.Id));">
+                                                <img src="~/img/segments/@(segment.Id)_grid.jpg" asp-append-version="true" class="img-fluid" alt="">
+                                            </a>
+                                        </div>
+                                        <div class="listing-content">
+                                            <div class="listing-features">
+                                                <h3 class="listing-title">
+                                                    <a href="#" onclick="javascript:Detail(@(segment.Id));">@(segment.Translations.First()?.Name)</a>
+                                                </h3>
+                                                <div class="list-rating">
+                                                    <span class="featured-text">@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.OuSimilar")</span>
+                                                </div>
+                                                <div class="price">
+                                                    @{
+                                                        string dailyValue = (Model.Prices[segment.Id] / Model.Days).ToString("0.00");
+                                                    }
+                                                    <span class="featured-text">@(dailyValue)€ </span>/ @TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Preco.Dia")<br />
+                                                    @TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Preco.Total"): @(Model.Prices[segment.Id])€
+                                                </div>
+                                            </div>
+                                            <div class="listing-details-group">
+                                                <ul>
+                                                    <li>
+                                                        <span><img src="~/img/icons/car-parts-01.svg" alt="Auto"></span>
+                                                        <p>@(Model.CarGearboxes[segment.CarGearboxId])</p>
+                                                    </li>
+                                                    <li>
+                                                        <span><img src="~/img/icons/car-parts-03.svg" alt="Petrol"></span>
+                                                        <p>@(Model.CarFuels[segment.CarFuelId])</p>
+                                                    </li>
+                                                    <li>
+                                                        <span><img src="~/img/icons/car-parts-06.svg" alt="Persons"></span>
+                                                        <p>@(segment.Seats)</p>
+                                                    </li>
+                                                </ul>
+                                                @if (segment.CarCategory.IsCommercial)
+                                                {
+                                                    <ul>
+                                                        <li>
+                                                            <span><img src="~/img/icons/truck_length.svg" alt="Length"></span>
+                                                            <p>@((segment.LoadingSpaceLengthInMilimeters.HasValue ? ((double)segment.LoadingSpaceLengthInMilimeters / 1000) : 0).ToString("0.00")) m</p>
+                                                        </li>
+                                                        <li>
+                                                            <span><img src="~/img/icons/truck_width.svg" alt="Width"></span>
+                                                            <p>@((segment.LoadingSpaceWidthInMilimeters.HasValue ? ((double)segment.LoadingSpaceWidthInMilimeters / 1000) : 0).ToString("0.00")) m</p>
+                                                        </li>
+                                                        <li>
+                                                            <span><img src="~/img/icons/truck_height.svg" alt="Height"></span>
+                                                            <p>@((segment.LoadingSpaceHeightInMilimeters.HasValue ? ((double)segment.LoadingSpaceHeightInMilimeters / 1000) : 0).ToString("0.00")) m</p>
+                                                        </li>
+                                                    </ul>
+                                                }
+                                                @if (!string.IsNullOrEmpty(segment.CarCategory.Translations.FirstOrDefault()?.Included))
+                                                {
+                                                    @foreach (string includedText in segment.CarCategory.Translations.FirstOrDefault()?.Included.Split("\r\n"))
+                                                    {
+                                                        <ul>
+                                                            <li>
+                                                                <span><i class="fa-regular fa-circle-check"></i></span>
+                                                                <p>@includedText</p>
+                                                            </li>
+                                                        </ul>
+                                                    }
+                                                }
+                                            </div>
+                                            <div class="listing-button">
+                                                <a href="#" onclick="javascript:Detail(@(segment.Id));" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Botao")</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /col -->
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <div class="listing-item text-danger">@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.SemResultados")</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-xl-9 col-lg-8 col-sm-12 col-12">
+                    <div class="row">
+                        @if (Model.CarSegments.Any())
+                        {
+                            @foreach (CarSegment segment in Model.CarSegments)
+                            {
+                                <div class="listview-car">
+                                    <div class="card">
+                                        <div class="blog-widget d-flex">
+                                            <div class="blog-img">
+                                                <a href="#" onclick="javascript:Detail(@(segment.Id));">
+                                                    <img src="~/img/segments/@(segment.Id)_list.jpg" asp-append-version="true" class="img-fluid" alt="blog-img">
+                                                </a>
+                                            </div>
+                                            <div class="bloglist-content w-100">
+                                                <div class="card-body">
+                                                    <div class="blog-list-head d-flex">
+                                                        <div class="blog-list-title">
+                                                            <h3><a href="#" onclick="javascript:Detail(@(segment.Id));">@(segment.Translations.First()?.Name)</a></h3>
+                                                            <h6>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.OuSimilar")</h6>
+                                                        </div>
+                                                        <div class="blog-list-rate">
+                                                            @{
+                                                                string dailyValue = (Model.Prices[segment.Id] / Model.Days).ToString("0.00");
+                                                            }
+                                                            <div class="price">
+                                                                <span class="featured-text">@(dailyValue)€ </span>/ @TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Preco.Dia")<br />
+                                                                @TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Preco.Total"): @(Model.Prices[segment.Id])€
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="listing-details-group">
+                                                        <ul>
+                                                            <li>
+                                                                <span><img src="~/img/icons/car-parts-01.svg" alt="Auto"></span>
+                                                                <p>@(Model.CarGearboxes[segment.CarGearboxId])</p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="~/img/icons/car-parts-03.svg" alt="Petrol"></span>
+                                                                <p>@(Model.CarFuels[segment.CarFuelId])</p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="~/img/icons/car-parts-06.svg" alt="Persons"></span>
+                                                                <p>@(segment.Seats)</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul>
+                                                            @if (segment.CarCategory.IsCommercial)
+                                                            {
+                                                                <li>
+                                                                    <span><img src="~/img/icons/truck_length.svg" alt="Length"></span>
+                                                                    <p>@((segment.LoadingSpaceLengthInMilimeters.HasValue ? ((double)segment.LoadingSpaceLengthInMilimeters / 1000) : 0).ToString("0.00")) m</p>
+                                                                </li>
+                                                                <li>
+                                                                    <span><img src="~/img/icons/truck_width.svg" alt="Width"></span>
+                                                                    <p>@((segment.LoadingSpaceWidthInMilimeters.HasValue ? ((double)segment.LoadingSpaceWidthInMilimeters / 1000) : 0).ToString("0.00")) m</p>
+                                                                </li>
+                                                                <li>
+                                                                    <span><img src="~/img/icons/truck_height.svg" alt="Height"></span>
+                                                                    <p>@((segment.LoadingSpaceHeightInMilimeters.HasValue ? ((double)segment.LoadingSpaceHeightInMilimeters / 1000) : 0).ToString("0.00")) m</p>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                    <div class="blog-list-head list-head-bottom d-flex">
+                                                        <div class="blog-list-title">
+                                                            <div class="title-bottom">
+                                                                <div class="address-info">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="listing-button">
+                                                            <a href="#" onclick="javascript:Detail(@(segment.Id));" type="button" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Botao")</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <div class="listing-item text-danger">@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.SemResultados")</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+@section Scripts
+{
+    <script>
+        var viewType = '@(Model.ViewLayout)';
+
+        function ChangeView(newViewType) {
+            $('#ViewLayout').val(newViewType);
+            Filter();
+        }
+
+        function ClearFilters() {
+            $(':checkbox').prop('checked', false);
+            Filter();
+        }
+
+        function Filter(anchor, clickedCheckbox) {
+            $('#search-index-form').attr('action', '/Search');
+            $('#Anchor').val(anchor);
+            if (ValidateForm()) {
+                Submit();
+            } else if (clickedCheckbox != null) {
+                $(clickedCheckbox).prop('checked', !$(clickedCheckbox).prop('checked'));
+            }
+        }
+
+        function Detail(id) {
+            $('#search-index-form').attr('action', '/Segment/Detail');
+            $('#Anchor').val('');
+            $('#SegmentId').val(id);
+            if (ValidateForm()) {
+                Submit();
+            }
+        }
+
+        function Submit() {
+            var checkedCategories = [];
+            $('.categoryCheckbox:checked').each(function () {
+                checkedCategories.push($(this).data('id'));
+            });
+            $('#SelectedCategoryIds').val(checkedCategories);
+
+            var checkedFuels = [];
+            $('.fuelCheckbox:checked').each(function () {
+                checkedFuels.push($(this).data('id'));
+            });
+            $('#SelectedFuelIds').val(checkedFuels);
+
+            var checkedGearboxes = [];
+            $('.gearboxCheckbox:checked').each(function () {
+                checkedGearboxes.push($(this).data('id'));
+            });
+            $('#SelectedGearboxIds').val(checkedGearboxes);
+
+            var checkedSeats = [];
+            $('.seatCheckbox:checked').each(function () {
+                checkedSeats.push($(this).data('id'));
+            });
+            $('#SelectedSeatNumbers').val(checkedSeats);
+
+            var checkedCampaigns = [];
+            $('.campaignCheckbox:checked').each(function () {
+                checkedCampaigns.push($(this).data('id'));
+            });
+            $('#SelectedCampaignIds').val(checkedCampaigns);
+
+            $('#search-index-form').submit();
+        }
+
+        function ValidateForm() {
+            var valid = true;
+            if ($('#PickupLocationId').val() == '' || $('#PickupLocationId').val() == null) {
+                $('[aria-labelledby="select2-PickupLocationId-container"]').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('[aria-labelledby="select2-PickupLocationId-container"]').removeClass("is-invalid");
+            }
+            if ($('#PickupDate').val() == '' || $('#PickupDate').val() == null) {
+                $('#PickupDate').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupDate').removeClass("is-invalid");
+            }
+            if ($('#PickupTime').val() == '' || $('#PickupTime').val() == null) {
+                $('#PickupTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupTime').removeClass("is-invalid");
+            }
+            if ($('#ReturnLocationId').val() == '' || $('#ReturnLocationId').val() == null) {
+                $('[aria-labelledby="select2-ReturnLocationId-container"]').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('[aria-labelledby="select2-ReturnLocationId-container"]').removeClass("is-invalid");
+            }
+            if ($('#ReturnDate').val() == '' || $('#ReturnDate').val() == null) {
+                $('#ReturnDate').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnDate').removeClass("is-invalid");
+            }
+            if ($('#ReturnTime').val() == '' || $('#ReturnTime').val() == null) {
+                $('#ReturnTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnTime').removeClass("is-invalid");
+            }
+            if (valid) {
+                $('#search-index-form #PickupDateTime').val($('#PickupDate').val().split("-").reverse().join("-") + ' ' + $('#PickupTime').val());
+                $('#search-index-form #ReturnDateTime').val($('#ReturnDate').val().split("-").reverse().join("-") + ' ' + $('#ReturnTime').val());
+                return true;
+            } else {
+                $("html, body").scrollTop($('#pickup-return-div').offset().top - 100);
+                return false;
+            }
+        }
+
+        $(function () {
+            SetActiveMenu('.menu-search');
+            var timeoutId;
+            $('.select2').select2();
+            $('.categoryCheckbox').change(function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () {
+                    Filter('category-div', this);
+                }, 1500);
+            });
+            $('.fuelCheckbox').change(function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () {
+                    Filter('fuel-div', this);
+                }, 1500);
+            });
+            $('.gearboxCheckbox').change(function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () {
+                    Filter('gearbox-div', this);
+                }, 1500);
+            });
+            $('.seatCheckbox').change(function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () {
+                    Filter('seat-div', this);
+                }, 1500);
+            });
+            $('.campaignCheckbox').change(function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () {
+                    Filter('campaign-div', this);
+                }, 1500);
+            });
+
+            $('#PickupLocationId,#ReturnLocationId').change(function () {
+                Filter('pickup-return-div', this);
+            });
+            $('#PickupDate,#ReturnDate').on('dp.change', function (e) {
+                Filter('pickup-return-div', this);
+            });
+            $('#PickupTime,#ReturnTime').on('dp.change', function (e) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function () {
+                    Filter('pickup-return-div', this);
+                }, 1500);
+            });
+        });
+    </script>
+    @if (!string.IsNullOrEmpty(Model.Anchor))
+    {
+        <script>
+            $("html, body").scrollTop($('#@(Model.Anchor)').offset().top - 100);
+        </script>
+    }
+}

@@ -1,0 +1,114 @@
+﻿@model AMRent.BackOffice.Models.Dashboard
+@{
+    ViewData["Title"] = "";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+}
+
+<div class="text-center mb-5">
+    <img src="~/img/logo.png" alt="Logo">
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-success card-outline">
+            <div class="card-header">
+                <h3 class="card-title">Reservas (por data de registo)</h3>
+            </div>
+            <div class="card-body">
+                <div class="chart">
+                    <canvas id="ReservationsByCreateDateChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-success card-outline">
+            <div class="card-header">
+                <h3 class="card-title">Reservas (por data de recolha)</h3>
+            </div>
+            <div class="card-body">
+                <div class="chart">
+                    <canvas id="ReservationsByPickupDateChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- ChartJS -->
+    <script src="~/lib/chart.js/Chart.min.js"></script>
+    <script>
+        var reservationsByCreateDateChartCanvas = $('#ReservationsByCreateDateChart');
+        var reservationsByCreateDateChart = new Chart(reservationsByCreateDateChartCanvas, {
+            type: 'line',
+            data: {
+                labels: @Json.Serialize(Model.FinishedReservationsPerMonthByCreateDate.Select(x => $"{x.Month.ToString("00")}/{x.Year}")),
+                datasets: [
+                {
+                    label: 'Concluídas',
+                    data: [@(string.Join(',', Model.FinishedReservationsPerMonthByCreateDate.Select(x => x.Count)))],
+                    backgroundColor: [
+                        'rgba(0, 255, 0, 0.1)'
+                    ],
+                    borderColor: [
+                        'rgba(0, 255, 0, 1)'
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: 'Canceladas',
+                    data: [@(string.Join(',', Model.CancelledReservationsPerMonthByCreateDate.Select(x => x.Count)))],
+                    backgroundColor: [
+                        'rgba(255, 0, 0, 0.1)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 0, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        var reservationsByPickupDateChartCanvas = $('#ReservationsByPickupDateChart');
+        var reservationsByPickupDateChart = new Chart(reservationsByPickupDateChartCanvas, {
+            type: 'line',
+            data: {
+                labels: @Json.Serialize(Model.ReservationsPerMonthByPickupDate.Select(x => $"{x.Month.ToString("00")}/{x.Year}")),
+                datasets: [
+                {
+                    label: 'Reservas (não canceladas)',
+                    data: [@(string.Join(',', Model.ReservationsPerMonthByPickupDate.Select(x => x.Count)))],
+                    backgroundColor: [
+                        'rgba(0, 255, 0, 0.1)'
+                    ],
+                    borderColor: [
+                        'rgba(0, 255, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+}

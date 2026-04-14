@@ -1,0 +1,134 @@
+﻿@model AMRent.Data.Models.Database.OfficeLocation
+
+@{
+    ViewData["Title"] = "Novo Escritório";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="OfficeLocations" asp-action="Index">Escritórios</a></li>
+}
+
+<form asp-action="Create">
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Nome</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+                        {
+                            int languageId = ViewBag.Languages[i].Id;
+                            var currentTranslation = Model?.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+                            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Name">Nome (@ViewBag.Languages[i].Name)</label>
+                                    <input name="Translations[@i].Name" class="form-control form-control-sm" value="@(currentTranslation?.Name ?? "")" />
+                                    <input type="hidden" name="Translations[@i].LanguageId" value="@languageId"/>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Address">Morada</label>
+                                <textarea asp-for="Address" rows="3" class="form-control form-control-sm"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Telephone">Telefone</label>
+                                <input asp-for="Telephone" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Email">Email</label>
+                                <input asp-for="Email" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="GoogleMapsURL">URL Google Maps</label>
+                                <input asp-for="GoogleMapsURL" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Horário</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="MondayToFridayTimetable">Seg - Sex</label>
+                                <input asp-for="MondayToFridayTimetable" class="form-control form-control-sm"></input>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="SaturdayTimetable">Sábado</label>
+                                <input asp-for="SaturdayTimetable" class="form-control form-control-sm"></input>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="SundayTimetable">Domingo</label>
+                                <input asp-for="SundayTimetable" class="form-control form-control-sm"></input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="OfficeLocations" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-office-locations', 'menu-amrent');
+        });
+    </script>
+}

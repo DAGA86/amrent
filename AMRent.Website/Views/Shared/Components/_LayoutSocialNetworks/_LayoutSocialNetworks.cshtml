@@ -1,0 +1,11 @@
+﻿@using AMRent.Data.Models.Database
+@model List<AMRent.Data.Models.Database.SocialNetwork>
+
+<ul class="nav-social">
+    @foreach (SocialNetwork socialNetwork in Model)
+    {
+        <li>
+            <a href="@(socialNetwork.Url)" target="_blank"><i class="@(socialNetwork.FontAwesomeIconCode) fi-icon"></i></a>
+        </li>
+    }
+</ul>

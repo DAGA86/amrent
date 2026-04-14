@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Campanhas";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Campaigns" asp-action="Index">Campanhas</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="Campaigns" asp-action="Create"><i class="fas fa-plus"></i> Nova</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var deleteUrl = '';
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/Campaigns/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Nome', targets: 0 },
+                    { title: 'Tipo', targets: 1 },
+                    { title: 'Valor', targets: 2 },
+                    { title: 'Extras', targets: 3, sortable: false },
+                    { title: 'Levantamento de', targets: 4 },
+                    { title: 'Devolução até', targets: 5 },
+                    {
+                        title: 'Visível', targets: 6, render: function (data, type, row) {
+                            var checked = ((data == true) ? 'checked' : '');
+                            return '<input type="checkbox" ' + checked + ' disabled />';
+                        }
+                    },
+                    {
+                        targets: 7, sortable: false, searchable: false, render: function (data, type, row) {
+                            var result = '';
+                            var marginClass = ((!row.hasReservations) ? 'ml-2' : '');
+                            if (!row.hasReservations) {
+                                result += '<a class="btn btn-info btn-xs btn-xs-square" href="/Campaigns/Edit/' + data + '"><i class="fas fa-edit"></i></a>';
+                                result += '<a class="btn btn-danger btn-xs btn-xs-square ml-2" href="/Campaigns/Delete/' + data + '"><i class="fas fa-trash-alt"></i></a>';
+                            }
+
+                            if (row.isActive) {
+                                result += '<a class="btn btn-danger btn-xs btn-xs-square ' + marginClass + '" href="/Campaigns/Deactivate/' + data + '"><i class="fas fa-eye-slash"></i></a>';
+                            }
+                            else {
+                                result += '<a class="btn btn-success btn-xs btn-xs-square ' + marginClass + '" href="/Campaigns/Activate/' + data + '"><i class="fas fa-eye"></i></a>';
+                            }
+
+                            return result;
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'name' },
+                    { data: 'discountType' },
+                    { data: 'value' },
+                    { data: 'extras' },
+                    { data: 'validFromUtc' },
+                    { data: 'validUntilUtc' },
+                    { data: 'isActive' },
+                    { data: 'id' },
+                    { data: 'hasReservations', visible: false },
+                ],
+                language: dataTablesLanguage
+            });
+
+            SetActiveMenu('menu-campaigns', 'menu-renting');
+        });
+    </script>
+}

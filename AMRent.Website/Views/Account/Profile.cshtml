@@ -1,0 +1,291 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using System.Globalization
+@model AMRent.Data.Models.Database.User
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "MinhaConta.Perfil.Titulo");
+}
+
+<section class="booking-section">
+    <form asp-action="Profile" method="post" id="profile-form">
+        <input type="hidden" asp-for="Id" />
+        <input asp-for="BirthDate" type="hidden" />
+        <input asp-for="LicenseDate" type="hidden" />
+        <input asp-for="LicenseExpireDate" type="hidden" />
+        <div class="container">
+            <!-- Heading title-->
+            <ul class="nav nav-pills booking-tab">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" style="text-align: center;">
+                        <span>&nbsp;</span>
+                        <h5>@ViewData["Title"]</h5>
+                        <span>&nbsp;</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Reservations">
+                        <span>&nbsp;</span>
+                        <h5>@(TranslationProvider.GetTranslation(languageId, "MinhaConta.Reservas.Titulo"))</h5>
+                        <span>&nbsp;</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="summary-div">
+                    <div class="booking-details">
+                        <div class="booking-title">
+                            <h3>@ViewData["Title"]</h3>
+                        </div>
+                        <div class="booking-form">
+                            <div class="booking-title">
+                                <h5>@(TranslationProvider.GetTranslation(languageId, "MinhaConta.Perfil.DadosPessoais.Titulo"))</h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.Nome")) <span class="text-danger">*</span></label>
+                                        <input asp-for="Name" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.DataNascimento"))</label>
+                                        <div style="position: relative;">
+                                            <input id="BirthDateInput" value="@(Model.BirthDate.HasValue ? Model.BirthDate.Value.ToString("dd-MM-yyyy") : "")" type="text" class="form-control datetimepicker">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.Email")) <span class="text-danger">*</span></label>
+                                        <input asp-for="EmailAddress" type="email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.PaisTelefone"))</label>
+                                        <select asp-for="TelephonePrefixCountryId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.Countries">
+                                            <option disabled selected></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.Telefone"))</label>
+                                        <input asp-for="Telephone" type="tel" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.PaisIdentificacao"))</label>
+                                        <select asp-for="IdentityCountryId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.Countries">
+                                            <option disabled selected></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.NumeroIdentificacao"))</label>
+                                        <input asp-for="IdentityNumber" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.PaisCartaConducao"))</label>
+                                        <select asp-for="LicenseCountryId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.Countries">
+                                            <option disabled selected></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.NumeroCartaConducao"))</label>
+                                        <input asp-for="LicenseNumber" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.DataEmissaoCartaConducao"))</label>
+                                        <div style="position: relative;">
+                                            <input id="LicenseDateInput" value="@(Model.LicenseDate.HasValue ? Model.LicenseDate.Value.ToString("dd-MM-yyyy") : "")" type="text" class="form-control datetimepicker">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosCondutor.DataValidadeCartaConducao"))</label>
+                                        <div style="position: relative;">
+                                            <input id="LicenseExpireDateInput" value="@(Model.LicenseExpireDate.HasValue ? Model.LicenseExpireDate.Value.ToString("dd-MM-yyyy") : "")" type="text" class="form-control datetimepicker">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="booking-title">
+                                <h5>@(TranslationProvider.GetTranslation(languageId, "MinhaConta.Perfil.DadosFaturacao.Titulo"))</h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosFaturacao.Morada"))</label>
+                                        <input asp-for="Address" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosFaturacao.CodigoPostal"))</label>
+                                        <input asp-for="PostalCode" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosFaturacao.LocalidadePostal"))</label>
+                                        <input asp-for="PostalLocation" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosFaturacao.Pais"))</label>
+                                        <select asp-for="CountryId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.Countries">
+                                            <option disabled selected></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 check-in-data">
+                                    <div class="form-group">
+                                        <label>@(TranslationProvider.GetTranslation(languageId, "Reserva.Detalhe.DadosFaturacao.NumeroContribuinte"))</label>
+                                        <input asp-for="VatNumber" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-btn">
+                                <a class="btn btn-primary submit-review" onclick="javascript:Save();" href="#">@(TranslationProvider.GetTranslation(languageId, "MinhaConta.Perfil.Botao"))<i class="fa-solid fa-arrow-right ms-2"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Booking  -->
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <script>
+        var valid = true;
+        $(function () {
+            $('.select2').select2();
+
+            $('#TelephonePrefixCountryId').on('change', function () {
+                if ($('#IdentityCountryId').val() === null) {
+                    $('#IdentityCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#LicenseCountryId').val() === null) {
+                    $('#LicenseCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#CountryId').val() === null) {
+                    $('#CountryId').val($(this).val()).trigger('change.select2');
+                }
+            });
+            $('#IdentityCountryId').on('change', function () {
+                if ($('#TelephonePrefixCountryId').val() === null) {
+                    $('#TelephonePrefixCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#LicenseCountryId').val() === null) {
+                    $('#LicenseCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#CountryId').val() === null) {
+                    $('#CountryId').val($(this).val()).trigger('change.select2');
+                }
+            });
+            $('#LicenseCountryId').on('change', function () {
+                if ($('#IdentityCountryId').val() === null) {
+                    $('#IdentityCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#TelephonePrefixCountryId').val() === null) {
+                    $('#TelephonePrefixCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#CountryId').val() === null) {
+                    $('#CountryId').val($(this).val()).trigger('change.select2');
+                }
+            });
+            $('#CountryId').on('change', function () {
+                if ($('#IdentityCountryId').val() === null) {
+                    $('#IdentityCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#TelephonePrefixCountryId').val() === null) {
+                    $('#TelephonePrefixCountryId').val($(this).val()).trigger('change.select2');
+                }
+                if ($('#LicenseCountryId').val() === null) {
+                    $('#LicenseCountryId').val($(this).val()).trigger('change.select2');
+                }
+            });            
+        });
+
+        function Save() {
+            Validate();
+            if (valid) {
+                if ($('#BirthDateInput').val() != '' && $('#BirthDateInput').val() != null) {
+                    $('#BirthDate').val($('#BirthDateInput').val().split("-").reverse().join("-"));
+                }
+                if ($('#LicenseExpireDateInput').val() != '' && $('#LicenseExpireDateInput').val() != null) {
+                    $('#LicenseExpireDate').val($('#LicenseExpireDateInput').val().split("-").reverse().join("-"));
+                }
+                if ($('#LicenseDateInput').val() != '' && $('#LicenseDateInput').val() != null) {
+                    $('#LicenseDate').val($('#LicenseDateInput').val().split("-").reverse().join("-"));
+                }
+                $('#profile-form').submit();
+            }
+        }
+
+        function Validate() {
+            valid = true;
+            if ($('#Name').val() == '' || $('#Name').val() == null) {
+                $('#Name').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#Name').removeClass("is-invalid");
+            }
+            if ($('#BirthDateInput').val() != '' && $('#BirthDateInput').val() != null) {
+                var selectedDate = $('#BirthDateInput').val().split("-").reverse().join("-");
+                if (!isAtLeast18YearsOld(selectedDate)) {
+                    $('#BirthDateInput').addClass("is-invalid");
+                    valid = false;
+                }
+                else {
+                    $('#BirthDate').val(selectedDate);
+                    $('#BirthDateInput').removeClass("is-invalid");
+                }
+            }
+            if ($('#EmailAddress').val() == '' || $('#EmailAddress').val() == null || !validateEmail($('#EmailAddress').val())) {
+                $('#EmailAddress').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#EmailAddress').removeClass("is-invalid");
+            }
+            return valid;
+        }
+
+        function validateEmail(email) {
+            var regex = /^[a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})*$/;
+            return regex.test(email);
+        }
+
+        function validatePhoneNumber(phoneNumber) {
+            var regex = /^\d{4,12}$/;
+            return regex.test(phoneNumber);
+        }
+
+        function isAtLeast18YearsOld(selectedDateString) {
+            const selectedDate = new Date(selectedDateString);
+            const currentDate = new Date();
+            const date18YearsAgo = new Date(
+                currentDate.getFullYear() - 18,
+                currentDate.getMonth(),
+                currentDate.getDate()
+            );
+            return selectedDate <= date18YearsAgo;
+        }
+    </script>
+}
+

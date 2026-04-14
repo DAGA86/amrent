@@ -1,0 +1,123 @@
+﻿@model AMRent.Data.Models.Database.Extra
+
+@{
+    ViewData["Title"] = "Novo Extra";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Extras" asp-action="Index">Extras</a></li>
+}
+
+<form asp-action="Create">
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="ExtraType">Tipo</label>
+                                <select asp-for="ExtraType" class="form-control form-control-sm" asp-items="ViewBag.ExtraTypes"></select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-check">
+                                <input asp-for="AllowMultiple" type="checkbox" class="form-check-input" />
+                                <label for="AllowMultiple">Permite vários</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        @for (int i = 0; i < ViewBag.InsuranceLevels.Count; i++)
+        {
+            <div class="col-md-4">
+                <div class="card card-success card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">Valores cobertura @(ViewBag.InsuranceLevels[i].Name)</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                            @{
+                                int insuranceLevelId = ViewBag.InsuranceLevels[i].Id;
+                                var currentPriceByInsuranceLevel = Model?.ExtraPricesByInsuranceLevel?.FirstOrDefault(x => x.InsuranceLevelId == insuranceLevelId);
+                            }
+                            <input type="hidden" name="ExtraPricesByInsuranceLevel[@i].InsuranceLevelId" value="@insuranceLevelId" />
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="ExtraPricesByInsuranceLevel[@i].Name">Valor / dia</label>
+                                    <input name="ExtraPricesByInsuranceLevel[@i].Value" class="form-control form-control-sm" value="@(currentPriceByInsuranceLevel?.Value)" />
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="ExtraPricesByInsuranceLevel[@i].MaximumValue">Valor máximo (opcional)</label>
+                                    <input name="ExtraPricesByInsuranceLevel[@i].MaximumValue" class="form-control form-control-sm" value="@(currentPriceByInsuranceLevel?.MaximumValue)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Nome</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+                        {
+                            int languageId = ViewBag.Languages[i].Id;
+                            var currentTranslation = Model?.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+                            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Name">@ViewBag.Languages[i].Name</label>
+                                    <input name="Translations[@i].Name" class="form-control form-control-sm" value="@(currentTranslation?.Name ?? "")" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="Extras" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-extras', 'menu-renting');
+        });
+    </script>
+}

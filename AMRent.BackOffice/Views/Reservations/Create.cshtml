@@ -1,0 +1,1107 @@
+﻿@using AMRent.Data.Models.Database
+@model AMRent.Data.Models.Database.Reservation
+
+@{
+    ViewData["Title"] = "Criar Reserva";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="Reservations" asp-action="Index">Reservas</a></li>
+}
+
+<form id="reservation-create-form" asp-controller="Reservations" asp-action="Create" method="post" novalidate>
+    <input type="hidden" asp-for="CampaignId" />
+    <input type="hidden" asp-for="SourceQuotationId" />
+    <input type="hidden" name="IsRefresh" id="IsRefresh" value="false" />
+    <input type="hidden" name="SendEmail" id="SendEmail" value="false" />
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="col-md-12">
+                <div class="card card-danger callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Recolha / Devolução</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="PickupLocationId">Local de recolha</label>
+                                        @if (Model.SourceQuotationId.HasValue)
+                                        {
+                                            <input type="hidden" asp-for="PickupLocationId" />
+                                            <select asp-for="PickupLocationId" class="form-control form-control-sm" disabled="disabled" asp-items="ViewBag.PickupLocations">
+                                                <option disabled selected></option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select asp-for="PickupLocationId" class="form-control form-control-sm" asp-items="ViewBag.PickupLocations">
+                                                <option disabled selected></option>
+                                            </select>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-2" style="display: none;" id="custom-pickup-location">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="CustomPickupLocationName">Local de recolha (outro)</label>
+                                        <input asp-for="CustomPickupLocationName" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="PickupDateTime">Data de recolha</label>
+                                        @if (Model.SourceQuotationId.HasValue)
+                                        {
+                                            <input type="hidden" asp-for="PickupDateTime" value="@Model.PickupDateTime.ToString("yyyy-MM-ddTHH:mm:ss")" />
+                                            <input type="datetime-local" asp-for="PickupDateTime" disabled="disabled" value="@Model.PickupDateTime.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control form-control-sm" />
+                                        }
+                                        else
+                                        {
+                                            <input type="datetime-local" asp-for="PickupDateTime" value="@Model.PickupDateTime.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control form-control-sm" />
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="ReturnLocationId">Local de devolução</label>
+                                        @if (Model.SourceQuotationId.HasValue)
+                                        {
+                                            <input type="hidden" asp-for="ReturnLocationId" />
+                                            <select asp-for="ReturnLocationId" class="form-control form-control-sm" disabled="disabled" asp-items="ViewBag.ReturnLocations">
+                                                <option disabled selected></option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select asp-for="ReturnLocationId" class="form-control form-control-sm" asp-items="ViewBag.ReturnLocations">
+                                                <option disabled selected></option>
+                                            </select>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-2" style="display: none;" id="custom-return-location">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="CustomReturnLocationName">Local de devolução (outro)</label>
+                                        <input asp-for="CustomReturnLocationName" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="ReturnDateTime">Data de devolução</label>
+                                        @if (Model.SourceQuotationId.HasValue)
+                                        {
+                                            <input type="hidden" asp-for="ReturnDateTime" value="@Model.ReturnDateTime.ToString("yyyy-MM-ddTHH:mm")" />
+                                            <input type="datetime-local" asp-for="ReturnDateTime" disabled="disabled" value="@Model.ReturnDateTime.ToString("yyyy-MM-ddTHH:mm")" class="form-control form-control-sm" />
+                                        }
+                                        else
+                                        {
+                                            <input type="datetime-local" asp-for="ReturnDateTime" value="@Model.ReturnDateTime.ToString("yyyy-MM-ddTHH:mm")" class="form-control form-control-sm" />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="TotalDays">Dias</label>
+                                        <input asp-for="TotalDays" disabled="disabled" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="FlightNumber">Número de voo</label>
+                                <input asp-for="FlightNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="CarSegmentId">Segmento</label>
+                                @if (Model.SourceQuotationId.HasValue)
+                                {
+                                    <input type="hidden" asp-for="CarSegmentId" />
+                                    <select asp-for="CarSegmentId" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.CarSegments">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="CarSegmentId" class="form-control form-control-sm" asp-items="ViewBag.CarSegments">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Combustível</label>
+                                <input type="text" disabled="disabled" class="form-control form-control-sm" value="@Model.CarSegment?.CarFuel?.Translations?.FirstOrDefault()?.Name" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Assentos</label>
+                                <input type="text" disabled="disabled" class="form-control form-control-sm" value="@Model.CarSegment?.Seats" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="InsuranceLevelId">Protecção</label>
+                                @if (Model.SourceQuotationId.HasValue)
+                                {
+                                    <input type="hidden" asp-for="InsuranceLevelId" />
+                                    <select asp-for="InsuranceLevelId" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.InsuranceLevels">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="InsuranceLevelId" class="form-control form-control-sm" asp-items="ViewBag.InsuranceLevels">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Franquia</label>
+                                <input type="hidden" asp-for="InsuranceExcess" />
+                                <input type="text" value="@(Model.InsuranceExcess)€" disabled="disabled" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Custos</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="PaymentType">Meio de pagamento</label>
+                                <select asp-for="PaymentType" class="form-control form-control-sm" asp-items="ViewBag.PaymentTypes">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="PaymentStatus">Estado de pagamento</label>
+                                <select asp-for="PaymentStatus" class="form-control form-control-sm" asp-items="ViewBag.PaymentStatus">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="HasAdvancePartialPayment">Sinal</label>
+                                <input type="checkbox" asp-for="HasAdvancePartialPayment" data-bootstrap-switch data-on-text="Sim" data-off-text="Não">
+                            </div>
+                        </div>
+                        <div class="col-md-2 AdvancePartialPayment" style="display: none;">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="AdvancePartialPaymentPaymentType">Meio de pagamento (sinal)</label>
+                                <select asp-for="AdvancePartialPaymentPaymentType" class="form-control form-control-sm" asp-items="ViewBag.PaymentTypes">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 AdvancePartialPayment" style="display: none;">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="AdvancePartialPaymentValue">Valor (sinal)</label>
+                                <input type="text" asp-for="AdvancePartialPaymentValue" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Segmento</label>
+                                <input type="hidden" asp-for="CarSegmentCost" />
+                                <input type="text" value="@(Model.CarSegmentCost)" disabled="disabled" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Recolha</label>
+                                <input type="hidden" asp-for="PickupCost" />
+                                <input type="text" value="@(Model.PickupCost)" disabled="disabled" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Devolução</label>
+                                <input type="hidden" asp-for="ReturnCost" />
+                                <input type="text" value="@(Model.ReturnCost)" disabled="disabled" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Cobertura</label>
+                                <input type="hidden" asp-for="InsuranceCost" />
+                                <input type="text" value="@(Model.InsuranceCost)" disabled="disabled" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Extras</label>
+                                <input type="text" value="@(Model.Extras.Sum(x => x.UnitValue * x.Quantity))" readonly class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Serviços</label>
+                                <input type="text" value="@(Model.Services.Sum(x => x.Value))" readonly class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Taxas</label>
+                                <input type="text" value="@(Model.PickupReturnTemporaryTaxes.Sum(x => x.UnitValue * x.Quantity))" readonly class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        @if (Model.TotalCost != Model.CarSegmentCost + Model.PickupCost + Model.ReturnCost + Model.InsuranceCost + Model.Extras.Sum(x => x.UnitValue * x.Quantity) + Model.Services.Sum(x => x.Value) + Model.PickupReturnTemporaryTaxes.Sum(x => x.UnitValue * x.Quantity))
+                        {
+                            <div class="col-md-2">
+                                <div class="form-group form-group-label-on-top">
+                                    <label>Total sem desconto</label>
+                                    <input type="text" value="@(Model.CarSegmentCost + Model.PickupCost + Model.ReturnCost + Model.InsuranceCost + Model.Extras.Sum(x => x.UnitValue * x.Quantity) + Model.Services.Sum(x => x.Value) + Model.PickupReturnTemporaryTaxes.Sum(x => x.UnitValue * x.Quantity))" readonly class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        }
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Total</label>
+                                <input type="hidden" asp-for="TotalCost" />
+                                <input type="text" value="@(Model.TotalCost)" readonly class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Total (manual)</label>
+                                <input asp-for="TotalCostOverride" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-3">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Taxas</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < Model.PickupReturnTemporaryTaxes.Count; i++)
+                        {
+                            <input type="hidden" asp-for="PickupReturnTemporaryTaxes[i].PickupReturnTemporaryTax.Translations[0].Name" />
+                            <input type="hidden" asp-for="PickupReturnTemporaryTaxes[i].PickupReturnTemporaryTax.Translations[0].PickupReturnTemporaryTaxId" />
+                            <input type="hidden" asp-for="PickupReturnTemporaryTaxes[i].PickupReturnTemporaryTax.Translations[0].LanguageId" />
+                            <input type="hidden" asp-for="PickupReturnTemporaryTaxes[i].PickupReturnTemporaryTaxId" />
+                            <input type="hidden" asp-for="PickupReturnTemporaryTaxes[i].UnitValue" />
+                            <input type="hidden" asp-for="PickupReturnTemporaryTaxes[i].Quantity" />
+                            <div class="col-md-2">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="PickupReturnTemporaryTaxes[@i].Quantity">Qtd</label>
+                                    <input value="@(Model.PickupReturnTemporaryTaxes[i].Quantity)" disabled="disabled" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group form-group-label-on-top">
+                                    <label>Valor</label>
+                                    <input value="@(Model.PickupReturnTemporaryTaxes[i].UnitValue * Model.PickupReturnTemporaryTaxes[i].Quantity)" disabled="disabled" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-label-on-top">
+                                    <label>Taxa</label>
+                                    <input value="@(Model.PickupReturnTemporaryTaxes[i].PickupReturnTemporaryTax.Translations.FirstOrDefault().Name)" disabled="disabled" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-3">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Serviços (custos)</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < Model.Services.Count; i++)
+                        {
+                            <div class="col-md-12">
+                                <input type="hidden" asp-for="Services[i].ServiceId" />
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Services[@i].Value">@Model.Services[i].Service.Translations.FirstOrDefault().Name</label>
+                                    @if (Model.SourceQuotationId.HasValue)
+                                    {
+                                        <input type="hidden" asp-for="Services[i].Value" />
+                                        <input asp-for="Services[i].Value" disabled="disabled" min="0" class="form-control form-control-sm" />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="Services[i].Value" min="0" class="form-control form-control-sm" />
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Extras (quantidades)</h3>
+                    @if (!Model.SourceQuotationId.HasValue)
+                    {
+                        <button onclick="Refresh();" class="btn btn-outline-success btn-sm float-right ml-2"><i class="fas fa-sync-alt"></i> Actualizar</button>
+                    }
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < Model.Extras.Count; i++)
+                        {
+                            <div class="col-md-6">
+                                <input type="hidden" asp-for="Extras[i].ExtraId" />
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Extras[@i].Quantity">@Model.Extras[i].Extra.Translations.FirstOrDefault().Name</label>
+                                    @if (Model.SourceQuotationId.HasValue)
+                                    {
+                                        <input type="hidden" asp-for="Extras[i].UnitValue" />
+                                        <input type="hidden" asp-for="Extras[i].Quantity" />
+                                        @if (Model.Extras[i].Extra.AllowMultiple)
+                                        {
+                                            <input type="number" asp-for="Extras[i].Quantity" disabled="disabled" min="0" class="form-control form-control-sm" />
+                                        }
+                                        else
+                                        {
+                                            <input type="number" asp-for="Extras[i].Quantity" disabled="disabled" min="0" max="1" class="form-control form-control-sm" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (Model.Extras[i].Extra.AllowMultiple)
+                                        {
+                                            <input type="number" asp-for="Extras[i].Quantity" min="0" class="form-control form-control-sm" />
+                                        }
+                                        else
+                                        {
+                                            <input type="number" asp-for="Extras[i].Quantity" min="0" max="1" class="form-control form-control-sm" />
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Outros</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Status">Estado</label>
+                                <select asp-for="Status" class="form-control form-control-sm" asp-items="ViewBag.ReservationStatus">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Source">Origem</label>
+                                @if (Model.SourceQuotationId.HasValue)
+                                {
+                                    <input type="hidden" asp-for="Source" />
+                                    <select asp-for="Source" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.ReservationSources">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="Source" class="form-control form-control-sm" asp-items="ViewBag.ReservationSources">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="VoucherId">Voucher</label>
+                                @if (Model.SourceQuotationId.HasValue)
+                                {
+                                    <input type="hidden" asp-for="VoucherId" />
+                                    <select asp-for="VoucherId" disabled="disabled" class="form-control form-control-sm VoucherId" asp-items="ViewBag.Vouchers">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="VoucherId" class="form-control form-control-sm VoucherId" asp-items="ViewBag.Vouchers">
+                                        <option disabled selected></option>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="CampaignId">Campanha</label>
+                                <input type="hidden" asp-for="CampaignId" />
+                                <select asp-for="CampaignId" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.Campaigns">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="LanguageId">Lingua para comunicações</label>
+                                @if (Model.SourceQuotationId.HasValue)
+                                {
+                                    <input type="hidden" asp-for="LanguageId" />
+                                    <select asp-for="LanguageId" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.Languages"></select>
+                                }
+                                else
+                                {
+                                    <select asp-for="LanguageId" class="form-control form-control-sm" asp-items="ViewBag.Languages"></select>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Comments">Comentários</label>
+                                <textarea rows="3" asp-for="Comments" class="form-control form-control-sm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Condutor</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverName">Nome</label>
+                                <input asp-for="DriverName" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverBirthDate">Data de nascimento</label>
+                                <input asp-for="DriverBirthDate" type="date" class="form-control form-control-sm birth-date" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverEmailAddress">Email</label>
+                                <input asp-for="DriverEmailAddress" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverTelephonePrefixCountryId">Indicativo</label>
+                                <select asp-for="DriverTelephonePrefixCountryId" class="form-control form-control-sm" asp-items="ViewBag.DriverTelehonePrefixCountries">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverTelephone">Telefone</label>
+                                <input asp-for="DriverTelephone" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverIdentificationCountryId">País de identificação</label>
+                                <select asp-for="DriverIdentityCountryId" class="form-control form-control-sm" asp-items="ViewBag.DriverIdentificationCountries">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverIdentityType">Tipo de identificação</label>
+                                <select asp-for="DriverIdentityType" class="form-control form-control-sm" asp-items="ViewBag.IdentityTypes">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverIdentificationNumber">Número de identificação</label>
+                                <input asp-for="DriverIdentityNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverVatNumber">NIF</label>
+                                <input asp-for="DriverVatNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverLicenseCountryId">País de carta de condução</label>
+                                <select asp-for="DriverLicenseCountryId" class="form-control form-control-sm" asp-items="ViewBag.DriverLicenceCountries">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverLicenseNumber">Número de carta de condução</label>
+                                <input asp-for="DriverLicenseNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverLicenseDate">Emissão de carta de condução</label>
+                                <input asp-for="DriverLicenseDate" type="date" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="DriverLicenseExpireDate">Validade de carta de condução</label>
+                                <input asp-for="DriverLicenseExpireDate" type="date" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        @if (Model.ExtraDrivers.Any())
+        {
+            @for (int i = 0; i < Model.ExtraDrivers.Count; i++)
+            {
+                <div class="col-md-12">
+                    <div class="card card-success card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">Condutor Adicional @(Model.ExtraDrivers.Count > 1 ? i + 1 : "")</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="@Model.ExtraDrivers[i].Name">Nome</label>
+                                        <input asp-for="@Model.ExtraDrivers[i].Name" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="@Model.ExtraDrivers[i].BirthDate">Data de nascimento</label>
+                                        <input asp-for="@Model.ExtraDrivers[i].BirthDate" type="date" class="form-control form-control-sm birth-date" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="@Model.ExtraDrivers[i].LicenseCountryId">País de carta de condução</label>
+                                        <select asp-for="@Model.ExtraDrivers[i].LicenseCountryId" class="form-control form-control-sm" asp-items="ViewBag.DriverLicenceCountries">
+                                            <option disabled selected></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="@Model.ExtraDrivers[i].LicenseNumber">Número de carta de condução</label>
+                                        <input asp-for="@Model.ExtraDrivers[i].LicenseNumber" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="@Model.ExtraDrivers[i].LicenseDate">Emissão de carta de condução</label>
+                                        <input asp-for="@Model.ExtraDrivers[i].LicenseDate" type="date" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group form-group-label-on-top">
+                                        <label for="@Model.ExtraDrivers[i].LicenseExpireDate">Validade de carta de condução</label>
+                                        <input asp-for="@Model.ExtraDrivers[i].LicenseExpireDate" type="date" class="form-control form-control-sm" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            }
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Faturação</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillName">Nome</label>
+                                <input asp-for="BillName" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillEmailAddress">Email</label>
+                                <input asp-for="BillEmailAddress" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillTelephonePrefixCountryId">Indicativo</label>
+                                <select asp-for="BillTelephonePrefixCountryId" class="form-control form-control-sm" asp-items="ViewBag.BillTelehonePrefixCountries">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillTelephone">Telefone</label>
+                                <input asp-for="BillTelephone" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillAddress">Morada</label>
+                                <input asp-for="BillAddress" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillPostalCode">Código postal</label>
+                                <input asp-for="BillPostalCode" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillPostalLocation">Localidade postal</label>
+                                <input asp-for="BillPostalLocation" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillCountryId">País</label>
+                                <select asp-for="BillCountryId" class="form-control form-control-sm" asp-items="ViewBag.BillCountries">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="BillVatNumber">NIF</label>
+                                <input asp-for="BillVatNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <button type="button" onclick="javascript:$('#SendEmail').val('true');SubmitForm()" class="btn btn-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <button type="button" onclick="javascript:SubmitForm()" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar (sem envio de email)</button>
+            <a asp-controller="Reservations" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <!-- Bootstrap Switch -->
+    <script src="~/lib/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script>
+        $(function () {
+            SetActiveMenu('menu-reservations', 'menu-renting');
+
+            if ($('#PickupLocationId').val() == '-1') {
+                $('#custom-pickup-location').show();
+            }
+            if ($('#ReturnLocationId').val() == '-1') {
+                $('#custom-return-location').show();
+            }
+
+            $("input[max='1']").on("input", function () {
+                if ($(this).val() > 1) {
+                    $(this).val(1);
+                }
+            });
+
+            $("input[data-bootstrap-switch]").each(function(){
+                $(this).bootstrapSwitch();
+                $(this).on('switchChange.bootstrapSwitch', function(event, state) {
+                    $(this).val(state);
+                    if (state)
+                    {
+                        $('.AdvancePartialPayment').show();
+                    }
+                    else
+                    {
+                        $('.AdvancePartialPayment').hide();
+                    }
+                });
+            })
+
+            if ($('#HasAdvancePartialPayment').is(':checked'))
+            {
+                $('.AdvancePartialPayment').show();
+            }
+
+            $('#PickupLocationId').change(function () {
+                if ($(this).val() == '-1') {
+                    $('#custom-pickup-location').show();
+                } else {
+                    $('#custom-pickup-location').hide();
+                }
+            });
+
+            $('#ReturnLocationId').change(function () {
+                if ($(this).val() == '-1') {
+                    $('#custom-return-location').show();
+                } else {
+                    $('#custom-return-location').hide();
+                }
+            });
+
+            $('#DriverName').on('blur', function () {
+                if ($('#BillName').val() === '') {
+                    $('#BillName').val($(this).val());
+                }
+            });
+            $('#BillName').on('blur', function () {
+                if ($('#DriverName').val() === '') {
+                    $('#DriverName').val($(this).val());
+                }
+            });
+            $('#DriverEmail').on('blur', function () {
+                if ($('#BillEmail').val() === '') {
+                    $('#BillEmail').val($(this).val());
+                }
+            });
+            $('#BillEmail').on('blur', function () {
+                if ($('#DriverEmail').val() === '') {
+                    $('#DriverEmail').val($(this).val());
+                }
+            });
+            $('#DriverTelephone').on('blur', function () {
+                if ($('#BillTelephone').val() === '') {
+                    $('#BillTelephone').val($(this).val());
+                }
+            });
+            $('#BillTelephone').on('blur', function () {
+                if ($('#DriverTelephone').val() === '') {
+                    $('#DriverTelephone').val($(this).val());
+                }
+            });
+            $('#DriverTelephonePrefixCountryId').on('change', function () {
+                if ($('#DriverIdentityCountryId').val() === null) {
+                    $('#DriverIdentityCountryId').val($(this).val());
+                }
+                if ($('#DriverLicenseCountryId').val() === null) {
+                    $('#DriverLicenseCountryId').val($(this).val());
+                }
+                if ($('#BillTelephoneCountryId').val() === null) {
+                    $('#BillTelephoneCountryId').val($(this).val());
+                }
+                if ($('#BillCountryId').val() === null) {
+                    $('#BillCountryId').val($(this).val());
+                }
+                if ($('#ExtraDriverLicenseCountryId').length > 0 && $('#ExtraDriverLicenseCountryId').val() === null) {
+                    $('#ExtraDriverLicenseCountryId').val($(this).val());
+                }
+            });
+            $('#DriverIdentityCountryId').on('change', function () {
+                if ($('#DriverTelephonePrefixCountryId').val() === null) {
+                    $('#DriverTelephonePrefixCountryId').val($(this).val());
+                }
+                if ($('#DriverLicenseCountryId').val() === null) {
+                    $('#DriverLicenseCountryId').val($(this).val());
+                }
+                if ($('#BillTelephoneCountryId').val() === null) {
+                    $('#BillTelephoneCountryId').val($(this).val());
+                }
+                if ($('#BillCountryId').val() === null) {
+                    $('#BillCountryId').val($(this).val());
+                }
+                if ($('#ExtraDriverLicenseCountryId').length > 0 && $('#ExtraDriverLicenseCountryId').val() === null) {
+                    $('#ExtraDriverLicenseCountryId').val($(this).val());
+                }
+            });
+            $('#DriverVatNumber').on('change', function () {
+                if ($('#BillVatNumber').val() === null) {
+                    $('#BillVatNumber').val($(this).val());
+                }
+            });
+            $('#BillVatNumber').on('change', function () {
+                if ($('#DriverVatNumber').val() === null) {
+                    $('#DriverVatNumber').val($(this).val());
+                }
+            });
+            $('#DriverLicenseCountryId').on('change', function () {
+                if ($('#DriverIdentityCountryId').val() === null) {
+                    $('#DriverIdentityCountryId').val($(this).val());
+                }
+                if ($('#DriverTelephonePrefixCountryId').val() === null) {
+                    $('#DriverTelephonePrefixCountryId').val($(this).val());
+                }
+                if ($('#BillTelephoneCountryId').val() === null) {
+                    $('#BillTelephoneCountryId').val($(this).val());
+                }
+                if ($('#BillCountryId').val() === null) {
+                    $('#BillCountryId').val($(this).val());
+                }
+                if ($('#ExtraDriverLicenseCountryId').length > 0 && $('#ExtraDriverLicenseCountryId').val() === null) {
+                    $('#ExtraDriverLicenseCountryId').val($(this).val());
+                }
+            });
+            $('#BillTelephoneCountryId').on('change', function () {
+                if ($('#DriverIdentityCountryId').val() === null) {
+                    $('#DriverIdentityCountryId').val($(this).val());
+                }
+                if ($('#DriverLicenseCountryId').val() === null) {
+                    $('#DriverLicenseCountryId').val($(this).val());
+                }
+                if ($('#DriverTelephonePrefixCountryId').val() === null) {
+                    $('#DriverTelephonePrefixCountryId').val($(this).val());
+                }
+                if ($('#BillCountryId').val() === null) {
+                    $('#BillCountryId').val($(this).val());
+                }
+                if ($('#ExtraDriverLicenseCountryId').length > 0 && $('#ExtraDriverLicenseCountryId').val() === null) {
+                    $('#ExtraDriverLicenseCountryId').val($(this).val());
+                }
+            });
+            $('#BillCountryId').on('change', function () {
+                if ($('#DriverIdentityCountryId').val() === null) {
+                    $('#DriverIdentityCountryId').val($(this).val());
+                }
+                if ($('#DriverLicenseCountryId').val() === null) {
+                    $('#DriverLicenseCountryId').val($(this).val());
+                }
+                if ($('#BillTelephoneCountryId').val() === null) {
+                    $('#BillTelephoneCountryId').val($(this).val());
+                }
+                if ($('#DriverTelephonePrefixCountryId').val() === null) {
+                    $('#DriverTelephonePrefixCountryId').val($(this).val());
+                }
+                if ($('#ExtraDriverLicenseCountryId').length > 0 && $('#ExtraDriverLicenseCountryId').val() === null) {
+                    $('#ExtraDriverLicenseCountryId').val($(this).val());
+                }
+            });
+            if ($('#ExtraDriverLicenseCountryId').length > 0) {
+                $('#ExtraDriverLicenseCountryId').on('change', function () {
+                    if ($('#DriverIdentityCountryId').val() === null) {
+                        $('#DriverIdentityCountryId').val($(this).val());
+                    }
+                    if ($('#DriverLicenseCountryId').val() === null) {
+                        $('#DriverLicenseCountryId').val($(this).val());
+                    }
+                    if ($('#BillTelephoneCountryId').val() === null) {
+                        $('#BillTelephoneCountryId').val($(this).val());
+                    }
+                    if ($('#BillCountryId').val() === null) {
+                        $('#BillCountryId').val($(this).val());
+                    }
+                    if ($('#DriverTelephonePrefixCountryId').val() === null) {
+                        $('#DriverTelephonePrefixCountryId').val($(this).val());
+                    }
+                });
+            }
+
+            $('#PickupLocationId,#PickupDateTime,#ReturnLocationId,#ReturnDateTime,#CarSegmentId,#InsuranceLevelId,#ExtraIds').change(function () {
+                Refresh();
+            });
+        });
+
+        function SubmitForm() {
+            if (ValidateRefresh() && ValidateSubmit()) {
+                $('#reservation-create-form').submit();
+            }
+            else {
+                $('#SendEmail').val('false')
+            }
+        }
+
+        function Refresh() {
+            if (ValidateRefresh()) {
+                $('#IsRefresh').val('true');
+                $('#reservation-create-form').submit();
+            }
+        }
+
+        function ValidateRefresh() {
+            var valid = true;
+            if ($('#PickupLocationId').val() == '' || $('#PickupLocationId').val() == null) {
+                $('#PickupLocationId').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupLocationId').removeClass("is-invalid");
+            }
+            if ($('#PickupDateTime').val() == '' || $('#PickupDateTime').val() == null) {
+                $('#PickupDateTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupDateTime').removeClass("is-invalid");
+            }
+            if ($('#ReturnLocationId').val() == '' || $('#ReturnLocationId').val() == null) {
+                $('#ReturnLocationId').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnLocationId').removeClass("is-invalid");
+            }
+            if ($('#ReturnDateTime').val() == '' || $('#ReturnDateTime').val() == null) {
+                $('#ReturnDateTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnDateTime').removeClass("is-invalid");
+            }
+            if ($('#CarSegmentId').val() == '' || $('#CarSegmentId').val() == null) {
+                $('#CarSegmentId').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#CarSegmentId').removeClass("is-invalid");
+            }
+            if ($('#InsuranceLevelId').val() == '' || $('#InsuranceLevelId').val() == null) {
+                $('#InsuranceLevelId').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#InsuranceLevelId').removeClass("is-invalid");
+            }
+            if ($('#PickupDateTime').val() != '' || $('#PickupDateTime').val() != null && $('#ReturnDateTime').val() != '' || $('#ReturnDateTime').val() != null) {
+                const pickupDateTime = new Date($('#PickupDateTime').val());
+                const returnDateTime = new Date($('#ReturnDateTime').val());
+                if (returnDateTime <= pickupDateTime) {
+                    $('#PickupDateTime').addClass("is-invalid");
+                    $('#ReturnDateTime').addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $('#ReturnDateTime').removeClass("is-invalid");
+                }
+            }
+
+            return valid;
+        }
+
+        function ValidateSubmit() {
+            $('input').removeClass("input-validation-error");
+            $('select').removeClass("input-validation-error");
+            var valid = true;
+            if ($('#Status').val() == '@(AMRent.Data.Enums.ReservationStatus.Confirmed)' || $('#Status').val() == '@(AMRent.Data.Enums.ReservationStatus.Finished)')
+            {
+                if ($('#DriverIdentityType').val() == '' || $('#DriverIdentityType').val() == null) {
+                    $('#DriverIdentityType').addClass("is-invalid");
+                    valid = false;
+                } else {
+                    if ($('#DriverIdentityType').val() == '@(nameof(AMRent.Data.Enums.IdentityType.CitizenCard))'
+                        && $('#DriverIdentityCountryId option:selected').text() == 'Portugal')
+                    {
+                        if ($('#DriverVatNumber').val() == '' || $('#DriverVatNumber').val() == null) {
+                            $('#DriverVatNumber').addClass("is-invalid");
+                            valid = false;
+                        } else {
+                            $('#DriverVatNumber').removeClass("is-invalid");
+                        }
+                    }
+                    else{
+                        $('#DriverVatNumber').removeClass("is-invalid");
+                    }
+                    $('#DriverIdentityType').removeClass("is-invalid");
+                }
+                if ($('#DriverIdentityNumber').val() == '' || $('#DriverIdentityNumber').val() == null) {
+                    $('#DriverIdentityNumber').addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $('#DriverIdentityNumber').removeClass("is-invalid");
+                }
+                if ($('#DriverIdentityCountryId').val() == '' || $('#DriverIdentityCountryId').val() == null) {
+                    $('#DriverIdentityCountryId').addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $('#DriverIdentityCountryId').removeClass("is-invalid");
+                }
+                $('.birth-date').each(function () {
+                    if ($(this).val() != '' || $(this).val() != null) {
+                        const today = new Date();
+                        const thresholdDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+                        const birthDateValue = new Date($(this).val());
+                        if (birthDateValue > thresholdDate) {
+                            $(this).addClass("is-invalid");
+                            valid = false;
+                        } else {
+                            $(this).removeClass("is-invalid");
+                        }
+                    }
+                });
+            }
+
+            return valid;
+        }
+    </script>
+}

@@ -1,0 +1,334 @@
+﻿@model AMRent.Data.Models.Database.ViaVerdeMovement
+
+@{
+    ViewData["Title"] = "Editar Movimento Via Verde";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="ViaVerdeMovements" asp-action="Index">Movimentos Via Verde</a></li>
+}
+
+<form asp-action="Edit" id="via-verde-edit-form">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ManufacturerCode" />
+    <input type="hidden" asp-for="EquipmentNumber" />
+    <input type="hidden" asp-for="ContractLicencePlate" />
+    <input type="hidden" asp-for="TariffClass" />
+    <input type="hidden" asp-for="ExitTollCode" />
+    <input type="hidden" asp-for="ExitTollName" />
+    <input type="hidden" asp-for="ExitDate" />
+    <input type="hidden" asp-for="EntryTollCode" />
+    <input type="hidden" asp-for="EntryTollName" />
+    <input type="hidden" asp-for="EntryDate" />
+    <input type="hidden" asp-for="TariffInCents" />
+    <input type="hidden" asp-for="TransactionCode" />
+    <input type="hidden" asp-for="VatCode" />
+    <input type="hidden" asp-for="ServiceCode" />
+    <input type="hidden" asp-for="NameOrDeliverySlipNumber" />
+    <div class="row">
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="card card-danger callout callout-danger">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Geral</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="Status">Estado</label>
+                                <select asp-for="Status" class="form-control form-control-sm" asp-items="ViewBag.ViaVerdeMovementStatus">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Código do Fabricante</label>
+                                <input disabled="disabled" asp-for="ManufacturerCode" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Número do Equipamento</label>
+                                <input disabled="disabled" asp-for="EquipmentNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Matrícula</label>
+                                <input disabled="disabled" asp-for="ContractLicencePlate" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Classe</label>
+                                <input disabled="disabled" asp-for="TariffClass" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Código de Transação</label>
+                                <input disabled="disabled" asp-for="TransactionCode" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Tarifa</label>
+                                @{
+                                    string tariff = (Model.TariffInCents / 100).ToString("0.00");
+                                }
+                                <input disabled="disabled" value="@($"{tariff}€")" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Iva</label>
+                                @{
+                                    string vatValue = Model.VatCode == "01" ? "23" : "6";
+                                }
+                                <input disabled="disabled" value="@($"{vatValue}%")" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Portagem de entrada</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Código</label>
+                                <input disabled="disabled" asp-for="EntryTollCode" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Nome</label>
+                                <input disabled="disabled" asp-for="EntryTollName" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Data</label>
+                                <input disabled="disabled" value="@(Model.EntryDate?.ToString("dd/MM/yyyy HH:mm:ss"))" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Portagem de saída</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Código</label>
+                                <input disabled="disabled" asp-for="ExitTollCode" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Nome</label>
+                                <input disabled="disabled" asp-for="ExitTollName" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Data</label>
+                                <input disabled="disabled" value="@(Model.ExitDate.ToString("dd/MM/yyyy HH:mm:ss"))" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12" id="rejected-tow-area" style="display: none;">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Dados de rejeição</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Nº guia de transporte</label>
+                                <input name="DeliverySlipNumber" id="DeliverySlipNumber" value="@Model.NameOrDeliverySlipNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-12" id="rejected-not-payed-area" style="display: none;">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Dados de rejeição</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Nome</label>
+                                <input name="Name" id="Name" value="@Model.NameOrDeliverySlipNumber" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Morada</label>
+                                <input asp-for="Address" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Localidade</label>
+                                <input asp-for="Town" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Cod postal</label>
+                                <input asp-for="PostalCode" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Localidade postal</label>
+                                <input asp-for="PostalLocation" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label>País</label>
+                                <select asp-for="CountryId" class="form-control form-control-sm" asp-items="ViewBag.Countries">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-group-label-on-top">
+                                <label id="identification-number-label">&nbsp;</label>
+                                <input asp-for="IdentificationNumber" disabled="disabled" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Ult 4 digitos cartão</label>
+                                <input asp-for="CreditCardLast4Digits" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Data de tentativa de cobrança</label>
+                                <input asp-for="CollectionAttemptedDate" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Cod de rejeição</label>
+                                <input asp-for="AcquirerResultCode" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-group-label-on-top">
+                                <label>Descrição de rejeição</label>
+                                <input asp-for="AcquirerResultDescription" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-sm-12">
+            <button type="button" onclick="javascript:Submit();" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+            <a asp-controller="ViaVerdeMovements" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('menu-via-verde-movements', 'menu-renting');
+
+            if ($('#Status').val() == '@(AMRent.Data.Enums.ViaVerdeMovementStatus.RejectedTow)') {
+                $('#rejected-tow-area').show();
+            } else if ($('#Status').val() == '@(AMRent.Data.Enums.ViaVerdeMovementStatus.RejectedNotPayed)') {
+                $('#rejected-not-payed-area').show();
+            }
+
+            if ($('#CountryId option:selected').text() != '') {
+                $('#IdentificationNumber').prop('disabled', false);
+                if ($('#CountryId option:selected').text() == 'Portugal') {
+                    $('#identification-number-label').text('Numero de contribuinte');
+                } else {
+                    $('#identification-number-label').text('Numero de carta de condução');
+                }
+            }
+
+            $('#Status').on('change', function() {
+                if ($(this).val() == '@(AMRent.Data.Enums.ViaVerdeMovementStatus.RejectedTow)') {
+                    $('#rejected-tow-area').show();
+                    $('#rejected-not-payed-area').hide();
+                } else if ($(this).val() == '@(AMRent.Data.Enums.ViaVerdeMovementStatus.RejectedNotPayed)') {
+                    $('#rejected-not-payed-area').show();
+                    $('#rejected-tow-area').hide();
+                } else {
+                    $('#rejected-tow-area').hide();
+                    $('#rejected-not-payed-area').hide();
+                }
+            });
+
+            $('#CountryId').on('change', function() {
+                $('#IdentificationNumber').val('');
+                $('#IdentificationNumber').prop('disabled', false);
+                if ($('#CountryId option:selected').text() == 'Portugal') {
+                    $('#identification-number-label').text('Numero de contribuinte');
+                } else {
+                    $('#identification-number-label').text('Numero de carta de condução');
+                }
+            });
+        });
+
+        function Submit() {
+            if ($('#Status').val() == '@(AMRent.Data.Enums.ViaVerdeMovementStatus.RejectedTow)') {
+                $('#NameOrDeliverySlipNumber').val($('#DeliverySlipNumber').val());
+            } else if ($('#Status').val() == '@(AMRent.Data.Enums.ViaVerdeMovementStatus.RejectedNotPayed)') {
+                $('#NameOrDeliverySlipNumber').val($('#Name').val());
+            }
+            $('#via-verde-edit-form').submit();
+        }
+    </script>
+}

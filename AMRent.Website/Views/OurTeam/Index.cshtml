@@ -1,0 +1,60 @@
+﻿@model List<AMRent.Data.Models.Database.TeamMember>
+@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Footer.NossaEquipa");
+}
+
+
+<!-- Meet our Team -->
+<section class="our-team-section">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@ViewData["Title"]</h2>
+        </div>
+        <div class="row">
+            @foreach (var teamMember in Model)
+            {
+                <div class="col-lg-3 col-md-4 col-12" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="100">
+                    <div class="our-team">
+                        <div class="profile-pic">
+                            <img src="/img/team/@(teamMember.Id).jpg" alt="Our Team">
+                        </div>
+                        <div class="team-prof">
+                            <h3 class="team-post-title">@(teamMember.Name)</h3>
+                            <span class="team-designation">@(teamMember.Translations.FirstOrDefault().Job)</span>
+                            @if (!string.IsNullOrEmpty(teamMember.Telephone))
+                            {
+                                <div class="col-12 team-contact mb-2">
+                                    <a href="tel:@(teamMember.Telephone)">
+                                        <i class="fa-solid fa-phone fa-icon-circle"></i>
+                                        <span>@(teamMember.Telephone)</span>
+                                    </a>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(teamMember.Email))
+                            {
+                                <div class="col-12 team-contact mb-2">
+                                    <a href="mailto:@(teamMember.Email)">
+                                        <i class="fa-solid fa-envelope fa-icon-circle"></i>
+                                        <span>@(teamMember.Email)</span>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- /Meet our Team -->
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('#menu-home');
+        });
+    </script>
+}

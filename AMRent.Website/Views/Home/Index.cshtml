@@ -1,0 +1,435 @@
+﻿@model HomeIndex
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using AMRent.Data.Models.Database
+@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Menu.Home");
+    // Todo: verificar ALT das imagens
+}
+
+<!-- Banner -->
+
+<div id="home-carousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        @for (int i = 0; i < Model.HomeBanners.Count; i++)
+        {
+            <div class="carousel-item @(i == 0 ? "active" : "")">
+                <a href="@Model.HomeBanners[i].Translations?.FirstOrDefault()?.URL">
+                    <img src="~/img/homebanners/@($"{Model.HomeBanners[i].Id}_{ViewBag.SelectedLanguageObject.Code}_{ViewBag.SelectedLanguageObject.CountryCode}").jpg" class="d-block w-100" />
+                </a>
+            </div>
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#home-carousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#home-carousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<!-- /Banner -->
+<!-- Search -->
+<div class="section-search">
+    <div class="container">
+        <div class="search-box-banner">
+            <form id="home-search-form" asp-controller="Search" asp-action="Index" method="post">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 m-0">
+                        <div class="row">
+                            <div class="col-12 p-0">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Home.Pesquisa.Recolha")</label>
+                                </div>
+                            </div>
+                            <div class="col-xxl-6 col-lg-12 p-0">
+                                <div class="form-group">
+                                    <div class="group-img">
+                                        <select asp-for="PickupLocationId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.Locations"></select>
+                                        <span><i class="feather-map-pin"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-sm-7 p-0">
+                                <div class="form-group date-widget">
+                                    <div class="group-img">
+                                        <input type="hidden" asp-for="PickupDateTime" id="PickupDateTime" name="PickupDateTime" />
+                                        <input id="PickupDate" type="text" class="form-control datetimepicker" value="@Model.PickupDateTime.ToString("dd-MM-yyyy")" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Data")">
+                                        <span><i class="feather-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-sm-5 p-0">
+                                <div class="form-group time-widget">
+                                    <div class="group-img">
+                                        <input id="PickupTime" name="PickupTime" type="text" class="form-control timepicker" value="@Model.PickupDateTime.TimeOfDay" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Hora")">
+                                        <span><i class="feather-clock"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12 m-0 mt-sm-2 mt-md-0">
+                        <div class="row">
+                            <div class="col-12 mt-xxl-0 p-0">
+                                <div class="form-group">
+                                    <label>@TranslationProvider.GetTranslation(languageId, "Home.Pesquisa.Devolucao")</label>
+                                </div>
+                            </div>
+                            <div class="col-xxl-6 col-lg-12 p-0">
+                                <div class="form-group">
+                                    <div class="group-img">
+                                        <select asp-for="ReturnLocationId" class="select2 form-control" style="width: 100%;" asp-items="ViewBag.Locations"></select>
+                                        <span><i class="feather-map-pin"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-sm-7 p-0">
+                                <div class="form-group date-widget">
+                                    <div class="group-img">
+                                        <input type="hidden" asp-for="ReturnDateTime" />
+                                        <input id="ReturnDate" type="text" class="form-control datetimepicker" value="@Model.ReturnDateTime.ToString(" dd-MM-yyyy")" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Data")">
+                                        <span><i class="feather-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-sm-5 p-0">
+                                <div class="form-group time-widget">
+                                    <div class="group-img">
+                                        <input id="ReturnTime" name="ReturnTime" type="text" class="form-control timepicker" value="@Model.ReturnDateTime.TimeOfDay" placeholder="@TranslationProvider.GetTranslation(languageId, "Placeholder.Hora")">
+                                        <span><i class="feather-clock"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-3 mt-3 p-0" style="margin-left: auto;">
+                        <div class="form-group form-group-search-button">
+                            <div class="search-btn">
+                                <button class="btn search-button" type="button" onclick="javascript:Search();"> <i class="fa fa-search" aria-hidden="true"></i>@TranslationProvider.GetTranslation(languageId, "Home.Pesquisa.Botao")</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- /Search -->
+@if (Model.Campaigns.Any())
+{
+    <div class="modal fade" id="campaignModal" tabindex="-1" aria-labelledby="campaignModalLabel">
+        <div class="modal-dialog modal-dialog-centered" style="width:80%; max-width: 80%; height:80%; max-height: 80%;">
+            <img style="width: 100%; max-height: 100%" src="/img/campaigns/@($"{Model.Campaigns.First().Id}_popup_{ViewBag.SelectedLanguageObject.Code}_{ViewBag.SelectedLanguageObject.CountryCode}").jpg" />
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          var myModal = new bootstrap.Modal(document.getElementById('campaignModal'));
+          myModal.show();
+        });
+    </script>
+    <!-- Pricing Plan -->
+    <section class="section pricing-section pricing-page pricing-section-bottom campaing-section">
+        <div class="container">
+            <!-- Heading title-->
+            <div class="section-heading" data-aos="fade-down">
+                <h2>@TranslationProvider.GetTranslation(languageId, "Home.Campanhas.Titulo")</h2>
+                <p>@TranslationProvider.GetTranslation(languageId, "Home.Campanhas.Subtitulo")</p>
+            </div>
+            <!-- /Heading title -->
+            <div class="row">
+                @foreach (Campaign campaign in Model.Campaigns)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12" data-aos="fade-down">
+                        <a asp-controller="Search" asp-action="Index" asp-route-filteredCampaignIds="@campaign.Id">
+                            <div class="col-12 campaign-card" style="background-image: url('/img/campaigns/@($"{campaign.Id}_{ViewBag.SelectedLanguageObject.Code}_{ViewBag.SelectedLanguageObject.CountryCode}").jpg');"></div>
+                        </a>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </section>
+    <!-- /Pricing Plan -->
+}
+
+<!-- services -->
+@*<section class="section services">
+    <div class="service-right">
+        <img src="~/img/bg/service-right.svg" class="img-fluid" alt="services right">
+    </div>
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@TranslationProvider.GetTranslation(languageId, "Home.Processo.Titulo")</h2>
+            <p>@TranslationProvider.GetTranslation(languageId, "Home.Processo.Subtitulo")</p>
+        </div>
+        <!-- /Heading title -->
+        <div class="services-work">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-12" data-aos="fade-down">
+                    <div class="services-group">
+                        <div class="services-icon border-secondary">
+                            <i class="@(Model.Processes[0].FontAwesomeIconCode)"></i>
+                        </div>
+                        <div class="services-content">
+                            <h3>1. @(Model.Processes[0].Translations?.FirstOrDefault()?.Title)</h3>
+                            <p>@(Model.Processes[0].Translations?.FirstOrDefault()?.Text)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-12" data-aos="fade-down">
+                    <div class="services-group">
+                        <div class="services-icon border-secondary">
+                            <i class="@(Model.Processes[1].FontAwesomeIconCode)"></i>
+                        </div>
+                        <div class="services-content">
+                            <h3>2. @(Model.Processes[1].Translations?.FirstOrDefault()?.Title)</h3>
+                            <p>@(Model.Processes[1].Translations?.FirstOrDefault()?.Text)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-12" data-aos="fade-down">
+                    <div class="services-group">
+                        <div class="services-icon border-secondary">
+                            <i class="@(Model.Processes[2].FontAwesomeIconCode)"></i>
+                        </div>
+                        <div class="services-content">
+                            <h3>3. @(Model.Processes[2].Translations?.FirstOrDefault()?.Title)</h3>
+                            <p>@(Model.Processes[2].Translations?.FirstOrDefault()?.Text)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- View More -->
+        <div class="view-all text-center" data-aos="fade-down">
+            <a asp-controller="Contact" asp-action="Index" class="btn btn-view d-inline-flex align-items-center">@TranslationProvider.GetTranslation(languageId, "Home.Processo.Botao") <span><i class="feather-arrow-right ms-2"></i></span></a>
+        </div>
+        <!-- View More -->
+    </div>
+</section>*@
+<!-- /services -->
+@*<!-- Facts By The Numbers -->
+<section class="section facts-number">
+    <div class="facts-left">
+    </div>
+    <div class="facts-right">
+    </div>
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2 class="title text-white">@TranslationProvider.GetTranslation(languageId, "Home.Factos.Titulo")</h2>
+            <p class="description text-white">@TranslationProvider.GetTranslation(languageId, "Home.Factos.Subtitulo")</p>
+        </div>
+        <!-- /Heading title -->
+        <div class="counter-group">
+            <div class="row">
+                @foreach (Fact fact in Model.Facts)
+                {
+                    <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down">
+                        <div class="count-group flex-fill">
+                            <div class="customer-count d-flex align-items-center">
+                                <div class="count-img">
+                                    <i class="@(fact.FontAwesomeIconCode)"></i>
+                                </div>
+                                <div class="count-content">
+                                    <h4><span class="counterUp">@(fact.Number)</span></h4>
+                                    <p>@(fact.Translations?.FirstOrDefault()?.Title)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /Facts By The Numbers -->*@
+<!-- Rental deals -->
+<section class="section popular-services">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@TranslationProvider.GetTranslation(languageId, "Home.MaisAlugados.Titulo")</h2>
+            <p>@TranslationProvider.GetTranslation(languageId, "Home.MaisAlugados.Subtitulo")</p>
+        </div>
+        <!-- /Heading title -->
+        <div class="row">
+            <div class="popular-slider-group">
+                <div class="owl-carousel rental-deal-slider owl-theme">
+                    @foreach (CarSegment carSegment in Model.MostRented)
+                    {
+                        <!-- owl carousel item -->
+                        <div class="rental-car-item">
+                            <div class="listing-item mb-0">
+                                <div class="listing-img">
+                                    <a asp-controller="Segment" asp-action="Detail" asp-route-segmentId="@carSegment.Id">
+                                        <img src="~/img/segments/@(carSegment.Id)_grid.jpg" asp-append-version="true" class="img-fluid" alt="@(carSegment.Translations?.FirstOrDefault()?.Name)">
+                                    </a>
+                                </div>
+                                <div class="listing-content">
+                                    <div class="listing-features">
+                                        <div class="fav-item-rental">
+                                            <span class="featured-text">@(carSegment.Prices?.FirstOrDefault()?.Value) € / @TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Preco.Dia")</span>
+                                        </div>
+                                        <h3 class="listing-title">
+                                            <a asp-controller="Segment" asp-action="Detail" asp-route-segmentId="@carSegment.Id">@(carSegment.Translations?.FirstOrDefault()?.Name)</a>
+                                        </h3>
+                                    </div>
+                                    <div class="listing-button">
+                                        <a asp-controller="Segment" asp-action="Detail" asp-route-segmentId="@carSegment.Id" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Botao")</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /owl carousel item -->
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- View More -->
+        <div class="view-all text-center" data-aos="fade-down">
+            <a asp-controller="Search" asp-action="Index" class="btn btn-view d-inline-flex align-items-center">@TranslationProvider.GetTranslation(languageId, "Home.MaisAlugados.Botao") <span><i class="feather-arrow-right ms-2"></i></span></a>
+        </div>
+        <!-- View More -->
+    </div>
+</section>
+<!-- /Rental deals -->
+<!-- Why Choose Us -->
+<section class="section why-choose popular-explore">
+    @* <div class="choose-left">
+        <img src="~/img/bg/choose-left.png" class="img-fluid" alt="Why Choose Us">
+    </div> *@
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@TranslationProvider.GetTranslation(languageId, "Home.RazoesParaAlugarConnosco.Titulo")</h2>
+            <p>@TranslationProvider.GetTranslation(languageId, "Home.RazoesParaAlugarConnosco.Subtitulo")</p>
+        </div>
+        <!-- /Heading title -->
+        <div class="why-choose-group">
+            <div class="row">
+                @foreach (ReasonToChooseUs reasonToChooseUs in Model.ReasonsToChooseUs)
+                {
+                    <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down">
+                        <div class="card flex-fill">
+                            <div class="card-body">
+                                <div class="choose-img choose-primary">
+                                    <i class="@(reasonToChooseUs.FontAwesomeIconCode)"></i>
+                                </div>
+                                <div class="choose-content">
+                                    <h4>@(reasonToChooseUs.Translations?.FirstOrDefault()?.Title)</h4>
+                                    <p>@(reasonToChooseUs.Translations?.FirstOrDefault()?.Text)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /Why Choose Us -->
+<!-- About us Testimonials -->
+<section class="section about-testimonial testimonials-section">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2 class="title">@TranslationProvider.GetTranslation(languageId, "Home.Testemunhos.Titulo")</h2>
+            <p>@TranslationProvider.GetTranslation(languageId, "Home.Testemunhos.Subtitulo")</p>
+        </div>
+        <!-- /Heading title -->
+        <div class="owl-carousel about-testimonials testimonial-group mb-0 owl-theme">
+            @foreach (Testimonial testimonial in Model.Testimonials)
+            {
+                <!-- Carousel Item -->
+                <div class="testimonial-item d-flex">
+                    <div class="card flex-fill">
+                        <div class="card-body">
+                            <div class="quotes-head">
+                                <i class="fa-solid fa-quote-left"></i>
+                            </div>
+                            <div class="review-box">
+                                <div class="review-details">
+                                    <h6>@(testimonial.AuthorName)</h6>
+                                    <div class="list-rating">
+                                        <div class="list-rating-star">
+                                            @for (int i = 0; i < testimonial.Score; i++)
+                                            {
+                                                <i class="fas fa-star filled"></i>
+                                            }
+                                        </div>
+                                        <p><span>(@(testimonial.Score).0)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>@(testimonial.Translations?.FirstOrDefault()?.Text)</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Carousel Item  -->
+            }
+        </div>
+    </div>
+</section>
+<!-- About us Testimonials -->
+@section Scripts {
+    <script>
+        function Search() {
+            var valid = true;
+            if ($('#PickupLocationId').val() == '' || $('#PickupLocationId').val() == null) {
+                $('[aria-labelledby="select2-PickupLocationId-container"]').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('[aria-labelledby="select2-PickupLocationId-container"]').removeClass("is-invalid");
+            }
+            if ($('#PickupDate').val() == '' || $('#PickupDate').val() == null) {
+                $('#PickupDate').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupDate').removeClass("is-invalid");
+            }
+            if ($('#PickupTime').val() == '' || $('#PickupTime').val() == null) {
+                $('#PickupTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#PickupTime').removeClass("is-invalid");
+            }
+            if ($('#ReturnLocationId').val() == '' || $('#ReturnLocationId').val() == null) {
+                $('[aria-labelledby="select2-ReturnLocationId-container"]').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('[aria-labelledby="select2-ReturnLocationId-container"]').removeClass("is-invalid");
+            }
+            if ($('#ReturnDate').val() == '' || $('#ReturnDate').val() == null) {
+                $('#ReturnDate').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnDateInput').removeClass("is-invalid");
+            }
+            if ($('#ReturnTime').val() == '' || $('#ReturnTime').val() == null) {
+                $('#ReturnTime').addClass("is-invalid");
+                valid = false;
+            } else {
+                $('#ReturnTime').removeClass("is-invalid");
+            }
+
+            if (valid) {
+                $('#PickupDateTime').val($('#PickupDate').val().split("-").reverse().join("-") + ' ' + $('#PickupTime').val())
+                $('#ReturnDateTime').val($('#ReturnDate').val().split("-").reverse().join("-") + ' ' + $('#ReturnTime').val());
+                $('#home-search-form').submit();
+            }
+        }
+        $(function () {
+            SetActiveMenu('#menu-home');
+            $('.select2').select2();
+        });
+
+    </script>
+}

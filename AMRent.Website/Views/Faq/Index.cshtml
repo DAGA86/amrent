@@ -1,0 +1,45 @@
+﻿@model List<AMRent.Data.Models.Database.QuestionAndAnswer>
+@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Footer.PerguntasERespostas");
+}
+
+<!-- FAQ  -->
+<section class="section faq-section">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@TranslationProvider.GetTranslation(languageId, "PerguntasERespostas.Titulo")</h2>
+            <p>@TranslationProvider.GetTranslation(languageId, "PerguntasERespostas.Subtitulo")</p>
+        </div>
+        <!-- /Heading title -->
+        <div class="faq-info">
+            @{
+                int counter = 1;
+                foreach (var questionAndAnswer in Model)
+                {
+                    <div class="faq-card bg-white" data-aos="fade-down">
+                        <h4 class="faq-title">
+                            <a class="collapsed" data-bs-toggle="collapse" href="#faq@(counter)" aria-expanded="false">@(questionAndAnswer.Translations?.FirstOrDefault()?.Question)</a>
+                        </h4>
+                        <div id="faq@(counter)" class="card-collapse collapse">
+                            <p>@(Html.Raw(questionAndAnswer.Translations?.FirstOrDefault()?.Answer.Replace("\n", "<br>")))</p>
+                        </div>
+                    </div>
+                    counter++;
+                }
+            }
+        </div>
+    </div>
+</section>
+<!-- /FAQ -->
+
+@section Scripts {
+    <script>
+		$(function () {
+			SetActiveMenu('#menu-home');
+		});
+	</script>
+}

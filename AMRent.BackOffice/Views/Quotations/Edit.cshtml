@@ -1,0 +1,807 @@
+@using AMRent.Data.Models.Database
+@model AMRent.Data.Models.Database.Quotation
+
+@{
+	ViewData["Title"] = "Editar Cotação";
+}
+
+@section Breadcrumb {
+	<li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+	<li class="breadcrumb-item active"><a asp-controller="Reservations" asp-action="Index">Reservas</a></li>
+}
+
+<form id="quotation-edit-form" asp-controller="Quotations" asp-action="Edit" method="post" novalidate>
+	<input type="hidden" asp-for="Id" />
+	<input type="hidden" asp-for="Number" />
+	<input type="hidden" asp-for="CreateDate" value="@Model.CreateDate.ToString("yyyy-MM-ddTHH:mm:ss")" />
+	<input type="hidden" asp-for="Source" />
+	<input type="hidden" name="RemoveIndex" id="RemoveIndex" value="0" />
+	<input type="hidden" name="AddItem" id="AddItem" value="false" />
+	<input type="hidden" name="IsRefresh" id="IsRefresh" value="false" />
+	<input type="hidden" name="SendEmail" id="SendEmail" value="false" />
+	<div class="row">
+		@if (ViewData.ModelState.ErrorCount > 0)
+		{
+			<div class="col-md-12">
+				<div class="card card-danger callout callout-danger">
+					<div asp-validation-summary="All" class="text-danger"></div>
+				</div>
+			</div>
+		}
+		<div class="col-md-12">
+			<div class="card card-success card-outline">
+				<div class="card-header">
+					<h3 class="card-title">Geral</h3>
+				</div>
+				<!-- /.card-header -->
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="UserId">Colaborador</label>
+								<select asp-for="UserId" class="form-control form-control-sm" asp-items="ViewBag.Users">
+									<option disabled selected></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="ExpireDateTime">Válida até</label>
+								<input type="datetime-local" asp-for="ExpireDateTime" value="@Model.ExpireDateTime.ToString("yyyy-MM-ddTHH:mm:ss")" class="form-control form-control-sm" />
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label>Número</label>
+								<input type="text" value="@Model.Number" disabled="disabled" class="form-control form-control-sm" />
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="CreateDate">Registo</label>
+								<input type="text" asp-for="CreateDate" disabled="disabled" class="form-control form-control-sm" />
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="Source">Origem</label>
+								<select asp-for="Source" disabled="disabled" class="form-control form-control-sm" asp-items="ViewBag.QuotationSources">
+									<option disabled selected></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="Status">Estado</label>
+								<select asp-for="Status" class="form-control form-control-sm" asp-items="ViewBag.QuotationStatus">
+									<option disabled selected></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-12" id="RejectionReasonDiv" style="display: none;">
+							<div class="form-group form-group-label-on-top">
+								<label for="RejectionReason">Motivo de rejeição</label>
+								<textarea rows="3" asp-for="RejectionReason" class="form-control form-control-sm"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.card-body -->
+			</div>
+			<!-- /.card -->
+		</div>
+		<div class="col-md-12">
+			<div class="card card-success card-outline">
+				<div class="card-header">
+					<h3 class="card-title">Recolha / Entrega</h3>
+				</div>
+				<!-- /.card-header -->
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-11">
+							<div class="row">
+								<div class="col-md-3">
+									<div class="form-group form-group-label-on-top">
+										<label for="PickupLocationId">Local de recolha</label>
+										<select asp-for="PickupLocationId" class="form-control form-control-sm" asp-items="ViewBag.PickupLocations">
+											<option disabled selected></option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group form-group-label-on-top">
+										<input type="hidden" asp-for="PickupDateTime" value="@Model.PickupDateTime.ToString("yyyy-MM-ddTHH:mm:ss")" />
+										<label for="PickupDateTime">Data de recolha</label>
+										<input type="date" disabled="disabled" asp-for="PickupDateTime" value="@Model.PickupDateTime.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+									</div>
+								</div>
+								<div class="col-md-1">
+									<div class="form-group form-group-label-on-top">
+										<label>Hora</label>
+										<input type="time" id="PickupTime" name="PickupTime" class="form-control form-control-sm" value="@Model.PickupDateTime.ToString("HH:mm")" />
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group form-group-label-on-top">
+										<label for="ReturnLocationId">Local de devolução</label>
+										<select asp-for="ReturnLocationId" class="form-control form-control-sm" asp-items="ViewBag.ReturnLocations">
+											<option disabled selected></option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group form-group-label-on-top">
+										<input type="hidden" asp-for="ReturnDateTime" value="@Model.ReturnDateTime.ToString("yyyy-MM-ddTHH:mm:ss")" />
+										<label for="ReturnDateTime">Data de devolução</label>
+										<input type="date" disabled="disabled" asp-for="ReturnDateTime" value="@Model.ReturnDateTime.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+									</div>
+								</div>
+								<div class="col-md-1">
+									<div class="form-group form-group-label-on-top">
+										<label>Hora</label>
+										<input type="time" id="ReturnTime" name="ReturnTime" class="form-control form-control-sm" value="@Model.ReturnDateTime.ToString("HH:mm")" />
+									</div>
+								</div>
+								<div class="col-md-3" style="display: none;" id="custom-pickup-location">
+									<div class="form-group form-group-label-on-top">
+										<label for="CustomPickupLocationName">Local de recolha (outro)</label>
+										<input asp-for="CustomPickupLocationName" class="form-control form-control-sm" />
+									</div>
+								</div>
+								<div class="col-md-3" style="display: none;" id="custom-return-location">
+									<div class="form-group form-group-label-on-top">
+										<label for="CustomReturnLocationName">Local de devolução (outro)</label>
+										<input asp-for="CustomReturnLocationName" class="form-control form-control-sm" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group form-group-label-on-top">
+										<label for="TotalDays">Dias</label>
+										<input asp-for="TotalDays" disabled="disabled" class="form-control form-control-sm" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.card-body -->
+			</div>
+			<!-- /.card -->
+		</div>
+		<div class="col-md-12">
+			<div class="card card-success card-outline">
+				<div class="card-header">
+					<h3 class="card-title">Outros</h3>
+				</div>
+				<!-- /.card-header -->
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="LanguageId">Lingua para comunicações</label>
+								<select asp-for="LanguageId" class="form-control form-control-sm" asp-items="ViewBag.Languages"></select>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group form-group-label-on-top">
+								<label for="Comments">Comentários</label>
+								<textarea rows="3" asp-for="Comments" class="form-control form-control-sm"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.card-body -->
+			</div>
+			<!-- /.card -->
+		</div>
+		<div class="col-md-12">
+			<div class="card card-success card-outline">
+				<div class="card-header">
+					<h3 class="card-title">Cliente</h3>
+				</div>
+				<!-- /.card-header -->
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="CustomerName">Nome</label>
+								<input asp-for="CustomerName" class="form-control form-control-sm" />
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group form-group-label-on-top">
+								<label for="CustomerEmailAddress">Email</label>
+								<input asp-for="CustomerEmailAddress" class="form-control form-control-sm" />
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group form-group-label-on-top">
+								<label for="CustomerTelephonePrefixCountryId">Indicativo</label>
+								<select asp-for="CustomerTelephonePrefixCountryId" class="form-control form-control-sm" asp-items="ViewBag.CustomerTelephonePrefixCountries">
+									<option disabled selected></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group form-group-label-on-top">
+								<label for="CustomerTelephone">Telefone</label>
+								<input asp-for="CustomerTelephone" class="form-control form-control-sm" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.card-body -->
+			</div>
+			<!-- /.card -->
+		</div>
+		<div id="quotation-items">
+			@for (int i = 0; i < Model.QuotationItems.Count; i++)
+			{
+				<input type="hidden" asp-for="QuotationItems[i].Id" />
+				<input type="hidden" asp-for="QuotationItems[i].CampaignId" />
+				<input type="hidden" asp-for="QuotationItems[i].CarSegmentCost" />
+				<input type="hidden" asp-for="QuotationItems[i].PickupCost" />
+				<input type="hidden" asp-for="QuotationItems[i].ReturnCost" />
+				<input type="hidden" asp-for="QuotationItems[i].InsuranceCost" />
+				<input type="hidden" asp-for="QuotationItems[i].InsuranceExcess" />
+				<input type="hidden" asp-for="QuotationItems[i].TotalCost" />
+				<div class="col-md-12" id="quotation-item-@i" data-index="@i">
+					<div class="card card-success">
+						<div class="card-header bg-success">
+							<h3 class="card-title" style="font-size: 1.5rem">Item @(i + 1)</h3>
+							<button type="button" class="btn btn-outline-danger btn-sm float-right" onclick="javascript:RemoveQuotationItem(@i)">Remover</button>
+						</div>
+						<!-- /.card-header -->
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="card card-success card-outline">
+										<div class="card-header">
+											<h3 class="card-title">Geral</h3>
+										</div>
+										<!-- /.card-header -->
+										<div class="card-body">
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label for="QuotationItems[@i].CarSegmentId">Segmento</label>
+														@if (Model.QuotationItems[i].Id != 0)
+														{
+															<input type="hidden" asp-for="QuotationItems[i].CarSegmentId" />
+															<select asp-for="QuotationItems[i].CarSegmentId" disabled="disabled" class="form-control form-control-sm CarSegmentId" data-index="@i" asp-items="ViewBag.CarSegments[i]">
+																<option disabled selected></option>
+															</select>
+														}
+														else
+														{
+															<select asp-for="QuotationItems[i].CarSegmentId" class="form-control form-control-sm CarSegmentId" data-index="@i" asp-items="ViewBag.CarSegments[i]">
+																<option disabled selected></option>
+															</select>
+														}
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Combustível</label>
+														<input type="text" disabled="disabled" class="form-control form-control-sm" value="@Model.QuotationItems[i].CarSegment?.CarFuel?.Translations?.FirstOrDefault()?.Name" />
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Assentos</label>
+														<input type="text" disabled="disabled" class="form-control form-control-sm" value="@Model.QuotationItems[i].CarSegment?.Seats" />
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- /.card-body -->
+									</div>
+									<!-- /.card -->
+								</div>
+								<div class="col-md-6">
+									<div class="card card-success card-outline">
+										<div class="card-header">
+											<h3 class="card-title">Opções</h3>
+										</div>
+										<!-- /.card-header -->
+										<div class="card-body">
+											<div class="row">
+												<div class="col-md-3">
+													<div class="form-group form-group-label-on-top">
+														<label for="QuotationItems[@i].InsuranceLevelId">Protecção</label>
+														<select asp-for="QuotationItems[i].InsuranceLevelId" class="form-control form-control-sm InsuranceLevelId" data-index="@i" asp-items="ViewBag.InsuranceLevels[i]">
+															<option disabled selected></option>
+														</select>
+													</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group form-group-label-on-top">
+														<label>Franquia</label>
+														<input type="text" value="@(Model.QuotationItems[i].InsuranceExcess)€" disabled="disabled" class="form-control form-control-sm" />
+													</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group form-group-label-on-top">
+														<label for="QuotationItems[@i].VoucherId">Voucher</label>
+														@if (Model.QuotationItems[i].Id != 0)
+														{
+															<input type="hidden" asp-for="QuotationItems[i].VoucherId" />
+															<select asp-for="QuotationItems[i].VoucherId" class="form-control form-control-sm VoucherId" disabled="disabled" asp-items="ViewBag.Vouchers[i]">
+																<option selected></option>
+															</select>
+														}
+														else
+														{
+															<select asp-for="QuotationItems[i].VoucherId" class="form-control form-control-sm VoucherId" asp-items="ViewBag.Vouchers[i]">
+																<option selected></option>
+															</select>
+														}
+													</div>
+												</div>
+												<div class="col-md-3">
+													<div class="form-group form-group-label-on-top">
+														<label>Campanha</label>
+														<input type="text" value="@(ViewBag.Campaigns[i])" disabled="disabled" class="form-control form-control-sm" />
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- /.card-body -->
+									</div>
+									<!-- /.card -->
+								</div>
+								<div class="col-md-3">
+									<div class="card card-success card-outline">
+										<div class="card-header">
+											<h3 class="card-title">Serviços (custos em €)</h3>
+											<button type="button" class="btn btn-outline-success btn-sm float-right ml-2 refresh-button"><i class="fas fa-sync-alt"></i> Actualizar</button>
+										</div>
+										<!-- /.card-header -->
+										<div class="card-body">
+											<div class="row">
+												@for (int j = 0; j < Model.QuotationItems[i].Services.Count; j++)
+												{
+													<div class="col-md-12">
+														<input type="hidden" asp-for="QuotationItems[i].Services[j].QuotationItemId" />
+														<input type="hidden" asp-for="QuotationItems[i].Services[j].ServiceId" />
+														<div class="form-group form-group-label-on-top">
+															<label for="Services[@j].Value">@Model.QuotationItems[i].Services[j].Service.Translations.FirstOrDefault().Name</label>
+															<input asp-for="QuotationItems[i].Services[j].Value" min="0" class="form-control form-control-sm" />
+														</div>
+													</div>
+												}
+											</div>
+										</div>
+										<!-- /.card-body -->
+									</div>
+									<!-- /.card -->
+								</div>
+								<div class="col-md-5">
+									<div class="card card-success card-outline">
+										<div class="card-header">
+											<h3 class="card-title">Extras (quantidades)</h3>
+											<button type="button" class="btn btn-outline-success btn-sm float-right ml-2 refresh-button"><i class="fas fa-sync-alt"></i> Actualizar</button>
+										</div>
+										<!-- /.card-header -->
+										<div class="card-body">
+											<div class="row">
+												@for (int j = 0; j < Model.QuotationItems[i].Extras.Count; j++)
+												{
+													<div class="col-md-4">
+														<input type="hidden" asp-for="QuotationItems[i].Extras[j].ExtraId" />
+														<input type="hidden" asp-for="QuotationItems[i].Extras[j].QuotationItemId" />
+														<input type="hidden" asp-for="QuotationItems[i].Extras[j].UnitValue" />
+														<div class="form-group form-group-label-on-top">
+															<label for="Extras[@j].Quantity">@Model.QuotationItems[i].Extras[j].Extra.Translations.FirstOrDefault().Name</label>
+															@if (Model.QuotationItems[i].Extras[j].Extra.AllowMultiple)
+															{
+																<input type="number" asp-for="QuotationItems[i].Extras[j].Quantity" min="0" class="form-control form-control-sm" />
+															}
+															else
+															{
+																<input type="number" asp-for="QuotationItems[i].Extras[j].Quantity" min="0" max="1" class="form-control form-control-sm" />
+															}
+														</div>
+													</div>
+												}
+											</div>
+										</div>
+										<!-- /.card-body -->
+									</div>
+									<!-- /.card -->
+								</div>
+								<div class="col-md-4">
+									<div class="card card-success card-outline">
+										<div class="card-header">
+											<h3 class="card-title">Custos (€)</h3>
+										</div>
+										<!-- /.card-header -->
+										<div class="card-body">
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Segmento</label>
+														<input type="text" value="@(Model.QuotationItems[i].CarSegmentCost)" disabled="disabled" class="form-control form-control-sm" />
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Recolha</label>
+														<input type="text" value="@(Model.QuotationItems[i].PickupCost)" disabled="disabled" class="form-control form-control-sm" />
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Devolução</label>
+														<input type="text" value="@(Model.QuotationItems[i].ReturnCost)" disabled="disabled" class="form-control form-control-sm" />
+													</div>
+												</div>
+												@if (Model.QuotationItems[i].PickupReturnTemporaryTaxes.Any())
+												{
+													<div class="col-12">
+														<hr class="m-0" />
+													</div>
+												}
+												@for (int j = 0; j < Model.QuotationItems[i].PickupReturnTemporaryTaxes?.Count; j++)
+												{
+													<input type="hidden" asp-for="QuotationItems[i].PickupReturnTemporaryTaxes[j].PickupReturnTemporaryTaxId" />
+													<input type="hidden" asp-for="QuotationItems[i].PickupReturnTemporaryTaxes[j].QuotationItemId" />
+													<input type="hidden" asp-for="QuotationItems[i].PickupReturnTemporaryTaxes[j].UnitValue" />
+													<input type="hidden" asp-for="QuotationItems[i].PickupReturnTemporaryTaxes[j].Quantity" />
+													<div class="col-md-2">
+														<div class="form-group form-group-label-on-top">
+															<label>Qt</label>
+															<input type="text" value="@(Model.QuotationItems[i].PickupReturnTemporaryTaxes[j].Quantity)" disabled="disabled" class="form-control form-control-sm" />
+														</div>
+													</div>
+													<div class="col-md-3">
+														<div class="form-group form-group-label-on-top">
+															<label>Valor</label>
+															<input type="text" value="@(Model.QuotationItems[i].PickupReturnTemporaryTaxes[j].UnitValue)" disabled="disabled" class="form-control form-control-sm" />
+														</div>
+													</div>
+													<div class="col-md-7">
+														<div class="form-group form-group-label-on-top">
+															<label>Taxa</label>
+															<input type="text" value="@(Model.QuotationItems[i].PickupReturnTemporaryTaxes[j].PickupReturnTemporaryTax.Translations.FirstOrDefault()?.Name)" disabled="disabled" class="form-control form-control-sm" />
+														</div>
+													</div>
+												}
+												@if (Model.QuotationItems[i].PickupReturnTemporaryTaxes.Any())
+												{
+													<div class="col-12">
+														<hr class="m-0" />
+													</div>
+												}
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Cobertura</label>
+														<input type="text" value="@(Model.QuotationItems[i].InsuranceCost)" disabled="disabled" class="form-control form-control-sm" />
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Extras</label>
+														<input type="text" value="@(Model.QuotationItems[i].Extras.Sum(x => x.UnitValue * x.Quantity))" readonly class="form-control form-control-sm" />
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Serviços</label>
+														<input type="text" value="@(Model.QuotationItems[i].Services.Sum(x => x.Value))" readonly class="form-control form-control-sm" />
+													</div>
+												</div>
+												@if (Model.QuotationItems[i].TotalCost != Model.QuotationItems[i].CarSegmentCost + Model.QuotationItems[i].PickupCost + Model.QuotationItems[i].ReturnCost + Model.QuotationItems[i].InsuranceCost + Model.QuotationItems[i].Extras.Sum(x => x.UnitValue * x.Quantity) + Model.QuotationItems[i].PickupReturnTemporaryTaxes.Sum(x => x.UnitValue * x.Quantity) + Model.QuotationItems[i].Services.Sum(x => x.Value))
+												{
+													<div class="col-md-4">
+														<div class="form-group form-group-label-on-top">
+															<label>Total sem desconto</label>
+															<input type="text" value="@(Model.QuotationItems[i].CarSegmentCost + Model.QuotationItems[i].PickupCost + Model.QuotationItems[i].ReturnCost + Model.QuotationItems[i].InsuranceCost + Model.QuotationItems[i].Extras.Sum(x => x.UnitValue * x.Quantity) + Model.QuotationItems[i].PickupReturnTemporaryTaxes.Sum(x => x.UnitValue * x.Quantity) + Model.QuotationItems[i].Services.Sum(x => x.Value))" readonly class="form-control form-control-sm" />
+														</div>
+													</div>
+												}
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Total</label>
+														<input type="text" value="@(Model.QuotationItems[i].TotalCost)" readonly class="form-control form-control-sm" />
+													</div>
+												</div>
+												<div class="col-md-4">
+													<div class="form-group form-group-label-on-top">
+														<label>Total (manual)</label>
+														<input asp-for="QuotationItems[i].TotalCostOverride" class="form-control form-control-sm" />
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- /.card-body -->
+									</div>
+									<!-- /.card -->
+								</div>
+							</div>
+						</div>
+						@if (Model.QuotationItems[i].Id > 0)
+						{
+							<div class="card-footer">
+								<a asp-controller="Reservations" asp-action="CreateFromQuotation" asp-route-quotationId="@Model.Id" asp-route-quotationItemId="@Model.QuotationItems[i].Id" class="btn btn-outline-success btn-sm float-right">Criar Reserva</a>
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+	<div class="row mb-2">
+		<div class="col-md-12">
+			<button type="button" id="addQuotationItem" class="btn btn-outline-secondary btn-sm float-right ml-2">Adicionar item</button>
+		</div>
+	</div>
+	<div class="row mb-2">
+		<div class="col-md-12">
+			<button type="button" onclick="javascript:$('#SendEmail').val('true');SubmitForm();" class="btn btn-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar</button>
+			<button type="button" onclick="javascript:SubmitForm()" class="btn btn-outline-success btn-sm float-right ml-2"><i class="far fa-save"></i> Gravar (sem envio de email)</button>
+			<a asp-controller="Quotations" asp-action="Index" class="btn btn-outline-info btn-sm float-right ml-2"><i class="fas fa-undo-alt"></i> Voltar</a>
+		</div>
+	</div>
+	<div class="row mb-2">
+		@if (Model.Changes.Any())
+		{
+			<div class="col-md-12">
+				<div class="card card-success card-outline">
+					<div class="card-header">
+						<h3 class="card-title">Histórico</h3>
+					</div>
+					<!-- /.card-header -->
+					<div class="card-body">
+						<div class="row">
+							<div class="col-md-12">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th>Campo</th>
+											<th>Valor Anterior</th>
+											<th>Valor Novo</th>
+											<th>Data</th>
+											<th>Utilizador</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach (var changeItem in Model.Changes.OrderByDescending(x => x.ChangeDateTime).ThenBy(x => x.FieldName))
+										{
+											<tr>
+												<td>@changeItem.FieldName</td>
+												<td>@changeItem.OldValue</td>
+												<td>@changeItem.NewValue</td>
+												<td>@changeItem.ChangeDateTime</td>
+												<td>@changeItem.User.Username</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</form>
+
+@section Scripts {
+	<script>
+		$(function () {
+			$('.select2').select2();
+				SetActiveMenu('menu-quotations', 'menu-renting');
+
+				if ($('#PickupLocationId').val() == '-1') {
+					$('#custom-pickup-location').show();
+				}
+				if ($('#ReturnLocationId').val() == '-1') {
+					$('#custom-return-location').show();
+				}
+
+			$("input[max='1']").on("input", function () {
+				if ($(this).val() > 1) {
+					$(this).val(1);
+				}
+			});
+
+			if ($('#Status').val() == '@(AMRent.Data.Enums.QuotationStatus.Cancelled)')
+			{
+				$('#RejectionReasonDiv').show();
+			}
+			$('#Status').change(function() {
+				if ($(this).val() == '@(AMRent.Data.Enums.QuotationStatus.Cancelled)')
+				{
+					$('#RejectionReasonDiv').show();
+				}
+				else
+				{
+					$('#RejectionReasonDiv').hide();
+				}
+			});
+
+			$("#addQuotationItem").click(function () {
+				if (ValidateMain() && ValidateRefresh()) {
+					$('#AddItem').val('true');
+					$('#IsRefresh').val('true');
+					$('#quotation-edit-form').submit();
+				}
+			});
+
+            $('#PickupLocationId').change(function () {
+                if ($(this).val() == '-1') {
+                    $('#custom-pickup-location').show();
+                } else {
+                    $('#custom-pickup-location').hide();
+                }
+            });
+
+            $('#ReturnLocationId').change(function () {
+                if ($(this).val() == '-1') {
+                    $('#custom-return-location').show();
+                } else {
+                    $('#custom-return-location').hide();
+                }
+            });
+
+			$('#PickupLocationId,#PickupDateTime,#ReturnLocationId,#ReturnDateTime,.CarSegmentId,.InsuranceLevelId,.VoucherId').change(function () {
+				if (ValidateMain() && ValidateRefresh()) {
+					$('#IsRefresh').val('true');
+					$('#quotation-edit-form').submit();
+				}
+			});
+
+			$('#ExpireDateTime').change(function () {
+				ValidateMain();
+				ValidateRefresh();
+			});
+
+			$('.refresh-button').click(function () {
+				if (ValidateMain() && ValidateRefresh()) {
+					$('#IsRefresh').val('true');
+					$('#quotation-edit-form').submit();
+				}
+			});
+		});
+
+		function SubmitForm() {
+			if (ValidateMain() && ValidateRefresh()) {
+				$('#IsRefresh').val('false');
+				$('#quotation-edit-form').submit();
+			}
+			else {
+				$('#SendEmail').val('false')
+			}
+		}
+
+		function RemoveQuotationItem(index) {
+			if (ValidateMain() && ValidateRemove(index)) {
+				$("#RemoveIndex").val(index);
+				$('#IsRefresh').val('true');
+				$('#quotation-edit-form').submit();
+			}
+		}
+
+		function ValidateMain() {
+			var valid = true;
+			if ($('#PickupLocationId').val() == '' || $('#PickupLocationId').val() == null) {
+				$('#PickupLocationId').addClass("is-invalid");
+				valid = false;
+			} else {
+				$('#PickupLocationId').removeClass("is-invalid");
+			}
+			if ($('#PickupDateTime').val() == '' || $('#PickupDateTime').val() == null) {
+				$('#PickupDateTime').addClass("is-invalid");
+				valid = false;
+			} else {
+				$('#PickupDateTime').removeClass("is-invalid");
+			}
+			if ($('#ReturnLocationId').val() == '' || $('#ReturnLocationId').val() == null) {
+				$('#ReturnLocationId').addClass("is-invalid");
+				valid = false;
+			} else {
+				$('#ReturnLocationId').removeClass("is-invalid");
+			}
+			if ($('#ReturnDateTime').val() == '' || $('#ReturnDateTime').val() == null) {
+				$('#ReturnDateTime').addClass("is-invalid");
+				valid = false;
+			} else {
+				$('#ReturnDateTime').removeClass("is-invalid");
+			}
+			if ($('#ExpireDateTime').val() == '' || $('#ExpireDateTime').val() == null) {
+				$('#ExpireDateTime').addClass("is-invalid");
+				valid = false;
+			} else {
+				$('#ExpireDateTime').removeClass("is-invalid");
+			}
+			if ($('#Status').val() != '@(AMRent.Data.Enums.QuotationStatus.Cancelled.ToString())' && $('#Status').val() != '@(AMRent.Data.Enums.QuotationStatus.Finished.ToString())')
+			{
+				if ($('#PickupDateTime').val() != '' || $('#PickupDateTime').val() != null && $('#ReturnDateTime').val() != '' || $('#ReturnDateTime').val() != null) {
+					const pickupDateTime = new Date($('#PickupDateTime').val());
+					const returnDateTime = new Date($('#ReturnDateTime').val());
+					if (returnDateTime <= pickupDateTime) {
+						$('#PickupDateTime').addClass("is-invalid");
+						$('#ReturnDateTime').addClass("is-invalid");
+						valid = false;
+					} else {
+						$('#PickupDateTime').removeClass("is-invalid");
+						$('#ReturnDateTime').removeClass("is-invalid");
+					}
+				}
+				if ($('#PickupDateTime').val() != '' || $('#PickupDateTime').val() != null && $('#ExpireDateTime').val() != '' || $('#ExpireDateTime').val() != null) {
+					const pickupDateTime = new Date($('#PickupDateTime').val());
+					const expireDateTime = new Date($('#ExpireDateTime').val());
+					if (expireDateTime >= pickupDateTime) {
+						$('#ExpireDateTime').addClass("is-invalid");
+						valid = false;
+					} else {
+						$('#ExpireDateTime').removeClass("is-invalid");
+					}
+				}
+			}
+			else
+			{
+				$('#PickupDateTime').removeClass("is-invalid");
+				$('#ReturnDateTime').removeClass("is-invalid");
+				$('#ExpireDateTime').removeClass("is-invalid");
+			}
+
+			return valid;
+		}
+
+		function ValidateRefresh() {
+			var valid = true;
+			$('.CarSegmentId').each(function () {
+				if ($(this).val() == '' || $(this).val() == null) {
+					$(this).addClass("is-invalid");
+					valid = false;
+				} else {
+					$(this).removeClass("is-invalid");
+				}
+			});
+			$('.InsuranceLevelId').each(function () {
+				if ($(this).val() == '' || $(this).val() == null) {
+					$(this).addClass("is-invalid");
+					valid = false;
+				} else {
+					$(this).removeClass("is-invalid");
+				}
+			});
+
+			return valid;
+		}
+
+		function ValidateRemove(removedIndex) {
+			var valid = true;
+			$('.CarSegmentId').each(function () {
+				if ($(this).attr('data-index') != removedIndex) {
+					if ($(this).val() == '' || $(this).val() == null) {
+						$(this).addClass("is-invalid");
+						valid = false;
+					} else {
+						$(this).removeClass("is-invalid");
+					}
+				}
+			});
+			$('.InsuranceLevelId').each(function () {
+				if ($(this).attr('data-index') != removedIndex) {
+					if ($(this).val() == '' || $(this).val() == null) {
+						$(this).addClass("is-invalid");
+						valid = false;
+					} else {
+						$(this).removeClass("is-invalid");
+					}
+				}
+			});
+
+			return valid;
+		}
+	</script>
+}

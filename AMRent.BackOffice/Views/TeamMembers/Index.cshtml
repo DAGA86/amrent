@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Membros da Equipa";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li class="breadcrumb-item active"><a asp-controller="TeamMembers" asp-action="Index">Membros da Equipa</a></li>
+}
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <a class="btn btn-outline-success btn-sm float-right ml-2" asp-controller="TeamMembers" asp-action="Create"><i class="fas fa-plus"></i> Novo</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-success card-outline">
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var deleteUrl = '';
+            $('#datatable').DataTable({
+                lengthMenu: [50, 100, 250, 500],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/TeamMembers/Get',
+                    method: 'Post'
+                },
+                columnDefs: [
+                    { title: 'Ordem', targets: 0 },
+                    { title: 'Nome', targets: 1 },
+                    { title: 'Profissão', targets: 2 },
+                    {
+                        targets: 3, sortable: false, searchable: false, render: function (data, type, row) {
+                            var result = '<a class="btn btn-info btn-xs btn-xs-square" href="/TeamMembers/Edit/' + row.id + '"><i class="fas fa-edit"></i></a>' +
+                                '<a class="btn btn-danger btn-xs btn-xs-square ml-2" href="/TeamMembers/Delete/' + data + '" onclick="javascript: return ConfirmDelete(this);"><i class="fas fa-trash-alt"></i></a>';
+                            if (!row.isLowestSortNumber){
+                                result += '<a class="btn btn-secondary btn-xs btn-xs-square ml-2" href="/TeamMembers/SortUp/' + row.id + '"><i class="fas fa-arrow-up"></i></a>';
+                            }
+                            if (!row.isHighestSortNumber) {
+                                result += '<a class="btn btn-secondary btn-xs btn-xs-square ml-2" href="/TeamMembers/SortDown/' + row.id + '"><i class="fas fa-arrow-down"></i></a>';
+                            }
+                            return result;
+                        }
+                    },
+                ],
+                columns: [
+                    { data: 'sortNumber' },
+                    { data: 'name' },
+                    { data: 'job' },
+                    { data: 'id' },
+                    { data: 'isLowestSortNumber', visible: false },
+                    { data: 'isHighestSortNumber', visible: false }
+                ],
+                language: dataTablesLanguage
+            });
+
+            SetActiveMenu('menu-team-members', 'menu-amrent');
+        });
+    </script>
+}

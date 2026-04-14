@@ -1,0 +1,41 @@
+﻿@inject dCore.MultiLanguage.Providers.TranslationProvider TranslationProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model AMRent.Data.Models.Database.TranslatableSetting
+@{
+    int languageId = HttpContextAccessor.HttpContext.Session.GetInt32("SelectedLanguage") ?? (int)AMRent.Data.Enums.Languages.Portuguese;
+    ViewData["Title"] = TranslationProvider.GetTranslation(languageId, "Footer.PoliticaDePrivacidade");
+}
+
+<!-- About -->
+<section class="section privacy-section">
+    <div class="container">
+        <!-- Heading title-->
+        <div class="section-heading" data-aos="fade-down">
+            <h2>@ViewData["Title"]</h2>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="terms-policy">
+                    @{
+                        if (!string.IsNullOrEmpty(Model.Translations?.FirstOrDefault()?.Text))
+                        {
+                            foreach (string line in Model.Translations?.FirstOrDefault()?.Text.Split('\n'))
+                            {
+                                <p data-aos="fade-down">@line</p>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /About -->
+
+@section Scripts {
+    <script>
+        $(function () {
+            SetActiveMenu('#menu-home');
+        });
+    </script>
+}
