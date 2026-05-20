@@ -466,6 +466,7 @@ namespace AMRent.Data.Contexts
             modelBuilder.Entity<Models.Database.ReservationExtraDriver>().ToTable(nameof(Models.Database.ReservationExtraDriver));
             modelBuilder.Entity<Models.Database.ReservationService>().ToTable(nameof(Models.Database.ReservationService));
             modelBuilder.Entity<Models.Database.ReservationPickupReturnTemporaryTax>().ToTable(nameof(Models.Database.ReservationPickupReturnTemporaryTax));
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().ToTable(nameof(Models.Database.ReservationQuotationCancellationReason));
             modelBuilder.Entity<Models.Database.Season>().ToTable(nameof(Models.Database.Season));
             modelBuilder.Entity<Models.Database.SeasonChange>().ToTable(nameof(Models.Database.SeasonChange));
             modelBuilder.Entity<Models.Database.SeasonCategory>().ToTable(nameof(Models.Database.SeasonCategory));
@@ -1188,6 +1189,21 @@ namespace AMRent.Data.Contexts
             modelBuilder.Entity<Models.Database.PickupReturnLocation>().HasData(pickupReturnLocation);
             modelBuilder.Entity<Models.Database.PickupReturnLocationTranslation>().HasData(pickupReturnLocationTranslations);
             modelBuilder.Entity<Models.Database.PickupReturnLocationDayOfWeekSchedule>().HasData(pickupReturnLocationDayOfWeekSchedules);
+
+            //// CustomerSources
+            //modelBuilder.Entity<Models.Database.CustomerSource>().HasData(new Models.Database.CustomerSource() { Id = 1, Description = "Recomendação" });
+            //modelBuilder.Entity<Models.Database.CustomerSource>().HasData(new Models.Database.CustomerSource() { Id = 2, Description = "Digital" });
+            //modelBuilder.Entity<Models.Database.CustomerSource>().HasData(new Models.Database.CustomerSource() { Id = 3, Description = "Já é cliente" });
+
+            // ReservationQuotationCancellationReason
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 1, Description = "Datas alteradas" });
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 2, Description = "Voo cancelado" });
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 3, Description = "Preço elevado" });
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 4, Description = "Pagamento recusado" });
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 5, Description = "Sem cartão de crédito" });
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 6, Description = "Reserva duplicada" });
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 7, Description = "Planos alterados" });
+            modelBuilder.Entity<Models.Database.ReservationQuotationCancellationReason>().HasData(new Models.Database.ReservationQuotationCancellationReason() { Id = 8, Description = "Não necessita de viatura" });
         }
 
         // ##### DBSets #####
@@ -1219,6 +1235,7 @@ namespace AMRent.Data.Contexts
         public DbSet<Models.Database.CarSegmentTranslation> CarSegmentTranslations { get; set; }
         public DbSet<Models.Database.Country> Countries { get; set; }
         public DbSet<Models.Database.CountryTranslation> CountryTranslations { get; set; }
+        //public DbSet<Models.Database.CustomerSource> CustomerSources { get; set; }
         public DbSet<Models.Database.DataProtectionConsent> DataProtectionConsents { get; set; }
         public DbSet<Models.Database.DataProtectionConsentQuotation> DataProtectionConsentQuotations { get; set; }
         public DbSet<Models.Database.DataProtectionConsentReservation> DataProtectionConsentReservations { get; set; }
@@ -1270,6 +1287,7 @@ namespace AMRent.Data.Contexts
         public DbSet<Models.Database.ReservationExtraDriver> ReservationExtraDrivers { get; set; }
         public DbSet<Models.Database.ReservationService> ReservationServices { get; set; }
         public DbSet<Models.Database.ReservationPickupReturnTemporaryTax> ReservationPickupReturnTemporaryTaxes { get; set; }
+        public DbSet<Models.Database.ReservationQuotationCancellationReason> ReservationQuotationCancellationReasons { get; set; }
         public DbSet<Models.Database.Season> Seasons { get; set; }
         public DbSet<Models.Database.SeasonChange> SeasonChanges { get; set; }
         public DbSet<Models.Database.SeasonCategory> SeasonCategories { get; set; }

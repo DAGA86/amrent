@@ -1035,3 +1035,9 @@ h4,
     }
 
 /* WhatsApp */
+
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 65vw;
+    }
+}

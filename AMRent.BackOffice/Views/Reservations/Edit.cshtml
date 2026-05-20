@@ -87,6 +87,20 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-3 cancelledStatusField">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="CancellationReasonId">Motivo de cancelamento</label>
+                                <select asp-for="CancellationReasonId" class="form-control form-control-sm" asp-items="ViewBag.CancellationReasons">
+                                    <option disabled selected></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-9 cancelledStatusField">
+                            <div class="form-group form-group-label-on-top">
+                                <label for="CancellationReasonDescription">Descrição de cancelamento</label>
+                                <input asp-for="CancellationReasonDescription" class="form-control form-control-sm" />
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4">
@@ -775,7 +789,7 @@
                                     </div>
                                 </div>
                                 <div class="col-9 col-md-10 col-xl-11">
-                                    @Model.DataProtectionConsents[i].DataProtectionConsent.Translations.FirstOrDefault().Text
+                                    @Model.DataProtectionConsents[i].DataProtectionConsent?.Translations?.FirstOrDefault()?.Text
                                 </div>
                             </div>
                         }
@@ -867,6 +881,21 @@
             if ($('#ReturnLocationId').val() == '-1') {
                 $('#custom-return-location').show();
             }
+            if ($('#Status').val() == '@(AMRent.Data.Enums.ReservationStatus.Cancelled)') {
+                $('.cancelledStatusField').show();
+            }
+            else {
+                $('.cancelledStatusField').hide();
+            }
+
+            $('#Status').on('change', function () {
+                if ($('#Status').val() == '@(AMRent.Data.Enums.ReservationStatus.Cancelled)') {
+                    $('.cancelledStatusField').show();
+                }
+                else {
+                    $('.cancelledStatusField').hide();
+                }
+            });
 
             $("input[max='1']").on("input", function () {
                 if ($(this).val() > 1) {

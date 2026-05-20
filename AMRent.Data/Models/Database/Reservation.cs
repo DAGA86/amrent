@@ -1,4 +1,5 @@
-﻿using dCore.MultiLanguage.Models;
+﻿using dCore.Helpers.DataAnnotations;
+using dCore.MultiLanguage.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -92,8 +93,12 @@ namespace AMRent.Data.Models.Database
         // Other
         public string? FlightNumber { get; set; }
         public string? Comments { get; set; }
+        public string? RejectionReason { get; set; }
         public int? SourceQuotationId { get; set; }
         public int LanguageId { get; set; } = (int)Enums.Languages.Portuguese;
+        [RequiredWhen(nameof(Status), Enums.ReservationStatus.Cancelled)]
+        public int? CancellationReasonId { get; set; }
+        public string? CancellationReasonDescription { get; set; }
 
         // Navigation Properties
         public User? AssignedUser { get; set; }
@@ -111,6 +116,7 @@ namespace AMRent.Data.Models.Database
         public Country? BillTelephonePrefixCountry { get; set; }
         public Country? BillCountry { get; set; }
         public Quotation? SourceQuotation { get; set; }
+        public ReservationQuotationCancellationReason? CancellationReason { get; set; }
 
         public List<ReservationExtraDriver>? ExtraDrivers { get; set; } = new();
         public List<ReservationExtra>? Extras { get; set; } = new();

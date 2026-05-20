@@ -130,14 +130,24 @@ namespace AMRent.Website.Controllers
             foreach (CarSegment carSegment in viewModel.CarSegments.ToArray())
             {
                 priceHelper.SetSegment(carSegment.Id);
+                int? campaignId = priceHelper.GetCampaignId(Array.Empty<int>(), isBackofficeRequest:false);
 
-                decimal? carSegmentPrice =
-                    priceHelper.GetCarCost()
-                    + priceHelper.GetPickupReturnCost(viewModel.PickupLocationId)
-                    + priceHelper.GetPickupReturnCost(viewModel.ReturnLocationId);
+                decimal? carSegmentPrice = priceHelper.GetTotalCost(
+                    priceHelper.GetCarCost().Value,
+                    priceHelper.GetPickupReturnCost(viewModel.PickupLocationId),
+                    priceHelper.GetPickupReturnCost(viewModel.ReturnLocationId),
+                    0, 0, 0, 0, null,
+                    campaignId,
+                    new Dictionary<int, Tuple<int, decimal>>());
+
                 if (carSegmentPrice.HasValue)
                 {
                     viewModel.Prices.Add(carSegment.Id, carSegmentPrice.Value);
+                    if (campaignId.HasValue)
+                    {
+                        string campaingName = _context.CampaignTranslations.FirstOrDefault(x => x.LanguageId == GetSelectedLanguageId() && x.CampaignId == campaignId).Name;
+                        viewModel.CarSegmentCampaigns.Add(carSegment.Id, campaingName);
+                    }
                 }
                 else
                 {

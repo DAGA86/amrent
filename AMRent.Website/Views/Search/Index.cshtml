@@ -318,6 +318,15 @@
                                             <a href="#" onclick="javascript:Detail(@(segment.Id));">
                                                 <img src="~/img/segments/@(segment.Id)_grid.jpg" asp-append-version="true" class="img-fluid" alt="">
                                             </a>
+                                            @if (!string.IsNullOrEmpty(segment.Translations.First()?.Tags))
+                                            {
+                                                <span class="featured-text">
+                                                    @foreach (var tag in segment.Translations.First()?.Tags.Split(','))
+                                                    {
+                                                        <span style="border-radius: 5px; padding: 5px 10px; color: #fff; margin-right: 10px" class="bg-primary">@tag</span>
+                                                    }
+                                                </span>
+                                            }
                                         </div>
                                         <div class="listing-content">
                                             <div class="listing-features">
@@ -384,6 +393,13 @@
                                                 <a href="#" onclick="javascript:Detail(@(segment.Id));" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span>@TranslationProvider.GetTranslation(languageId, "Pesquisa.Segmento.Botao")</a>
                                             </div>
                                         </div>
+                                        @if (Model.CarSegmentCampaigns.Any(x => x.Key == segment.Id))
+                                        {
+                                            string campaignName = Model.CarSegmentCampaigns.FirstOrDefault(x => x.Key == segment.Id).Value;
+                                            <div class="feature-text">
+                                                <span class="bg-primary">@campaignName</span>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                                 <!-- /col -->
@@ -477,6 +493,13 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @if (Model.CarSegmentCampaigns.Any(x => x.Key == segment.Id))
+                                            {
+                                                string campaignName = Model.CarSegmentCampaigns.FirstOrDefault(x => x.Key == segment.Id).Value;
+                                                <div class="feature-text">
+                                                    <span class="bg-primary">@campaignName</span>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 </div>

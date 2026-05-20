@@ -216,6 +216,8 @@ namespace AMRent.BackOffice.Controllers
 
             reservation.Services = reservation.Services.OrderBy(x => x.Service.Translations.First().Name).ToList();
 
+            ViewBag.CancellationReasons = new SelectList(_context.ReservationQuotationCancellationReasons.ToList().OrderBy(x => x.Description), "Id", "Description", reservation.CancellationReasonId);
+
             //if (!reservation.Extras.Any())
             //{
             //    foreach (Extra extra in _context.Extras.Include(x => x.Translations.Where(y => y.LanguageId == (int)Languages.Portuguese)))

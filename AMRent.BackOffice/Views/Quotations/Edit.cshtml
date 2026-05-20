@@ -80,10 +80,18 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-md-12" id="RejectionReasonDiv" style="display: none;">
+						<div class="col-md-3 cancelledStatusField">
 							<div class="form-group form-group-label-on-top">
-								<label for="RejectionReason">Motivo de rejeição</label>
-								<textarea rows="3" asp-for="RejectionReason" class="form-control form-control-sm"></textarea>
+								<label for="CancellationReasonId">Motivo de cancelamento</label>
+								<select asp-for="CancellationReasonId" class="form-control form-control-sm" asp-items="ViewBag.CancellationReasons">
+									<option disabled selected></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-9 cancelledStatusField">
+							<div class="form-group form-group-label-on-top">
+								<label for="CancellationReasonDescription">Descrição de cancelamento</label>
+								<input asp-for="CancellationReasonDescription" class="form-control form-control-sm" />
 							</div>
 						</div>
 					</div>
@@ -612,18 +620,19 @@
 				}
 			});
 
-			if ($('#Status').val() == '@(AMRent.Data.Enums.QuotationStatus.Cancelled)')
-			{
-				$('#RejectionReasonDiv').show();
+			if ($('#Status').val() == '@(AMRent.Data.Enums.ReservationStatus.Cancelled)') {
+				$('.cancelledStatusField').show();
 			}
-			$('#Status').change(function() {
-				if ($(this).val() == '@(AMRent.Data.Enums.QuotationStatus.Cancelled)')
-				{
-					$('#RejectionReasonDiv').show();
+			else {
+				$('.cancelledStatusField').hide();
+			}
+
+			$('#Status').on('change', function () {
+				if ($('#Status').val() == '@(AMRent.Data.Enums.ReservationStatus.Cancelled)') {
+					$('.cancelledStatusField').show();
 				}
-				else
-				{
-					$('#RejectionReasonDiv').hide();
+				else {
+					$('.cancelledStatusField').hide();
 				}
 			});
 

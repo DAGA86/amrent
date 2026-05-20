@@ -25,5 +25,8 @@
         public string? PostalLocation { get; set; }
         public int? CountryId { get; set; }
         public string? VatNumber { get; set; }
+
+        //public int? CustomerSourceId { get; set; }
+        //public CustomerSource? CustomerSource { get; set; }
     }
 }

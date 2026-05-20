@@ -4,6 +4,7 @@ using AMRent.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AMRent.Data.Migrations
 {
     [DbContext(typeof(FullDatabaseContext))]
-    partial class FullDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260512125849_AddCancellationReasonToReservationAndQuotation")]
+    partial class AddCancellationReasonToReservationAndQuotation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -423,10 +426,6 @@ namespace AMRent.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
-
-                    b.Property<string>("Tags")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("LanguageId", "CarSegmentId");
 
@@ -1046,12 +1045,6 @@ namespace AMRent.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ValidFromUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ValidUntilUtc")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -2541,7 +2534,7 @@ namespace AMRent.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReservationQuotationCancellationReason", (string)null);
+                    b.ToTable("ReservationQuotationCancellationReason");
 
                     b.HasData(
                         new

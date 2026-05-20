@@ -23,6 +23,7 @@
         // Data
         public List<Data.Models.Database.CarSegment> CarSegments { get; set; }
         public Dictionary<int, decimal> Prices { get; set; } = new();
+        public Dictionary<int, string> CarSegmentCampaigns { get; set; } = new();
         public int Days { get; set; }
 
         // Other

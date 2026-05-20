@@ -1,4 +1,5 @@
-﻿using AMRent.BackOffice.Models.DataTables;
+﻿using AMRent.BackOffice.Models;
+using AMRent.BackOffice.Models.DataTables;
 using AMRent.Data.Contexts;
 using AMRent.Data.Enums;
 using AMRent.Data.Models.Database;
@@ -163,6 +164,8 @@ namespace AMRent.BackOffice.Controllers
                 }
 
                 quotationItem.Services = quotationItem.Services.OrderBy(x => x.Service.Translations.First().Name).ToList();
+
+                ViewBag.CancellationReasons = new SelectList(_context.ReservationQuotationCancellationReasons.ToList().OrderBy(x => x.Description), "Id", "Description", quotation.CancellationReasonId);
             }
         }
 

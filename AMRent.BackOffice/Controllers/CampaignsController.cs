@@ -229,6 +229,14 @@ namespace AMRent.BackOffice.Controllers
                         ModelState.AddModelError($"PopupImageFile_{currentLanguage.Code}_{currentLanguage.CountryCode}", "Please upload a JPG file.");
                         return false;
                     }
+                    using (var image = Image.FromStream(popupFile.OpenReadStream()))
+                    {
+                        if (image.Width != 1080 || image.Height != 1080)
+                        {
+                            ModelState.AddModelError($"PopupImageFile_{currentLanguage.Code}_{currentLanguage.CountryCode}", "Please upload an image with a resolution of 1080px x 1080px.");
+                            return false;
+                        }
+                    }
 
                     if (System.IO.File.Exists(popupFilePath))
                     {
@@ -356,8 +364,10 @@ namespace AMRent.BackOffice.Controllers
                 }
             }
             ViewBag.Languages = languages;
-            ViewBag.Segments = new MultiSelectList(_context.CarSegments.Select(x => new { x.Id, x.Code }), "Id", "Code", campaign.CarSegments.Select(x => x.Id));
-            ViewBag.Extras = new MultiSelectList(_context.Extras.Select(x => new { x.Id, x.Translations.FirstOrDefault(t => t.LanguageId == (int)Data.Enums.Languages.Portuguese).Name }), "Id", "Name", campaign.Extras.Select(x => x.Id));
+            ViewBag.Segments = new MultiSelectList(_context.CarSegments.Select(x => new { x.Id, x.Code }), "Id", "Code");
+            campaign.SegmentIds = campaign.CarSegments.Select(x => x.Id).ToList();
+            ViewBag.Extras = new MultiSelectList(_context.Extras.Select(x => new { x.Id, x.Translations.FirstOrDefault(t => t.LanguageId == (int)Data.Enums.Languages.Portuguese).Name }), "Id", "Name");
+            campaign.ExtraIds = campaign.Extras.Select(x => x.Id).ToList();
             return View(campaign);
         }
 

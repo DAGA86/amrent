@@ -4,6 +4,7 @@ using AMRent.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AMRent.Data.Migrations
 {
     [DbContext(typeof(FullDatabaseContext))]
-    partial class FullDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260519143218_AddStartAndEndDateTimesToHomeBanners")]
+    partial class AddStartAndEndDateTimesToHomeBanners
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -75,7 +75,7 @@
             </div>
             <!-- /.card -->
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div class="card card-success card-outline">
                 <div class="card-header">
                     <h3 class="card-title">Nome</h3>
@@ -92,6 +92,32 @@
                                 <div class="form-group form-group-label-on-top">
                                     <label for="Translations[@i].Name">@ViewBag.Languages[i].Name</label>
                                     <input name="Translations[@i].Name" class="form-control form-control-sm" value="@(currentTranslation?.Name ?? "")" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-3">
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Tags (separadas por vírgula)</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        @for (int i = 0; i < ViewBag.Languages.Count; i++)
+                        {
+                            int languageId = ViewBag.Languages[i].Id;
+                            var currentTranslation = Model?.Translations?.FirstOrDefault(x => x.LanguageId == languageId);
+                            <input type="hidden" name="Translations[@i].LanguageId" value="@languageId" />
+                            <div class="col-sm-12">
+                                <div class="form-group form-group-label-on-top">
+                                    <label for="Translations[@i].Tags">@ViewBag.Languages[i].Name</label>
+                                    <input name="Translations[@i].Tags" class="form-control form-control-sm" value="@(currentTranslation?.Tags ?? "")" />
                                 </div>
                             </div>
                         }

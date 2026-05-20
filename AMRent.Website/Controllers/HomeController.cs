@@ -120,7 +120,7 @@ namespace AMRent.Website.Controllers
             Models.HomeIndex viewModel = EnsureViewModelHasDefaults(new Models.HomeIndex());
 
             viewModel.HomeBanners = _context.HomeBanners
-                .Include(x => x.Translations.Where(t => t.LanguageId == GetSelectedLanguageId())).ToList();
+                .Include(x => x.Translations.Where(t => t.LanguageId == GetSelectedLanguageId())).Where(x => (!x.ValidFromUtc.HasValue || x.ValidFromUtc <= DateTime.UtcNow) && (!x.ValidUntilUtc.HasValue || x.ValidUntilUtc >= DateTime.UtcNow)).ToList();
             viewModel.Campaigns = _context.Campaigns
                 .Include(x => x.Translations.Where(t => t.LanguageId == GetSelectedLanguageId()))
                 .Where(x => x.AppliesToBookingsMadeFromUtc <= DateTime.UtcNow && x.AppliesToBookingsMadeUntilUtc >= DateTime.UtcNow && x.IsActive)

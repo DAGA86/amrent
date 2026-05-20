@@ -1,4 +1,6 @@
-﻿using dCore.MultiLanguage.Models;
+﻿using AMRent.Data.Enums;
+using dCore.Helpers.DataAnnotations;
+using dCore.MultiLanguage.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,8 +36,10 @@ namespace AMRent.Data.Models.Database
 
         // Other
         public string? Comments { get; set; }
-        public string? RejectionReason { get; set; }
         public int LanguageId { get; set; } = (int)Enums.Languages.Portuguese;
+        [RequiredWhen(nameof(Status), Enums.QuotationStatus.Cancelled)]
+        public int? CancellationReasonId { get; set; }
+        public string? CancellationReasonDescription { get; set; }
 
         // Navigation Properties
         public User? User { get; set; }
@@ -43,6 +47,7 @@ namespace AMRent.Data.Models.Database
         public PickupReturnLocation? PickupLocation { get; set; }
         public PickupReturnLocation? ReturnLocation { get; set; }
         public Country? CustomerTelephonePrefixCountry { get; set; }
+        public ReservationQuotationCancellationReason? CancellationReason { get; set; }
         public IList<QuotationItem> QuotationItems { get; set; } = new List<QuotationItem>();
         public List<QuotationChange>? Changes { get; set; } = new();
         public List<DataProtectionConsentQuotation>? DataProtectionConsents { get; set; } = new();
