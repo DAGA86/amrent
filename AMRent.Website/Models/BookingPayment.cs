@@ -13,5 +13,9 @@ namespace AMRent.Website.Models
         public decimal TotalCost { get; set; }
         public Data.Enums.PaymentTypes? PaymentType { get; set; } = PaymentTypes.BankTransfer;
         public string? MbWayNumber { get; set; }
+        public PaymentAmountType PaymentAmountType { get; set; } = AMRent.Website.Models.PaymentAmountType.Total;
+
+        [NotMapped]
+        public decimal DepositCost => Math.Round(TotalCost * 0.20m, 2);
     }
 }

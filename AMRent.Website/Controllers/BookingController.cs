@@ -643,6 +643,7 @@ namespace AMRent.Website.Controllers
                 Comments = viewModel.Comments,
                 FlightNumber = viewModel.FlightNumber,
                 PaymentType = viewModel.PaymentType,
+                HasAdvancePartialPayment = viewModel.PaymentAmountType == Models.PaymentAmountType.Deposit,
 
                 CampaignId = viewModel.CampaignId,
                 VoucherId = viewModel.VoucherId,
@@ -730,6 +731,14 @@ namespace AMRent.Website.Controllers
                         break;
                 }
                 dCore.Business.Payment.Easypay.Providers.Payment paymentProvider = new();
+
+                decimal paymentValue = viewModel.PaymentAmountType == Models.PaymentAmountType.Deposit
+                    ? Math.Round(reservation.TotalCost * 0.20m, 2)
+                    : reservation.TotalCost;
+                reservation.HasAdvancePartialPayment = viewModel.PaymentAmountType == Models.PaymentAmountType.Deposit;
+                reservation.AdvancePartialPaymentValue = reservation.HasAdvancePartialPayment ? paymentValue : null;
+                reservation.AdvancePartialPaymentPaymentType = reservation.HasAdvancePartialPayment ? reservation.PaymentType : null;
+
                 dCore.Business.Payment.Easypay.Models.Payment<dCore.Business.Payment.Easypay.Models.SinglePaymentCreate> paymentModel = new()
                 {
                     AccountId = _configuration["Easypay:AccountId"],
@@ -738,7 +747,7 @@ namespace AMRent.Website.Controllers
                     RequestModel = new dCore.Business.Payment.Easypay.Models.SinglePaymentCreate()
                     {
                         Key = reservation.Number,
-                        Value = reservation.TotalCost,
+                        Value = paymentValue,
                         Method = paymentMethod,
                         Capture = new dCore.Business.Payment.Easypay.Models.SinglePaymentCreateCapture()
                         {
@@ -1373,7 +1382,8 @@ namespace AMRent.Website.Controllers
                 ReservationId = reservation.Id,
                 ReservationNumber = reservation.Number,
                 TotalCost = reservation.TotalCostOverride ?? reservation.TotalCost,
-                PaymentType = reservation.PaymentType
+                PaymentType = reservation.PaymentType,
+                PaymentAmountType = reservation.HasAdvancePartialPayment ? Models.PaymentAmountType.Deposit : Models.PaymentAmountType.Total
             };
 
             BuildViewBag();
@@ -1454,6 +1464,14 @@ namespace AMRent.Website.Controllers
                         break;
                 }
                 dCore.Business.Payment.Easypay.Providers.Payment paymentProvider = new();
+
+                decimal paymentValue = viewModel.PaymentAmountType == Models.PaymentAmountType.Deposit
+                    ? Math.Round((reservation.TotalCostOverride ?? reservation.TotalCost) * 0.20m, 2)
+                    : reservation.TotalCostOverride ?? reservation.TotalCost;
+                reservation.HasAdvancePartialPayment = viewModel.PaymentAmountType == Models.PaymentAmountType.Deposit;
+                reservation.AdvancePartialPaymentValue = reservation.HasAdvancePartialPayment ? paymentValue : null;
+                reservation.AdvancePartialPaymentPaymentType = reservation.HasAdvancePartialPayment ? reservation.PaymentType : null;
+
                 dCore.Business.Payment.Easypay.Models.Payment<dCore.Business.Payment.Easypay.Models.SinglePaymentCreate> paymentModel = new()
                 {
                     AccountId = _configuration["Easypay:AccountId"],
@@ -1462,7 +1480,7 @@ namespace AMRent.Website.Controllers
                     RequestModel = new dCore.Business.Payment.Easypay.Models.SinglePaymentCreate()
                     {
                         Key = reservation.Number,
-                        Value = reservation.TotalCostOverride ?? reservation.TotalCost,
+                        Value = paymentValue,
                         Method = paymentMethod,
                         Capture = new dCore.Business.Payment.Easypay.Models.SinglePaymentCreateCapture()
                         {

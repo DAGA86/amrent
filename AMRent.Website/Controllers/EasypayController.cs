@@ -26,7 +26,10 @@ namespace AMRent.Website.Controllers
                 return new JsonResult("Not Found");
             }
 
-            reservation.PaymentStatus = Data.Enums.PaymentStatus.Paid;
+            reservation.PaymentStatus = reservation.HasAdvancePartialPayment
+                ? Data.Enums.PaymentStatus.PartiallyPaid
+                : Data.Enums.PaymentStatus.Paid;
+
             _context.SaveChanges();
 
             dCore.Communication.Models.SmtpConfiguration smtpConfiguration = _configuration.GetSection("SmtpConfiguration").Get<dCore.Communication.Models.SmtpConfiguration>();
@@ -159,7 +162,9 @@ namespace AMRent.Website.Controllers
                         return BadRequest("Payment failed.");
                     }
 
-                    reservation.PaymentStatus = Data.Enums.PaymentStatus.Paid;
+                    reservation.PaymentStatus = reservation.HasAdvancePartialPayment
+                        ? Data.Enums.PaymentStatus.PartiallyPaid
+                        : Data.Enums.PaymentStatus.Paid;
                     _context.SaveChanges();
 
                     emailSender.Send(Data.Enums.EmailContentTypes.PaymentConfirmation, _configuration["Environment"] == "Test", reservation.Id);

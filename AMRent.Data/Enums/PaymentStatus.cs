@@ -9,6 +9,8 @@ namespace AMRent.Data.Enums
         [Description("Pago")]
         Paid = 2,
         [Description("Falhado")]
-        Failed = 3
+        Failed = 3,
+        [Description("Sinalizado")]
+        PartiallyPaid = 4
     }
 }

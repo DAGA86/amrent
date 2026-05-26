@@ -1038,6 +1038,6 @@ h4,
 
 @media (min-width: 576px) {
     .modal-dialog {
-        max-width: 65vw;
+        max-width: 40vw;
     }
 }

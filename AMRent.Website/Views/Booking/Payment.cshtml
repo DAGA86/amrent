@@ -12,6 +12,7 @@
         <input type="hidden" asp-for="ReservationId" />
         <input type="hidden" asp-for="ReservationNumber" />
         <input type="hidden" asp-for="PaymentType" />
+        <input type="hidden" asp-for="PaymentAmountType" />
         <div class="container">
             <!-- Heading title-->
             <div class="section-heading" data-aos="fade-down">
@@ -27,6 +28,21 @@
                             <div class="booking-amount">
                                 <h5>@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.Valor.Titulo"))</h5>
                                 <h6><span>@(Model.TotalCost)€ </span><i class="feather-info"></i></h6>
+                            </div>
+                        </div>
+                        <div class="booking-info">
+                            <h4 class="text-danger">Montante a pagar</h4>
+                            <div class="mb-2">
+                                <label>
+                                    <input type="radio" name="payment-amount-choice" checked="@(Model.PaymentAmountType == PaymentAmountType.Total)" onclick="javascript:PaymentAmountTypeSelect('@(PaymentAmountType.Total)');" />
+                                    Total (@Model.TotalCost.ToString("0.00", CultureInfo.InvariantCulture)€)
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input type="radio" name="payment-amount-choice" checked="@(Model.PaymentAmountType == PaymentAmountType.Deposit)" onclick="javascript:PaymentAmountTypeSelect('@(PaymentAmountType.Deposit)');" />
+                                    Sinal 20% (@Model.DepositCost.ToString("0.00", CultureInfo.InvariantCulture)€)
+                                </label>
                             </div>
                         </div>
                         <div class="payment-method">
@@ -82,6 +98,7 @@
         var valid = true;
         $(function () {
             SetActiveMenu('.menu-search');
+            PaymentAmountTypeSelect('@Model.PaymentAmountType');
         });
 
         function PaymentTypeSelect(paymentType) {
@@ -90,6 +107,9 @@
             $('.payment-method ul li a').removeClass('active');
             $('#payment-type-' + paymentType).addClass('active');
             $('#@(nameof(Model.PaymentType))').val(paymentType);
+        }
+        function PaymentAmountTypeSelect(paymentAmountType) {
+            $('#@(nameof(Model.PaymentAmountType))').val(paymentAmountType);
         }
 
         function ValidatePayment() {

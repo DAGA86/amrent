@@ -371,6 +371,21 @@
                                 
                             </div>
                         </div>
+                        <div class="booking-info">
+                            <h4 class="text-danger">Montante a pagar</h4>
+                            <div class="mb-2">
+                                <label>
+                                    <input type="radio" name="payment-amount-choice" checked="@(Model.PaymentAmountType == AMRent.Website.Models.PaymentAmountType.Total)" onclick="javascript:PaymentAmountTypeSelect('@(AMRent.Website.Models.PaymentAmountType.Total)');" />
+                                    Total (@((Model.TotalValue ?? totalCost).ToString("0.00", CultureInfo.InvariantCulture))€)
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input type="radio" name="payment-amount-choice" checked="@(Model.PaymentAmountType == AMRent.Website.Models.PaymentAmountType.Deposit)" onclick="javascript:PaymentAmountTypeSelect('@(AMRent.Website.Models.PaymentAmountType.Deposit)');" />
+                                    Sinal 20% (@(Math.Round((Model.TotalValue ?? totalCost) * 0.20m, 2).ToString("0.00", CultureInfo.InvariantCulture))€)
+                                </label>
+                            </div>
+                        </div>
                         <div class="payment-method">
                             <h4 class="text-danger">@(TranslationProvider.GetTranslation(languageId, "Reserva.Pagamento.EscolhaMetodo.Titulo"))</h4>
                             <ul>
@@ -429,6 +444,7 @@
         <input asp-for="PickupValue" type="hidden" />
         <input asp-for="ReturnValue" type="hidden" />
         <input asp-for="PaymentType" type="hidden" />
+        <input asp-for="PaymentAmountType" type="hidden" />
         @for (int i = 0; i < Model.Extras.Count; i++)
         {
             <input asp-for="Extras[i].Id" type="hidden" />
@@ -445,6 +461,7 @@
         $(function () {
             SetActiveMenu('.menu-search');
             $('.select2').select2();
+            PaymentAmountTypeSelect('@Model.PaymentAmountType');
 
             $('#DriverName').on('blur', function () {
                 if ($('#BillName').val() === '') {
@@ -617,6 +634,9 @@
             $('.payment-method ul li a').removeClass('active');
             $('#payment-type-' + paymentType).addClass('active');
             $('#@(nameof(Model.PaymentType))').val(paymentType);
+        }
+        function PaymentAmountTypeSelect(paymentAmountType) {
+            $('#@(nameof(Model.PaymentAmountType))').val(paymentAmountType);
         }
 
         function GoToPayment() {

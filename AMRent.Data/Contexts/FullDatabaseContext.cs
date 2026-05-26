@@ -535,6 +535,8 @@ namespace AMRent.Data.Contexts
             // Settings
             modelBuilder.Entity<Models.Database.Setting>().HasData(new Models.Database.Setting() { Id = 1, Key = "QuotationExpiringReminderDays", Description = "Número de dias de antecedência para notificar por email que uma cotação está prestes a expirar", Value = "5" });
             modelBuilder.Entity<Models.Database.Setting>().HasData(new Models.Database.Setting() { Id = 2, Key = "DefaultQuotationExpireDateDays", Description = "Número de dias de validade da cotação por defeito", Value = "15" });
+            modelBuilder.Entity<Models.Database.Setting>().HasData(new Models.Database.Setting() { Id = 3, Key = "PartialPaymentMinimumValue", Description = "Valor mínimo da reserva para disponibilizar pagamento de sinal", Value = "333.33" });
+            modelBuilder.Entity<Models.Database.Setting>().HasData(new Models.Database.Setting() { Id = 4, Key = "PartialPaymentDefaultPercentage", Description = "Percentagem do sinal", Value = "30" });
 
             // Translatable Settings
             modelBuilder.Entity<Models.Database.TranslatableSetting>().HasData(new Models.Database.TranslatableSetting() { Id = 1, Code = Enums.TranslatableSettings.TermsAndConditions });

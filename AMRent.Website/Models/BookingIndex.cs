@@ -27,6 +27,7 @@ namespace AMRent.Website.Models
         //public List<int> SelectedExtraIds { get; set; } = new();
         public Data.Enums.PaymentTypes PaymentType { get; set; } = PaymentTypes.BankTransfer;
         public string? MbWayNumber { get; set; }
+        public PaymentAmountType PaymentAmountType { get; set; } = AMRent.Website.Models.PaymentAmountType.Total;
 
         // Driver
         public string DriverName { get; set; }
@@ -108,5 +109,11 @@ namespace AMRent.Website.Models
         public bool HasConsent { get; set; }
         public bool IsRequired { get; set; }
         public string Text { get; set; }
+    }
+
+    public enum PaymentAmountType
+    {
+        Total = 1,
+        Deposit = 2
     }
 }
